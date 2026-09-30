@@ -856,5 +856,68 @@
       "explore": "Explore the practice library",
       "note": "No long-term commitment. Cancel any time."
     }
+  },
+  "Journal": {
+    "metaTitle": "The Solstice Chronicle",
+    "eyebrow": "The Solstice Chronicle · Essays, Somatics & Reflections",
+    "title": "Writings on the quiet architecture of breath, movement, and everyday stillness.",
+    "lede": "Essays, breath guides and somatic inquiries by Elena Vance and guest writers. An open archive for the mindful nervous system.",
+    "searchLabel": "Search the journal",
+    "searchPlaceholder": "Search essays, breath practices, or keywords…",
+    "published": "{count, plural, one {# work published} other {# works published}}",
+    "categoriesLabel": "Journal categories",
+    "allCategories": "All writings",
+    "categories": {
+      "somatic": "Somatic science",
+      "breath": "Pranayama & breath",
+      "morning": "Morning rituals",
+      "sleep": "Sleep & restorative",
+      "philosophy": "Philosophy & lineage",
+      "space": "Sacred space"
+    },
+    "issue": "Issue {issue, number}",
+    "featureEssay": "Feature essay",
+    "readTime": "{minutes, number} min read",
+    "readEssay": "Read essay",
+    "anthologyEyebrow": "The core anthology",
+    "anthologyTitle": "Dispatches from the Atelier",
+    "emptyTitle": "No essays match that search.",
+    "clear": "Clear filters",
+    "pagination": "Journal pages",
+    "previous": "Previous page",
+    "next": "Next page",
+    "pageLabel": "Page {page, number}",
+    "showing": "Showing {from, number}–{to, number} of {count, plural, one {# essay} other {# essays}}",
+    "quote": {
+      "eyebrow": "A reflection on inquiry",
+      "text": "“We do not practice yoga to become flexible acrobats. We practice to inhabit the quiet room within ourselves before the world asks us to be loud.”",
+      "source": "Elena Vance · From ‘The Architecture of Presence’"
+    },
+    "epistle": {
+      "eyebrow": "Bi-weekly literary dispatch",
+      "title": "The New Moon Epistle",
+      "body": "Every lunar cycle, Elena shares unreleased writing, guided breath practices and recommended reading on slow living. No spam, only quiet.",
+      "note": "Unsubscribe at any quiet moment."
+    },
+    "chronicle": "The Solstice Chronicle",
+    "reader": {
+      "progress": "Reading progress",
+      "breadcrumb": "Breadcrumb",
+      "verified": "Studio founder",
+      "share": "Share or copy link",
+      "copied": "Link copied",
+      "print": "Print",
+      "practicesEyebrow": "Embodied application",
+      "practicesTitle": "Practices featured in this essay",
+      "practiceNow": "Practice now",
+      "related": "Continue reading"
+    }
+  },
+  "Newsletter": {
+    "label": "Email address",
+    "placeholder": "Enter your email address…",
+    "submit": "Subscribe",
+    "done": "Welcome to the circle. The next epistle arrives with the new moon.",
+    "invalid": "Please enter a valid email address."
   }
 }

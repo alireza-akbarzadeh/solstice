@@ -8,7 +8,7 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** About `/about` — `about-elena-vance-desktop`.
+> **Next up:** Member area — `/dashboard` (`today-sanctuary`), then `/my-practices`, `/progress`, `/profile`, `/community`.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -43,7 +43,7 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Favorites + completions | ✅ | `solstice_favorite`, `solstice_practice_completion`; `modules/progress`. Save on cards + detail; Mark complete (auto on video end) |
 | Community: practice reflections | ✅ | `solstice_comment`, `solstice_comment_like`; `modules/community`. Tags, video moments, private-to-instructor, replies, likes, pin (instructor), delete, reply push notification |
 | Pricing source | 🟡 | `src/modules/memberships/plans.ts` ($24/mo, $220/yr). Stitch screens disagree ($24 vs $48) — confirm the real price |
-| Newsletter signup (footer) | ⬜ | Form renders, not wired; needs `EmailProvider` |
+| Newsletter signup | 🟡 | Journal forms store to `solstice_newsletter_subscriber` (`modules/newsletter`). Footer form not wired yet; sending needs an `EmailProvider` |
 | Soundscape audio | ⬜ | Home atmosphere bar selects only; no audio assets/player yet |
 | Legal pages `/privacy`, `/terms`, `/ethics` | ⬜ | Linked from footer, no content yet |
 | PWA (installable, offline fallback) | ✅ | `public/sw.js`, `src/app/manifest.ts`, `/offline` + `/fa/offline`, icons via `pnpm icons`. Offline tested in a production build (cached pages, localized offline page, Persian font offline) |
@@ -59,9 +59,9 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | `/practices/[slug]` | ✅ | 🎨 | Custom player (play, ±10s, seek, volume, speed, mirror, fullscreen), seekable chapters, related, share. Members-only practices: full for members, a `previewSeconds` preview or locked state otherwise. Save to Sanctuary, Mark complete (auto when the video ends), reflections (comments) with timestamps that seek the player. Program progress card when opened from a program day. Not yet: soundscape chips |
 | `/programs` | ✅ | — | Composed from the home program spotlights |
 | `/programs/[slug]` | ✅ | 🎨 | `30-day-awakening-immersion-hub-desktop`. Enroll (members), weeks as tabs, day cards (done / today / open / locked), progress card with streak, start over. Daily pacing unlocks one day per day; self-paced opens all. Days open practices with `?program=&day=` → breadcrumb, “Active program” card, completion counts for the day. Not built: live-sit notice, PDF workbook, journey artifacts (no content yet) |
-| `/journal` | ⬜ | 🎨 | `the-solstice-chronicle-editorial-journal` |
-| `/journal/[slug]` | ⬜ | 🎨 | `the-vagus-nerve-in-movement-essay-reader` |
-| `/about` | ⬜ | 🎨 | `about-elena-vance-desktop` |
+| `/journal` | ✅ | 🎨 | `the-solstice-chronicle-editorial-journal`. Search + categories + pagination in the URL, featured essay, quote, newsletter. Sample essays: `modules/journal/sample-articles.ts` |
+| `/journal/[slug]` | ✅ | 🎨 | `the-vagus-nerve-in-movement-essay-reader`. Block body (paragraph, heading, quote, figure, steps), reading progress, share, print, featured practices, related. Not built: audio narration (no audio yet) |
+| `/about` | ✅ | 🎨 | `about-elena-vance-desktop`: hero, lineage, pillars, studio, letter, FAQ (`<details>`), invitation |
 | `/membership` | ✅ | 🎨 | `sanctuary-checkout-pricing-desktop`, `sanctuary-checkout-access-pass`. Monthly/annual checkout (signed-out → `/sign-up` first, plan kept); members see status + cancel/resume |
 | `/membership/welcome` | ✅ | — | Post-checkout confirmation; non-members are sent back to `/membership` |
 
@@ -130,3 +130,5 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
   states), practice reflections (comments), Save / Mark complete. New tables pushed to Neon.
 - **2026-09-30** — Programs: `/programs`, `/programs/[slug]` with enrollment, daily unlocking,
   per-day completion and streaks (`solstice_program_enrollment`, program columns on completions).
+- **2026-09-30** — About, Journal index and essay reader (en/fa). Newsletter sign-ups stored.
+  `pnpm stitch:images` now also downloads CSS background images.

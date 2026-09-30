@@ -105,8 +105,9 @@ export function parseJournalFilters(
     typeof params[key] === "string" ? params[key] : undefined;
   const category = one("category");
   const page = Number(one("page") ?? 1);
+  const q = one("q")?.trim().slice(0, 100);
   return {
-    q: one("q")?.trim().slice(0, 100) || undefined,
+    q: q === "" ? undefined : q, // an empty search box is no search
     category: journalCategories.includes(category as never)
       ? (category as JournalFilters["category"])
       : undefined,
@@ -137,7 +138,7 @@ export async function getJournal(locale: Locale, filters: JournalFilters) {
 
   const q = filters.q?.toLocaleLowerCase(locale);
   const matches = newest.filter((article) => {
-    if (featured && article.slug === featured.slug) return false;
+    if (article.slug === featured?.slug) return false;
     if (filters.category && article.category !== filters.category) return false;
     if (!q) return true;
     const haystack = [article.title, article.excerpt, ...article.tags]
