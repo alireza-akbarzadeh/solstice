@@ -5,18 +5,25 @@ import { env } from "@/env";
 import { db } from "@/server/db";
 
 export const auth = betterAuth({
+  baseURL: env.BETTER_AUTH_URL,
+  secret: env.BETTER_AUTH_SECRET,
   database: drizzleAdapter(db, {
-    provider: "pg", // or "pg" or "mysql"
+    provider: "pg",
   }),
   emailAndPassword: {
     enabled: true,
   },
   socialProviders: {
-    github: {
-      clientId: env.BETTER_AUTH_GITHUB_CLIENT_ID,
-      clientSecret: env.BETTER_AUTH_GITHUB_CLIENT_SECRET,
-      redirectURI: "http://localhost:3000/api/auth/callback/github",
-    },
+    // Google sign-in is only enabled once both OAuth credentials are set.
+    ...(env.BETTER_AUTH_GOOGLE_CLIENT_ID && env.BETTER_AUTH_GOOGLE_CLIENT_SECRET
+      ? {
+          google: {
+            clientId: env.BETTER_AUTH_GOOGLE_CLIENT_ID,
+            clientSecret: env.BETTER_AUTH_GOOGLE_CLIENT_SECRET,
+            redirectURI: `${env.BETTER_AUTH_URL}/api/auth/callback/google`,
+          },
+        }
+      : {}),
   },
 });
 

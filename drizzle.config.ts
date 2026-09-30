@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-  tablesFilter: ["solstice_*"],
+  tablesFilter: ["solstice_*", "user", "session", "account", "verification"],
 } satisfies Config;
