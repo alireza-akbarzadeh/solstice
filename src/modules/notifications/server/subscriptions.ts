@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 
 import type { Locale } from "@/i18n/routing";
 import { db } from "@/server/db";
@@ -45,4 +45,10 @@ export async function getUserSubscriptions(userId: string) {
 
 export async function getAllSubscriptions() {
   return db.select().from(pushSubscriptions);
+}
+
+/** How many devices a studio announcement would reach. */
+export async function getSubscriptionCount() {
+  const [row] = await db.select({ n: count() }).from(pushSubscriptions);
+  return row?.n ?? 0;
 }

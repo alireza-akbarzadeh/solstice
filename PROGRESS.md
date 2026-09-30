@@ -8,7 +8,8 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** Instructor area — `/instructor` overview, `/instructor/videos`, `/instructor/members` (+ revenue), `/instructor/posts`, `/instructor/community`.
+> **Next up:** Legal pages (`/privacy`, `/terms`, `/ethics`) and a localized 404, then journal
+> essays into Postgres so `/instructor/journal` becomes an editor rather than a shelf.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -25,8 +26,8 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | GitHub OAuth provider | 🟡 | Code done; needs `BETTER_AUTH_GITHUB_CLIENT_ID/SECRET`. Buttons render only for configured providers (`enabledSocialProviders`) |
 | Email/password auth | ✅ | `/sign-in`, `/sign-up`; 8-char minimum, "keep me signed in" (30 days), safe `?next=` redirects (`src/lib/safe-next.ts`). No email verification yet |
 | Email verification / password reset | ✅ | `EmailProvider` boundary (`infrastructure/email`), `outbox` provider stores mail in `solstice_email_outbox`; read it at `/test/mailbox` (test accounts only outside dev). Verification is sent on sign-up but not required |
-| `member` / `instructor` roles | 🟡 | `user.role` column (not settable at sign-up; promote in the DB). Instructors get full access. No instructor routes/guards yet |
-| shadcn/ui (radix-nova, RTL) | ✅ | `components.json`, `src/components/ui` |
+| `member` / `instructor` roles | ✅ | `user.role` column (not settable at sign-up). Instructors get full access and the studio; `requireInstructor()` guards the layout and every page — members get 404, signed-out visitors go to sign-in. Promote the first instructor in the DB or with the test panel; after that, from `/instructor/members` |
+| shadcn/ui (radix-nova, RTL) | ✅ | `components.json`, `src/components/ui`. Studio adds `sidebar`, `table`, `select`, `switch`, `toggle-group`, `dialog`, `alert-dialog`, `alert`, `empty`, `tooltip`, `progress`, `tabs`, `textarea`, … |
 | next-intl (`en`, `fa`) + RTL direction | ✅ | `src/i18n`, `messages/`, `src/middleware.ts` |
 | Fonts: Playfair Display + Plus Jakarta Sans (en), Vazirmatn for all Persian text (fa) | ✅ | `src/app/[locale]/layout.tsx`; per-locale switch in `globals.css` (`html:lang(fa)`) |
 | Stitch theme → `globals.css` tokens | ✅ | Stitch tokens exposed 1:1 (`bg-surface-container-low`, `font-headline-sm text-headline-sm`, `px-margin`…); Stitch `secondary` → `clay` |
@@ -87,14 +88,20 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
 ## Instructor — `src/app/[locale]/(instructor)/instructor`
 
+A shadcn `Sidebar` shell (`components/layout/studio-sidebar.tsx` + `studio-header.tsx`), separate
+from the public chrome: collapses to icons on desktop, to a sheet on phones, and sits on the end
+side in Persian. Draft and awaiting-reply counts ride on the nav as badges.
+
 | Route | Status | Stitch | Notes |
 | --- | --- | --- | --- |
-| `/instructor` | ⬜ | ? | Overview |
-| `/instructor/videos` | ⬜ | 🎨 | Upload/manage (via `VideoProvider`); `studio-admin-content-video-publisher` |
-| `/instructor/programs` | ⬜ | ? | |
-| `/instructor/members` | ⬜ | 🎨 | `studio-admin-members-access`; `studio-admin-transactions-revenue` has no route yet |
-| `/instructor/posts` | ⬜ | ? | Announcements |
-| `/instructor/community` | ⬜ | ? | Moderation |
+| `/instructor` | ✅ | 🎨 | The welcome panel + metric bento shared by the `studio-admin-*` screens: accounts, projected MRR, minutes practised, reflections; newest arrivals and library pipeline |
+| `/instructor/videos` | ✅ | 🎨 | `studio-admin-content-video-publisher`. Real rows: edit both locales' words, category/props/duration/intensity, access + preview length; publish, return to draft, feature; attach a video. Not built: creating a practice from nothing (needs image/video upload — seed with `pnpm db:seed`), and upload/transcode (mock `VideoProvider` stores a URL) |
+| `/instructor/journal` | ✅ | — | Read-only shelf: essays are still `modules/journal/sample-articles.ts`, so the page says so. Becomes an editor when essays move to Postgres |
+| `/instructor/members` | ✅ | 🎨 | `studio-admin-members-access`: directory (search + views + tiers) and the dossier panel. Real actions — comped pass (1/3/6/12 months, `provider: "studio"`), stop/resume renewal, end access now, change role, send a reset link. Not built: the private instructor note (needs a column) |
+| `/instructor/revenue` | ✅ | 🎨 | `studio-admin-transactions-revenue`: MRR/ARR, subscribers, retention, a hand-drawn SVG trajectory + arrivals bars, tier cards, membership ledger. Everything is **projected** from membership rows — payments are still mocked, so nothing was charged |
+| `/instructor/community` | ✅ | — | Moderation through the member-facing `ReflectionsPanel`, so reply/pin/remove behave as under a practice. Views: awaiting reply (private notes + inquiries with no instructor answer), all, private, pinned, circle |
+| `/instructor/posts` | ✅ | — | Announcements: a circle post as the studio, optionally pinned as the week's intention (the previous one is unpinned), optionally sent as a Web Push to every subscribed device |
+| `/instructor/programs` | ⬜ | — | Programs are still sample data |
 
 ---
 
@@ -137,3 +144,13 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
   practice (circle posts). Account deletion enabled in Better Auth.
 - **2026-09-30** — Account recovery: forgot/reset password and email verification through an
   `EmailProvider` (outbox) with a test mailbox. Tested reset end to end with a test account.
+- **2026-10-01** — Instructor studio: a shadcn `Sidebar` shell and seven pages — overview,
+  practices (publisher), journal, members (+ dossier and access controls), revenue, community
+  moderation, announcements. All three `studio-admin-*` Stitch screens are now built. Every page
+  reads real rows; where the data isn't real yet the page says so (revenue is projected, video
+  uploads are a URL, essays are sample data). Verified all 14 URLs (`en` + `fa`) return 200 with
+  no server errors, members get 404 and signed-out visitors go to sign-in.
+  Fixed two pre-existing bugs found on the way: `getAwaitingReplyIds` had hand-written
+  snake_case column names (`r.user_id`) that don't exist — columns are camelCase, so it now
+  goes through drizzle's `alias()`/`notExists()`; and `account-menu.tsx` called a missing
+  `Account.studio` message, which had been failing `pnpm typecheck` since the account commit.

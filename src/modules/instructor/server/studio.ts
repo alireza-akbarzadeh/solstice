@@ -1,19 +1,36 @@
-import { and, count, desc, eq, gte, ilike, isNull, or, sql, sum } from "drizzle-orm";
+import { and, count, desc, eq, gte, ilike, isNull, notExists, or, sql, sum } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 
 import { billingPlans } from "@/modules/memberships/plans";
 import { db } from "@/server/db";
-import { comments, memberships, practiceCompletions, user } from "@/server/db/schema";
+import { comments, memberships, practiceCompletions, practices, user } from "@/server/db/schema";
 
 const DAY = 24 * 60 * 60 * 1000;
 const since = (days: number) => new Date(Date.now() - days * DAY);
 
 // Top-level reflections that ask the instructor something (private, or tagged as an
-// inquiry) and have no instructor reply yet.
+// inquiry) and have no instructor reply yet. Aliased through drizzle rather than hand-written
+// SQL, so the correlated subqueries use the real (camelCase) column names.
+const reply = alias(comments, "reply");
+const replier = alias(user, "replier");
+const asker = alias(user, "asker");
+
 const awaitingReply = and(
   isNull(comments.parentId),
   or(eq(comments.visibility, "private"), eq(comments.tag, "inquiry")),
-  sql`not exists (select 1 from ${comments} r join ${user} u on u.id = r.user_id where r.parent_id = ${comments.id} and u.role = 'instructor')`,
-  sql`not exists (select 1 from ${user} a where a.id = ${comments.userId} and a.role = 'instructor')`,
+  notExists(
+    db
+      .select({ one: sql`1` })
+      .from(reply)
+      .innerJoin(replier, eq(replier.id, reply.userId))
+      .where(and(eq(reply.parentId, comments.id), eq(replier.role, "instructor"))),
+  ),
+  notExists(
+    db
+      .select({ one: sql`1` })
+      .from(asker)
+      .where(and(eq(asker.id, comments.userId), eq(asker.role, "instructor"))),
+  ),
 );
 
 export async function getAwaitingReplyIds(limit = 50) {
@@ -24,6 +41,15 @@ export async function getAwaitingReplyIds(limit = 50) {
     .orderBy(desc(comments.createdAt))
     .limit(limit);
   return rows.map((r) => r.id);
+}
+
+/** Counts the sidebar shows beside sections, so waiting work is visible without opening a page. */
+export async function getStudioBadges() {
+  const [[drafts], awaiting] = await Promise.all([
+    db.select({ n: count() }).from(practices).where(eq(practices.status, "draft")),
+    getAwaitingReplyIds(),
+  ]);
+  return { drafts: drafts?.n ?? 0, awaiting: awaiting.length };
 }
 
 /** Memberships that grant access now, split by plan and state. */
@@ -89,6 +115,7 @@ export async function listMembers(query?: string) {
       id: user.id,
       name: user.name,
       email: user.email,
+      image: user.image,
       role: user.role,
       createdAt: user.createdAt,
       plan: memberships.plan,

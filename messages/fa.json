@@ -501,6 +501,7 @@
     "statusNone": "بدون عضویت",
     "statusInstructor": "مربی",
     "membership": "عضویت",
+    "studio": "استودیو",
     "signOut": "خروج",
     "profile": "نمایه"
   },
@@ -1175,6 +1176,448 @@
     "verify": {
       "subject": "تأیید ایمیل شما در سولستیس",
       "body": "سلام {name}،\n\nبه پناهگاه خوش آمدید. لطفاً نشانی ایمیل خود را تأیید کنید:\n\n{url}\n\n— النا و پناهگاه سولستیس"
+    }
+  },
+  "Studio": {
+    "search": "جست‌وجو",
+    "clear": "پاک کردن جست‌وجو",
+    "nav": {
+      "label": "بخش‌های استودیو",
+      "title": "استودیو",
+      "studio": "استودیو",
+      "content": "محتوا",
+      "people": "افراد",
+      "business": "کسب‌وکار",
+      "overview": "نمای کلی",
+      "practices": "تمرین‌ها",
+      "journal": "مجله",
+      "members": "اعضا",
+      "community": "انجمن",
+      "announcements": "اعلان‌ها",
+      "revenue": "درآمد",
+      "site": "سایت عمومی"
+    },
+    "overview": {
+      "metaTitle": "نمای کلی استودیو",
+      "eyebrow": "کنسول مدیریت",
+      "title": "خوش آمدید، {name}.",
+      "lede": "این پناهگاه {accounts, number} حساب دارد و در هفت روز گذشته {sessions, number} تمرین کامل شده است.",
+      "actions": {
+        "publish": "تمرین‌ها",
+        "announce": "نوشتن اعلان",
+        "members": "اعضا"
+      },
+      "stats": {
+        "practitioners": "حساب‌ها",
+        "newAccounts": "{count, number}+ این ماه",
+        "paying": "{count, number} پرداخت‌کننده",
+        "trialing": "{count, number} در دوره آزمایشی",
+        "revenue": "درآمد ماهانه",
+        "perYear": "{amount} در سال",
+        "projected": "برآورد از عضویت‌ها",
+        "mock": "هنوز پرداختی انجام نشده",
+        "minutes": "دقیقه‌های تمرین",
+        "sessions": "{count, number} جلسه",
+        "lastSevenDays": "هفت روز گذشته",
+        "publishedOf": "{published, number} از {total, number} منتشر شده",
+        "reflections": "بازتاب‌ها",
+        "awaiting": "{count, number} منتظر شما",
+        "openQueue": "دیدن صف"
+      },
+      "arrivals": {
+        "title": "تازه‌ترین اعضا",
+        "all": "همه اعضا",
+        "emptyTitle": "هنوز حسابی نیست",
+        "emptyBody": "نخستین تمرین‌کننده‌ای که ثبت‌نام کند اینجا دیده می‌شود."
+      },
+      "library": {
+        "title": "کتابخانه",
+        "published": "منتشر شده",
+        "drafts": "پیش‌نویس",
+        "membersOnly": "ویژه اعضا",
+        "missingVideo": "در انتظار ویدیو",
+        "minutes": "دقیقه تمرین",
+        "attach": "افزودن ویدیوهای نداشته",
+        "complete": "هر تمرین ویدیو دارد"
+      }
+    },
+    "practices": {
+      "metaTitle": "تمرین‌ها",
+      "eyebrow": "محتوا و تمرین‌ها",
+      "title": "کتابخانه تمرین",
+      "lede": "{total, number} تمرین و {minutes, number} دقیقه راهنمایی. متنی را که اعضا می‌خوانند ویرایش کنید و هنگام آماده شدن منتشر کنید.",
+      "stats": {
+        "published": "منتشر شده",
+        "live": "در کتابخانه دیده می‌شود",
+        "drafts": "پیش‌نویس",
+        "hidden": "از اعضا پنهان است",
+        "membersOnly": "ویژه اعضا",
+        "gated": "پشت عضویت",
+        "missingVideo": "بدون ویدیو",
+        "attachNeeded": "برای انتشار ویدیو لازم است"
+      },
+      "pick": {
+        "title": "تمرینی را برای ویرایش برگزینید",
+        "body": "یکی را از فهرست پایین انتخاب کنید تا متن، زمان و دسترسی‌اش اینجا بیاید."
+      },
+      "inventory": "فهرست",
+      "showing": "{shown, number} از {total, number}",
+      "views": {
+        "all": "همه",
+        "published": "منتشر شده",
+        "draft": "پیش‌نویس",
+        "members": "ویژه اعضا",
+        "needsVideo": "نیازمند ویدیو"
+      },
+      "emptyTitle": "در این نما چیزی نیست",
+      "emptyBody": "پالایه دیگری را بیازمایید — کتابخانه همچنان کامل است.",
+      "status": {
+        "draft": "پیش‌نویس",
+        "published": "منتشر شده"
+      },
+      "access": {
+        "open": "آزاد",
+        "members": "اعضا"
+      },
+      "published": "«{title}» اکنون در کتابخانه است.",
+      "unpublished": "«{title}» به پیش‌نویس بازگشت.",
+      "featured": "«{title}» در صفحه خانه برگزیده شد.",
+      "unfeatured": "«{title}» دیگر برگزیده نیست.",
+      "actionFailed": "ذخیره نشد. دوباره بیازمایید.",
+      "table": {
+        "practice": "تمرین",
+        "state": "وضعیت",
+        "access": "دسترسی",
+        "engagement": "جلسه · ذخیره · بازتاب",
+        "actions": "کنش‌ها",
+        "hasVideo": "ویدیو پیوست شده",
+        "noVideo": "هنوز ویدیویی نیست",
+        "featured": "برگزیده",
+        "chapters": "{count, number} فصل",
+        "updated": "ویرایش {when}",
+        "preview": "{seconds, number} ثانیه پیش‌نمایش",
+        "sessions": "جلسه‌ها",
+        "saves": "ذخیره‌ها",
+        "reflections": "بازتاب‌ها",
+        "edit": "ویرایش",
+        "more": "کنش‌های بیشتر برای {title}",
+        "publish": "انتشار",
+        "unpublish": "بازگشت به پیش‌نویس",
+        "feature": "برگزیدن در خانه",
+        "unfeature": "برداشتن از خانه",
+        "view": "دیدن در کتابخانه"
+      },
+      "editor": {
+        "eyebrow": "فراداده تحریریه",
+        "title": "آنچه اعضا می‌خوانند",
+        "save": "ذخیره تمرین",
+        "saved": "ذخیره شد.",
+        "error": "ذخیره نشد. زمینه‌ها را بررسی کنید و دوباره بیازمایید.",
+        "locale": {
+          "en": "انگلیسی",
+          "fa": "فارسی"
+        },
+        "fields": {
+          "title": "عنوان",
+          "series": "خط مجموعه",
+          "seriesHint": "بالای عنوان می‌نشیند، مثل «مجموعه خورشیدی • توالی چهارم».",
+          "summary": "چکیده",
+          "category": "دسته",
+          "props": "ابزار",
+          "duration": "دقیقه",
+          "intensity": "شدت",
+          "intensityLabel": "عبارت شدت",
+          "access": "دسترسی",
+          "accessOpen": "آزاد برای همه",
+          "accessMembers": "ویژه اعضا",
+          "preview": "پیش‌نمایش رایگان (ثانیه)",
+          "previewHint": "غیراعضا این اندازه را پیش از دروازه عضویت می‌بینند. صفر برای هیچ."
+        },
+        "video": {
+          "eyebrow": "ویدیو",
+          "title": "ضبط",
+          "present": "ویدیو پیوست شده",
+          "absent": "هنوز ویدیویی نیست",
+          "absentHint": "تا پیوست شدن ویدیو، اعضا نمونه را می‌بینند.",
+          "ready": "آماده",
+          "pending": "در انتظار",
+          "urlLabel": "نشانی ویدیو",
+          "urlHint": "فراهم‌کننده آزمایشی همین پرونده را پخش می‌کند. هر نشانی https کار می‌کند.",
+          "attach": "پیوست ویدیو",
+          "detach": "جدا کردن",
+          "attached": "ویدیو پیوست شد.",
+          "detached": "ویدیو جدا شد.",
+          "invalid": "این نشانی ذخیره نشد.",
+          "mockTitle": "بارگذاری هنوز آماده نیست",
+          "mockBody": "استودیو روی VideoProvider آزمایشی کار می‌کند که به جای بارگذاری، یک نشانی را نگه می‌دارد. یک فراهم‌کننده واقعی (Mux یا Cloudflare Stream) پرونده را می‌گیرد، رمزگذاری می‌کند و پیش‌نمایش را روی سرور اعمال می‌کند."
+        }
+      }
+    },
+    "members": {
+      "metaTitle": "اعضا و دسترسی",
+      "eyebrow": "اعضا و دسترسی",
+      "title": "همه در پناهگاه",
+      "lede": "{total, number} حساب که {paying, number} از آن‌ها پرداخت‌کننده‌اند. هر کس را باز کنید تا تمرین و دسترسی‌اش را ببینید.",
+      "searchPlaceholder": "جست‌وجو با نام یا رایانامه…",
+      "showing": "نمایش {shown, number} از {total, number}",
+      "views": {
+        "all": "همه",
+        "paying": "پرداخت‌کننده",
+        "trial": "آزمایشی",
+        "attention": "نیازمند توجه",
+        "lapsed": "منقضی",
+        "instructors": "مربیان"
+      },
+      "emptyTitle": "کسی اینجا نیست",
+      "emptyBody": "هیچ حسابی با این نما همخوان نیست.",
+      "emptySearch": "چیزی با «{q}» همخوان نیست.",
+      "stats": {
+        "accounts": "حساب‌ها",
+        "accountsNote": "هر کس که ورود دارد",
+        "paying": "اعضای پرداخت‌کننده",
+        "split": "{monthly, number} ماهانه · {annual, number} سالانه",
+        "trialing": "در دوره آزمایشی",
+        "trialingNote": "درون بازه رایگان",
+        "attention": "نیازمند توجه",
+        "attentionNote": "{pastDue, number} معوق · {leaving, number} در حال رفتن"
+      },
+      "tiers": {
+        "instructor": "مربی",
+        "none": "بدون عضویت",
+        "trial": "آزمایشی",
+        "pastDue": "معوق",
+        "canceled": "منقضی",
+        "monthly": "ماهانه",
+        "annual": "سالانه"
+      },
+      "table": {
+        "practitioner": "تمرین‌کننده",
+        "tier": "سطح و وضعیت",
+        "lastPractice": "آخرین تمرین",
+        "sessions": "تمرین‌ها",
+        "access": "دسترسی",
+        "joined": "پیوستن {when}",
+        "leaving": "پایان در سرِ دوره",
+        "renews": "تا {when}",
+        "never": "هنوز تمرین نکرده",
+        "inspect": "بررسی"
+      },
+      "dossier": {
+        "pickTitle": "کسی برگزیده نشده",
+        "pickBody": "تمرین‌کننده‌ای را از فهرست برگزینید تا پرونده و کنترل‌های دسترسی‌اش بیاید.",
+        "eyebrow": "پرونده تمرین‌کننده",
+        "active": "دسترسی دارد",
+        "inactive": "دسترسی ندارد",
+        "joined": "پیوستن {when}",
+        "instructor": "مربی",
+        "verified": "رایانامه تأیید شده",
+        "unverified": "رایانامه تأیید نشده",
+        "rhythm": {
+          "morning": "آهنگ صبح",
+          "evening": "آهنگ شب",
+          "breath": "آهنگ تنفس"
+        },
+        "tier": "سطح",
+        "state": "وضعیت",
+        "paidThrough": "تا",
+        "provider": "فراهم‌کننده",
+        "sessions": "جلسه‌ها",
+        "minutes": "دقیقه‌ها",
+        "saves": "ذخیره‌شده",
+        "plans": {
+          "monthly": "ماهانه",
+          "annual": "سالانه",
+          "none": "هیچ"
+        },
+        "states": {
+          "trialing": "آزمایشی",
+          "active": "فعال",
+          "past_due": "معوق",
+          "canceled": "لغو شده"
+        },
+        "grantTitle": "دادن دسترسی",
+        "grantPlan": "طرح",
+        "grantMonths": "مدت",
+        "months": "{count, number} ماه",
+        "grant": "دادن دسترسی مهمان",
+        "granted": "دسترسی داده شد.",
+        "controlsTitle": "کنترل‌های دسترسی",
+        "resume": "ازسرگیری تمدید",
+        "cancelAtEnd": "پایان در سرِ دوره",
+        "resumed": "تمدید از سر گرفته شد.",
+        "canceled": "در سرِ دوره پایان می‌یابد.",
+        "sendReset": "فرستادن پیوند بازنشانی",
+        "resetSent": "پیوند بازنشانی فرستاده شد.",
+        "makeMember": "تبدیل به عضو",
+        "makeInstructor": "تبدیل به مربی",
+        "makeMemberBody": "{name} استودیو را از دست می‌دهد و دسترسی عضو را نگه می‌دارد. این کار برگشت‌پذیر است.",
+        "makeInstructorBody": "{name} استودیو را می‌گیرد: هر تمرین، هر عضو و هر رقم در این صفحه‌ها.",
+        "roleChanged": "نقش تغییر کرد.",
+        "endNow": "پایان دسترسی همین حالا",
+        "endNowBody": "{name} بی‌درنگ تمرین‌های ویژه اعضا را از دست می‌دهد. حساب، تاریخ و ذخیره‌هایش می‌مانند.",
+        "ended": "دسترسی پایان یافت.",
+        "cancelAction": "همین‌طور بماند",
+        "confirm": "تأیید",
+        "failed": "ذخیره نشد. دوباره بیازمایید.",
+        "streamTitle": "جریان تمرین",
+        "sessionLine": "{minutes, number} دقیقه · {when}",
+        "reflectionsTitle": "بازتاب‌های تازه",
+        "private": "خصوصی"
+      }
+    },
+    "revenue": {
+      "metaTitle": "تراکنش‌ها و درآمد",
+      "eyebrow": "تراکنش‌ها و درآمد",
+      "title": "آنچه پناهگاه را نگه می‌دارد",
+      "lede": "{mrr} در ماه از {paying, number} عضویت پرداخت‌کننده.",
+      "mockTitle": "برآورد، نه دریافت",
+      "mockBody": "پرداخت‌ها از فراهم‌کننده آزمایشی می‌گذرند، پس چیزی دریافت نشده است. هر رقم اینجا بهای فهرست عضویت‌های ثبت‌شده است — تسویه، واریز و مالیات واقعی با یک فراهم‌کننده پرداخت و وب‌هوک‌هایش می‌آید.",
+      "stats": {
+        "mrr": "درآمد ماهانه",
+        "mrrNote": "طرح سالانه ماهانه شمرده شده",
+        "arr": "آهنگ سالانه",
+        "arrNote": "دوازده برابر ماهانه",
+        "subscribers": "اعضای پرداخت‌کننده",
+        "subscribersNote": "{trialing, number} هنوز آزمایشی",
+        "converted": "پرداخت‌کننده",
+        "churn": "ماندگاری",
+        "churnNote": "{canceled, number} منقضی · {leaving, number} در حال رفتن"
+      },
+      "chart": {
+        "eyebrow": "مسیر",
+        "title": "درآمد ماهانه",
+        "note": "برآورد از عضویت‌های فعال در هر ماه.",
+        "current": "اکنون {amount} در ماه"
+      },
+      "joins": {
+        "eyebrow": "پیوستن‌ها",
+        "title": "عضویت‌های آغازشده"
+      },
+      "tiers": {
+        "monthly": {
+          "label": "پناهگاه ماهانه",
+          "interval": "ماه",
+          "body": "ماه به ماه، پس از دوره آزمایشی رایگان."
+        },
+        "annual": {
+          "label": "حامی سالانه",
+          "interval": "سال",
+          "body": "یک سال یک‌جا، با نرخ ماهانه ملایم‌تر."
+        },
+        "trial": {
+          "label": "دوره آزمایشی",
+          "days": "{count, number} روز",
+          "body": "دسترسی کامل پیش از نخستین پرداخت."
+        },
+        "members": "{count, number} عضو",
+        "contributes": "{amount} در ماه"
+      },
+      "ledger": {
+        "title": "دفتر عضویت",
+        "count": "{count, number} رکورد",
+        "member": "عضو",
+        "plan": "طرح و وضعیت",
+        "started": "آغاز",
+        "paidThrough": "پرداخت تا",
+        "amount": "بهای فهرست",
+        "free": "آزمایشی",
+        "leaving": "پایان در سرِ دوره",
+        "emptyTitle": "هنوز عضویتی نیست",
+        "emptyBody": "نخستین عضویت همان دم که کسی بپیوندد اینجا دیده می‌شود.",
+        "states": {
+          "trialing": "آزمایشی",
+          "active": "فعال",
+          "past_due": "معوق",
+          "canceled": "لغو شده"
+        }
+      }
+    },
+    "community": {
+      "metaTitle": "نظارت بر انجمن",
+      "eyebrow": "نظارت بر انجمن",
+      "title": "آنچه حلقه می‌گوید",
+      "lede": "{awaiting, number} بازتاب از میان {total, number} رشته منتظر شماست.",
+      "stats": {
+        "awaiting": "منتظر پاسخ",
+        "awaitingNote": "پرسش‌ها و یادداشت‌های خصوصی",
+        "threads": "رشته‌ها",
+        "threadsNote": "{replies, number} پاسخ",
+        "private": "خصوصی با شما",
+        "privateNote": "تنها شما و نویسنده",
+        "pinned": "سنجاق‌شده",
+        "pinnedNote": "در بالا نگه داشته شده"
+      },
+      "views": {
+        "awaiting": "منتظر پاسخ",
+        "all": "همه",
+        "private": "خصوصی",
+        "pinned": "سنجاق‌شده",
+        "circle": "نوشته‌های حلقه"
+      },
+      "clearTitle": "چیزی منتظر نیست",
+      "clearBody": "هر پرسش و یادداشت خصوصی پاسخی دارد. حلقه رسیدگی شده است.",
+      "emptyTitle": "در این نما چیزی نیست",
+      "emptyBody": "پالایه دیگری را بیازمایید."
+    },
+    "posts": {
+      "metaTitle": "اعلان‌ها",
+      "eyebrow": "اعلان‌ها",
+      "title": "با حلقه سخن بگویید",
+      "lede": "یک نوشته به همه در انجمن می‌رسد و {devices, number} دستگاه آگاهی‌ها را روشن کرده‌اند.",
+      "ledeNoPush": "یک نوشته به همه در انجمن می‌رسد. آگاهی‌های فوری در این محیط تنظیم نشده‌اند.",
+      "history": "نوشته‌های پیشین",
+      "count": "{count, number} نوشته",
+      "emptyTitle": "هنوز چیزی نوشته نشده",
+      "emptyBody": "نخستین اعلان شما اینجا و در بالای انجمن دیده می‌شود.",
+      "pinned": "نیت هفته",
+      "push": {
+        "title": "{name} در حلقه نوشت"
+      },
+      "composer": {
+        "eyebrow": "اعلان تازه",
+        "title": "به پناهگاه بنویسید",
+        "label": "سخن شما",
+        "placeholder": "این هفته حلقه چه باید بداند؟",
+        "remaining": "{count, number} نویسه مانده",
+        "pin": "نیت هفته باشد",
+        "pinHint": "تا نوشتن اعلان بعدی در بالای انجمن می‌ماند.",
+        "notify": "به‌صورت آگاهی بفرست",
+        "notifyHint": "هر عضوی که آگاهی‌ها را روشن کرده، آن را روی دستگاهش می‌گیرد.",
+        "notifyOff": "آگاهی‌های فوری در این محیط تنظیم نشده‌اند.",
+        "publish": "نوشتن در حلقه",
+        "posted": "در حلقه نوشته شد.",
+        "postedAndSent": "نوشته شد و به {count, number} دستگاه فرستاده شد.",
+        "error": "نوشته نشد. دوباره بیازمایید."
+      }
+    },
+    "journal": {
+      "metaTitle": "مجله و جستارها",
+      "eyebrow": "مجله و جستارها",
+      "title": "گاه‌نامه سولستیس",
+      "lede": "{total, number} جستار، نزدیک به {minutes, number} دقیقه خواندن.",
+      "sampleTitle": "جستارها هنوز در پایگاه داده نیستند",
+      "sampleBody": "گاه‌نامه همچنان از modules/journal/sample-articles.ts خوانده می‌شود، پس اینجا خواندنی است اما ویرایش‌پذیر نیست. بردن جستارها به Postgres — چنان‌که کتابخانه تمرین رفته — این صفحه را به ویرایشگر بدل می‌کند.",
+      "all": "همه",
+      "stats": {
+        "essays": "جستارها",
+        "essaysNote": "منتشرشده در گاه‌نامه",
+        "reading": "زمان خواندن",
+        "minutes": "{count, number} دقیقه",
+        "readingNote": "در همه جستارها",
+        "categories": "دسته‌ها",
+        "categoriesNote": "در کاربرد",
+        "authors": "نویسندگان",
+        "latest": "تازه‌ترین {when}"
+      },
+      "table": {
+        "essay": "جستار",
+        "category": "دسته",
+        "published": "انتشار",
+        "actions": "کنش‌ها",
+        "issue": "شماره {issue, number}",
+        "read": "{count, number} دقیقه خواندن",
+        "read_": "خواندن"
+      }
     }
   }
 }

@@ -501,6 +501,7 @@
     "statusNone": "No membership",
     "statusInstructor": "Instructor",
     "membership": "Membership",
+    "studio": "Studio",
     "signOut": "Sign out",
     "profile": "Profile"
   },
@@ -1175,6 +1176,448 @@
     "verify": {
       "subject": "Confirm your email for Solstice",
       "body": "Hello {name},\n\nWelcome to the sanctuary. Please confirm your email address:\n\n{url}\n\n— Elena & Solstice Sanctuary"
+    }
+  },
+  "Studio": {
+    "search": "Search",
+    "clear": "Clear search",
+    "nav": {
+      "label": "Studio sections",
+      "title": "Studio",
+      "studio": "Studio",
+      "content": "Content",
+      "people": "People",
+      "business": "Business",
+      "overview": "Overview",
+      "practices": "Practices",
+      "journal": "Journal",
+      "members": "Members",
+      "community": "Community",
+      "announcements": "Announcements",
+      "revenue": "Revenue",
+      "site": "Public sanctuary"
+    },
+    "overview": {
+      "metaTitle": "Studio overview",
+      "eyebrow": "Admin console",
+      "title": "Welcome back, {name}.",
+      "lede": "The sanctuary holds {accounts, number} accounts, and {sessions, number} practices were completed in the last seven days.",
+      "actions": {
+        "publish": "Practices",
+        "announce": "Write announcement",
+        "members": "Members"
+      },
+      "stats": {
+        "practitioners": "Accounts",
+        "newAccounts": "+{count, number} this month",
+        "paying": "{count, number} paying",
+        "trialing": "{count, number} on trial",
+        "revenue": "Recurring revenue",
+        "perYear": "{amount} / year",
+        "projected": "Projected from memberships",
+        "mock": "No payments yet",
+        "minutes": "Minutes practised",
+        "sessions": "{count, number} sessions",
+        "lastSevenDays": "Last seven days",
+        "publishedOf": "{published, number} of {total, number} published",
+        "reflections": "Reflections",
+        "awaiting": "{count, number} awaiting you",
+        "openQueue": "Open the queue"
+      },
+      "arrivals": {
+        "title": "Newest arrivals",
+        "all": "All members",
+        "emptyTitle": "No accounts yet",
+        "emptyBody": "The first practitioner to sign up will appear here."
+      },
+      "library": {
+        "title": "The library",
+        "published": "Published",
+        "drafts": "Drafts",
+        "membersOnly": "Members only",
+        "missingVideo": "Waiting on video",
+        "minutes": "Minutes of practice",
+        "attach": "Attach the missing videos",
+        "complete": "Every practice has a video"
+      }
+    },
+    "practices": {
+      "metaTitle": "Practices",
+      "eyebrow": "Content & practices",
+      "title": "The practice library",
+      "lede": "{total, number} practices, {minutes, number} minutes of guidance. Edit the words members read, then publish when it is ready.",
+      "stats": {
+        "published": "Published",
+        "live": "Visible in the library",
+        "drafts": "Drafts",
+        "hidden": "Hidden from members",
+        "membersOnly": "Members only",
+        "gated": "Behind the membership",
+        "missingVideo": "No video",
+        "attachNeeded": "Attach one to publish"
+      },
+      "pick": {
+        "title": "Choose a practice to edit",
+        "body": "Pick one from the inventory below and its words, timing and access appear here."
+      },
+      "inventory": "Inventory",
+      "showing": "{shown, number} of {total, number}",
+      "views": {
+        "all": "All",
+        "published": "Published",
+        "draft": "Drafts",
+        "members": "Members only",
+        "needsVideo": "Needs video"
+      },
+      "emptyTitle": "Nothing in this view",
+      "emptyBody": "Try another filter — the library is still whole.",
+      "status": {
+        "draft": "Draft",
+        "published": "Published"
+      },
+      "access": {
+        "open": "Open",
+        "members": "Members"
+      },
+      "published": "“{title}” is now in the library.",
+      "unpublished": "“{title}” is back to a draft.",
+      "featured": "“{title}” is featured on the home page.",
+      "unfeatured": "“{title}” is no longer featured.",
+      "actionFailed": "That did not save. Try again.",
+      "table": {
+        "practice": "Practice",
+        "state": "State",
+        "access": "Access",
+        "engagement": "Sessions · Saves · Reflections",
+        "actions": "Actions",
+        "hasVideo": "Video attached",
+        "noVideo": "No video yet",
+        "featured": "Featured",
+        "chapters": "{count, number} chapters",
+        "updated": "Edited {when}",
+        "preview": "{seconds, number}s preview",
+        "sessions": "Sessions",
+        "saves": "Saves",
+        "reflections": "Reflections",
+        "edit": "Edit",
+        "more": "More actions for {title}",
+        "publish": "Publish",
+        "unpublish": "Return to draft",
+        "feature": "Feature on home",
+        "unfeature": "Remove from home",
+        "view": "View in the library"
+      },
+      "editor": {
+        "eyebrow": "Editorial metadata",
+        "title": "What members read",
+        "save": "Save practice",
+        "saved": "Saved.",
+        "error": "That did not save. Check the fields and try again.",
+        "locale": {
+          "en": "English",
+          "fa": "Persian"
+        },
+        "fields": {
+          "title": "Title",
+          "series": "Series line",
+          "seriesHint": "Sits above the title, e.g. “Solar Series • Sequence IV”.",
+          "summary": "Summary",
+          "category": "Category",
+          "props": "Props",
+          "duration": "Minutes",
+          "intensity": "Intensity",
+          "intensityLabel": "Intensity wording",
+          "access": "Access",
+          "accessOpen": "Open to everyone",
+          "accessMembers": "Members only",
+          "preview": "Free preview (seconds)",
+          "previewHint": "Non-members watch this much before the membership gate. Zero for none."
+        },
+        "video": {
+          "eyebrow": "Video",
+          "title": "The recording",
+          "present": "Video attached",
+          "absent": "No video yet",
+          "absentHint": "Members see the sample clip until one is attached.",
+          "ready": "Ready",
+          "pending": "Pending",
+          "urlLabel": "Video URL",
+          "urlHint": "The mock provider plays this file directly. Any https URL works.",
+          "attach": "Attach video",
+          "detach": "Detach",
+          "attached": "Video attached.",
+          "detached": "Video detached.",
+          "invalid": "That URL did not save.",
+          "mockTitle": "Uploads are not wired yet",
+          "mockBody": "The studio runs on the mock VideoProvider, which stores a URL rather than an upload. A real provider (Mux, Cloudflare Stream) would take a file here, transcode it, and enforce previews server-side."
+        }
+      }
+    },
+    "members": {
+      "metaTitle": "Members & access",
+      "eyebrow": "Members & access",
+      "title": "Everyone in the sanctuary",
+      "lede": "{total, number} accounts, {paying, number} of them paying. Open anyone to see their practice and adjust their access.",
+      "searchPlaceholder": "Search by name or email…",
+      "showing": "Showing {shown, number} of {total, number}",
+      "views": {
+        "all": "All",
+        "paying": "Paying",
+        "trial": "On trial",
+        "attention": "Needs attention",
+        "lapsed": "Lapsed",
+        "instructors": "Instructors"
+      },
+      "emptyTitle": "Nobody here",
+      "emptyBody": "No account matches this view.",
+      "emptySearch": "Nothing matches “{q}”.",
+      "stats": {
+        "accounts": "Accounts",
+        "accountsNote": "Everyone with a sign-in",
+        "paying": "Paying members",
+        "split": "{monthly, number} monthly · {annual, number} annual",
+        "trialing": "On trial",
+        "trialingNote": "Inside the free window",
+        "attention": "Needs attention",
+        "attentionNote": "{pastDue, number} past due · {leaving, number} leaving"
+      },
+      "tiers": {
+        "instructor": "Instructor",
+        "none": "No membership",
+        "trial": "Trial",
+        "pastDue": "Past due",
+        "canceled": "Lapsed",
+        "monthly": "Monthly",
+        "annual": "Annual"
+      },
+      "table": {
+        "practitioner": "Practitioner",
+        "tier": "Tier & status",
+        "lastPractice": "Last practice",
+        "sessions": "Practices",
+        "access": "Access",
+        "joined": "Joined {when}",
+        "leaving": "Leaving at period end",
+        "renews": "Through {when}",
+        "never": "Has not practised yet",
+        "inspect": "Inspect"
+      },
+      "dossier": {
+        "pickTitle": "No one selected",
+        "pickBody": "Choose a practitioner from the directory to see their dossier and access controls.",
+        "eyebrow": "Practitioner dossier",
+        "active": "Has access",
+        "inactive": "No access",
+        "joined": "Joined {when}",
+        "instructor": "Instructor",
+        "verified": "Email verified",
+        "unverified": "Email unverified",
+        "rhythm": {
+          "morning": "Morning rhythm",
+          "evening": "Evening rhythm",
+          "breath": "Breath rhythm"
+        },
+        "tier": "Tier",
+        "state": "State",
+        "paidThrough": "Through",
+        "provider": "Provider",
+        "sessions": "Sessions",
+        "minutes": "Minutes",
+        "saves": "Saved",
+        "plans": {
+          "monthly": "Monthly",
+          "annual": "Annual",
+          "none": "None"
+        },
+        "states": {
+          "trialing": "Trialing",
+          "active": "Active",
+          "past_due": "Past due",
+          "canceled": "Canceled"
+        },
+        "grantTitle": "Give access",
+        "grantPlan": "Plan",
+        "grantMonths": "Length",
+        "months": "{count, number} months",
+        "grant": "Grant a comped pass",
+        "granted": "Access granted.",
+        "controlsTitle": "Access controls",
+        "resume": "Resume renewal",
+        "cancelAtEnd": "Stop at period end",
+        "resumed": "Renewal resumed.",
+        "canceled": "Will stop at the period end.",
+        "sendReset": "Send reset link",
+        "resetSent": "Reset link sent.",
+        "makeMember": "Make a member",
+        "makeInstructor": "Make an instructor",
+        "makeMemberBody": "{name} loses the studio and keeps member access. You can undo this.",
+        "makeInstructorBody": "{name} gains the studio: every practice, every member, every figure on these pages.",
+        "roleChanged": "Role changed.",
+        "endNow": "End access now",
+        "endNowBody": "{name} loses members-only practices immediately. Their account, history and saves stay.",
+        "ended": "Access ended.",
+        "cancelAction": "Keep as is",
+        "confirm": "Confirm",
+        "failed": "That did not save. Try again.",
+        "streamTitle": "Practice stream",
+        "sessionLine": "{minutes, number} min · {when}",
+        "reflectionsTitle": "Recent reflections",
+        "private": "Private"
+      }
+    },
+    "revenue": {
+      "metaTitle": "Transactions & revenue",
+      "eyebrow": "Transactions & revenue",
+      "title": "What the sanctuary sustains",
+      "lede": "{mrr} a month from {paying, number} paying memberships.",
+      "mockTitle": "Projected, not collected",
+      "mockBody": "Payments run through the mock provider, so nothing has been charged. Every figure here is the list price of the memberships on record — real settlement, payouts and tax arrive with a payment provider and its webhooks.",
+      "stats": {
+        "mrr": "Monthly recurring",
+        "mrrNote": "Annual plans counted monthly",
+        "arr": "Annual run rate",
+        "arrNote": "Twelve times the monthly",
+        "subscribers": "Paying members",
+        "subscribersNote": "{trialing, number} still on trial",
+        "converted": "paying",
+        "churn": "Retention",
+        "churnNote": "{canceled, number} lapsed · {leaving, number} leaving"
+      },
+      "chart": {
+        "eyebrow": "Trajectory",
+        "title": "Recurring revenue",
+        "note": "Projected from the memberships active in each month.",
+        "current": "Now at {amount} a month"
+      },
+      "joins": {
+        "eyebrow": "Arrivals",
+        "title": "Memberships started"
+      },
+      "tiers": {
+        "monthly": {
+          "label": "Monthly sanctuary",
+          "interval": "month",
+          "body": "Month to month, after the free trial."
+        },
+        "annual": {
+          "label": "Annual patron",
+          "interval": "year",
+          "body": "A year at once, at a gentler monthly rate."
+        },
+        "trial": {
+          "label": "Free trial",
+          "days": "{count, number} days",
+          "body": "Full access before the first charge."
+        },
+        "members": "{count, number} members",
+        "contributes": "{amount} / mo"
+      },
+      "ledger": {
+        "title": "Membership ledger",
+        "count": "{count, number} records",
+        "member": "Member",
+        "plan": "Plan & state",
+        "started": "Started",
+        "paidThrough": "Paid through",
+        "amount": "List price",
+        "free": "Trial",
+        "leaving": "Leaving at period end",
+        "emptyTitle": "No memberships yet",
+        "emptyBody": "The first membership will appear here the moment someone joins.",
+        "states": {
+          "trialing": "Trialing",
+          "active": "Active",
+          "past_due": "Past due",
+          "canceled": "Canceled"
+        }
+      }
+    },
+    "community": {
+      "metaTitle": "Community moderation",
+      "eyebrow": "Community moderation",
+      "title": "What the circle is saying",
+      "lede": "{awaiting, number} reflections are waiting for you, out of {total, number} threads.",
+      "stats": {
+        "awaiting": "Awaiting reply",
+        "awaitingNote": "Questions and private notes",
+        "threads": "Threads",
+        "threadsNote": "{replies, number} replies",
+        "private": "Private to you",
+        "privateNote": "Only you and the author",
+        "pinned": "Pinned",
+        "pinnedNote": "Held at the top"
+      },
+      "views": {
+        "awaiting": "Awaiting reply",
+        "all": "Everything",
+        "private": "Private",
+        "pinned": "Pinned",
+        "circle": "Circle posts"
+      },
+      "clearTitle": "Nothing is waiting",
+      "clearBody": "Every question and private note has an answer. The circle is tended.",
+      "emptyTitle": "Nothing in this view",
+      "emptyBody": "Try another filter."
+    },
+    "posts": {
+      "metaTitle": "Announcements",
+      "eyebrow": "Announcements",
+      "title": "Speak to the circle",
+      "lede": "A post reaches everyone in the community, and {devices, number} devices have notifications switched on.",
+      "ledeNoPush": "A post reaches everyone in the community. Push notifications are not configured in this environment.",
+      "history": "Posted before",
+      "count": "{count, number} posts",
+      "emptyTitle": "Nothing posted yet",
+      "emptyBody": "Your first announcement will appear here and at the top of the community.",
+      "pinned": "Week’s intention",
+      "push": {
+        "title": "{name} posted to the circle"
+      },
+      "composer": {
+        "eyebrow": "New announcement",
+        "title": "Write to the sanctuary",
+        "label": "Your words",
+        "placeholder": "What should the circle know this week?",
+        "remaining": "{count, number} characters left",
+        "pin": "Make it the week’s intention",
+        "pinHint": "Held at the top of the community until you post another.",
+        "notify": "Send as a notification",
+        "notifyHint": "Every member with notifications on gets it on their device.",
+        "notifyOff": "Push notifications are not configured in this environment.",
+        "publish": "Post to the circle",
+        "posted": "Posted to the circle.",
+        "postedAndSent": "Posted, and sent to {count, number} devices.",
+        "error": "That did not post. Try again."
+      }
+    },
+    "journal": {
+      "metaTitle": "Journal & essays",
+      "eyebrow": "Journal & essays",
+      "title": "The Solstice Chronicle",
+      "lede": "{total, number} essays, about {minutes, number} minutes of reading.",
+      "sampleTitle": "Essays are not in the database yet",
+      "sampleBody": "The chronicle still reads from modules/journal/sample-articles.ts, so it can be read here but not edited. Moving essays into Postgres — as the practice library already is — makes this page an editor.",
+      "all": "All",
+      "stats": {
+        "essays": "Essays",
+        "essaysNote": "Published in the chronicle",
+        "reading": "Reading time",
+        "minutes": "{count, number} min",
+        "readingNote": "Across every essay",
+        "categories": "Categories",
+        "categoriesNote": "In use",
+        "authors": "Authors",
+        "latest": "Latest {when}"
+      },
+      "table": {
+        "essay": "Essay",
+        "category": "Category",
+        "published": "Published",
+        "actions": "Actions",
+        "issue": "Issue {issue, number}",
+        "read": "{count, number} min read",
+        "read_": "Read"
+      }
     }
   }
 }

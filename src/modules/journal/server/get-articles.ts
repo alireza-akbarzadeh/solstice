@@ -125,6 +125,13 @@ export function journalFiltersToQuery(filters: Partial<JournalFilters>) {
 }
 
 // TODO(db): read posts from Drizzle once the posts schema exists (instructor publishing).
+/** Every essay, newest first — the studio's journal overview needs the whole shelf. */
+export async function getAllArticleSummaries(locale: Locale): Promise<JournalArticleSummary[]> {
+  return [...sampleArticles]
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+    .map((a) => toSummary(a, locale));
+}
+
 export async function getJournal(locale: Locale, filters: JournalFilters) {
   const newest = [...sampleArticles].sort((a, b) =>
     b.publishedAt.localeCompare(a.publishedAt),
