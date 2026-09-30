@@ -8,11 +8,135 @@
     "en": "English",
     "fa": "فارسی"
   },
+  "Brand": {
+    "name": "Solstice",
+    "studio": "Elena Vance Studio",
+    "instructor": "Elena Vance",
+    "logoAlt": "Solstice logo"
+  },
+  "Nav": {
+    "primary": "Main navigation",
+    "home": "Home",
+    "practices": "Practices",
+    "programs": "Programs",
+    "journal": "Journal",
+    "about": "About",
+    "membership": "Membership",
+    "signIn": "Member Sign In",
+    "join": "Join Sanctuary",
+    "account": "Your account",
+    "openMenu": "Open menu",
+    "menuTitle": "Menu"
+  },
+  "Footer": {
+    "eyebrow": "A Sanctuary for Conscious Movement",
+    "quote": "“Breath is the architecture of presence. Through mindful alignment and unhurried stillness, we return home to the body.”",
+    "attribution": "— Elena Vance, Founder & Guide",
+    "newsletterTitle": "The Solstice Chronicle",
+    "newsletterBody": "Subtle reflections, seasonal breathwork rituals, and private retreat itineraries delivered on each new and full moon.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "Your email address",
+    "subscribe": "Subscribe",
+    "curriculum": "Curriculum",
+    "dailyAsana": "Daily Asana",
+    "pranayama": "Pranayama Series",
+    "nidra": "Restorative Nidra",
+    "apprenticeship": "Apprenticeship",
+    "essays": "Solstice Essays",
+    "copyright": "© {year} Solstice Sanctuary & Elena Vance. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Practice",
+    "ethics": "Ethics & Lineage"
+  },
+  "Practice": {
+    "minutes": "{count} min"
+  },
   "Home": {
-    "title": "Solstice",
-    "subtitle": "Your private yoga studio is being prepared.",
-    "signedInAs": "Signed in as {name}",
-    "signInWithGoogle": "Continue with Google",
-    "signOut": "Sign out"
+    "hero": {
+      "eyebrow": "Autumn Solstice Season Online",
+      "titleLine1": "Move better.",
+      "titleLine2": "Breathe deeper.",
+      "titleLine3": "Live fully.",
+      "subtitle": "A calm digital sanctuary guided by Elena Vance. Mindful vinyasa, somatic restoration, and breathwork crafted for everyday presence.",
+      "primaryCta": "Begin 14-Day Free Sanctuary",
+      "secondaryCta": "Explore Practice Library",
+      "statPractices": "140+ Mindful Practices",
+      "statPrograms": "4 Immersion Programs",
+      "statLive": "Weekly Live Sangha",
+      "imageAlt": "Minimal yoga studio with limestone walls, oak floors and linen drapes in soft morning light",
+      "nowPlaying": "Now Resonance Ambient",
+      "nowPlayingTitle": "Warm Studio Rain & Singing Bowl",
+      "toggleSound": "Play ambient sound",
+      "nextLive": "Next Live Studio:",
+      "nextLiveTitle": "Sunday Dawn Nidra"
+    },
+    "atmosphere": {
+      "title": "Curate Atmosphere",
+      "rain": "Warm Studio Rain",
+      "binaural": "Binaural 432Hz Silence",
+      "breeze": "Mountain Solitude Breeze",
+      "quote": "“Sound shapes the vessel of breath.”"
+    },
+    "practices": {
+      "eyebrow": "Curated Rituals",
+      "title": "Practices for Mind & Body",
+      "description": "Sequenced without rush. Selected sessions designed to synchronize your nervous system with the sun's rhythm."
+    },
+    "programs": {
+      "eyebrow": "Transformative Horizons",
+      "title": "Structured Immersions",
+      "description": "Step beyond isolated classes. Multi-week somatic architectures built to recondition motor habits, reduce chronic cortisol, and elevate everyday vital ease."
+    },
+    "instructor": {
+      "eyebrow": "Guide & Founder",
+      "portraitAlt": "Portrait of Elena Vance",
+      "credentialsTitle": "Lineage & Training",
+      "credentials": "E-RYT 500 • 18 Years Devotion • Somatic Experiencing Practitioner",
+      "quote": "“Yoga is not about touching your toes; it is about what you discover on the way down.”",
+      "bio1": "Elena began her study along the banks of the Ganges in Rishikesh before deepening her craft through somatic physiology and therapeutic trauma work in Zurich. Solstice was conceived as an antidote to performance-driven, athletic yoga.",
+      "bio2": "Her methodology pairs classical alignment with soft neurological inquiry. Every cue invites you to cultivate intimacy with sensation, unravel habitual holding patterns, and return home to an unhurried mind.",
+      "stat1Value": "18,000+",
+      "stat1Label": "Practitioners Guided",
+      "stat2Value": "18 Yrs",
+      "stat2Label": "Dedicated Inquiry",
+      "stat3Value": "Zurich & Rishikesh",
+      "stat3Label": "Educated Roots"
+    },
+    "testimonials": {
+      "eyebrow": "Member Voices",
+      "title": "Sangha Reflections",
+      "description": "Quiet insights shared by practitioners weaving Solstice into their daily lives.",
+      "rating": "Rated 5 out of 5",
+      "clara": {
+        "quote": "“In a world of loud 45-minute HIIT workouts disguised as yoga, Solstice is a breath of cold pine air. Elena’s cues don’t command you—they hold space for you.”",
+        "name": "Clara Lindqvist",
+        "meta": "Practicing 18 Months • Stockholm"
+      },
+      "marcus": {
+        "quote": "“The Somatic Nervous System Reset healed my chronic neck tension in three weeks. The audio soundscapes make my small apartment feel like a mountain sanctuary.”",
+        "name": "Marcus Thorne",
+        "meta": "Architect & Father • London"
+      },
+      "amina": {
+        "quote": "“Sunday Live Nidra has become non-negotiable family time. Solstice feels less like an app and more like visiting a quiet temple where time moves slower.”",
+        "name": "Amina Patel",
+        "meta": "Practicing 2 Years • Montreal"
+      }
+    },
+    "membership": {
+      "eyebrow": "Step Into Stillness",
+      "title": "Begin Your Practice Sanctuary",
+      "description": "Gain unrestricted entry to every on-demand asana sequence, breathwork ritual, guided immersion program, and weekly live community gatherings with Elena.",
+      "benefit1": "140+ cinematic video practices",
+      "benefit2": "All structured immersions included",
+      "benefit3": "Weekly live Q&A and practice sangha",
+      "benefit4": "Cancel or pause effortlessly at any time",
+      "tier": "Membership Tier",
+      "trial": "14 Days Free",
+      "perMonth": "/ month",
+      "annual": "Or choose annual sanctuary at <strong>{price} / year</strong> (saving 24% with full offline practice downloads).",
+      "cta": "Begin 14-Day Free Sanctuary",
+      "reassurance": "No commitment. No questions asked."
+    }
   }
 }

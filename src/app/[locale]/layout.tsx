@@ -61,7 +61,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       className={`${playfair.variable} ${jakarta.variable} ${vazirmatn.variable}`}
       suppressHydrationWarning
     >
-      <body>
+      <body className="flex min-h-svh flex-col">
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
             {children}
