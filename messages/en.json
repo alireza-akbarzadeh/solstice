@@ -421,7 +421,7 @@
       "title": "Checkout & admission",
       "secure": "Secure",
       "testModeTitle": "Test mode",
-      "testModeBody": "Payments aren’t connected yet. Starting a membership here is free — no card needed.",
+      "testModeBody": "You’ll pay on a test page with a test card — no real money moves.",
       "ledger": "Order summary",
       "trialLine": "{days, number}-day free sanctuary access",
       "renewsAnnual": "Renews on day {days, number} (annual)",
@@ -468,5 +468,86 @@
     "membership": "Membership",
     "signOut": "Sign out",
     "profile": "Profile"
+  },
+  "TestMode": {
+    "checkout": {
+      "metaTitle": "Test payment",
+      "title": "Test payment",
+      "badge": "Test mode",
+      "body": "Payments aren’t connected yet. Pay with a test card below — no real money moves.",
+      "afterTrialMonth": "{price}/mo after {days, number} days",
+      "afterTrialYear": "{price}/yr after {days, number} days",
+      "dueToday": "Due today",
+      "account": "Account",
+      "cardsTitle": "Test cards",
+      "cards": {
+        "approved": "Payment succeeds",
+        "declined": "Card is declined"
+      },
+      "cardNumber": "Card number",
+      "expiry": "Expiry",
+      "cvc": "CVC",
+      "pay": "Start {days, number}-day free trial",
+      "cancel": "Cancel and go back",
+      "errors": {
+        "declined": "Your card was declined (test card). Try the “Payment succeeds” card.",
+        "unknownCard": "Use one of the test cards above."
+      }
+    },
+    "panel": {
+      "open": "Open test panel",
+      "badge": "Test",
+      "title": "Test mode",
+      "body": "Switch your own account between states to see how the app changes. Only available while payments are mocked.",
+      "state": {
+        "guest": "Guest",
+        "free": "Free account",
+        "member": "Member",
+        "instructor": "Instructor"
+      },
+      "createAccount": "Create a test account",
+      "freshAccount": "Switch to a fresh test account",
+      "signIn": "Sign in",
+      "signOut": "Sign out (view as guest)",
+      "password": "Password: {password}",
+      "roleTitle": "Role",
+      "roles": {
+        "member": "Member",
+        "instructor": "Instructor (full access)"
+      },
+      "membershipTitle": "Membership",
+      "presets": {
+        "none": {
+          "label": "No membership",
+          "hint": "Signed in, free content only"
+        },
+        "trial": {
+          "label": "Free trial",
+          "hint": "Full access, trial running"
+        },
+        "active": {
+          "label": "Active member",
+          "hint": "Full access, renews in 30 days"
+        },
+        "canceling": {
+          "label": "Canceled, still active",
+          "hint": "Access until the period ends"
+        },
+        "pastDue": {
+          "label": "Payment failed",
+          "hint": "Past due, no access"
+        },
+        "expired": {
+          "label": "Expired",
+          "hint": "Period ended, no access"
+        }
+      },
+      "periodEnds": "Period ends {date} ({days, plural, one {# day} other {# days}} left)",
+      "periodEnded": "Period ended {date}",
+      "checkout": "Go through checkout",
+      "accountCreated": "Test account created and signed in",
+      "signedOut": "Signed out",
+      "failed": "That didn’t work — try again"
+    }
   }
 }

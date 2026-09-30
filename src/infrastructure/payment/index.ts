@@ -1,4 +1,7 @@
+import type { Locale } from "next-intl";
+
 import { env } from "@/env";
+import { getPathname } from "@/i18n/navigation";
 
 // PaymentProvider boundary (README: providers stay replaceable). Domain code in
 // modules/memberships decides what a membership is; providers only move money.
@@ -10,6 +13,8 @@ export type CheckoutInput = {
   email: string;
   plan: BillingPlan;
   trialDays: number;
+  /** Language for the hosted checkout page. */
+  locale: Locale;
   /** Absolute URLs for hosted checkouts to return to. */
   successUrl: string;
   cancelUrl: string;
@@ -30,12 +35,17 @@ export interface PaymentProvider {
   resumeSubscription(providerSubscriptionId: string): Promise<void>;
 }
 
-// Grants the subscription immediately without charging. Development / demo only.
+// Behaves like a hosted checkout without charging: sends the member to the in-app test
+// payment page (/checkout/test), which settles with a test card. Development / demo only.
 const mockPaymentProvider: PaymentProvider = {
   id: "mock",
   testMode: true,
   async startCheckout(input) {
-    return { kind: "completed", providerSubscriptionId: `mock_${input.userId}_${Date.now()}` };
+    const path = getPathname({
+      href: { pathname: "/checkout/test", query: { plan: input.plan, success: input.successUrl, cancel: input.cancelUrl } },
+      locale: input.locale,
+    });
+    return { kind: "redirect", url: new URL(path, input.successUrl).toString() };
   },
   async cancelSubscription() {
     // Nothing to cancel: the mock never bills.

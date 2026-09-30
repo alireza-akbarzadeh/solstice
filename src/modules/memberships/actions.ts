@@ -32,6 +32,7 @@ export async function startCheckout(formData: FormData) {
     email: viewer.user.email,
     plan,
     trialDays: sanctuaryPlan.trialDays,
+    locale,
     successUrl: absolute(withNext("/membership/welcome", next)),
     cancelUrl: absolute(withNext(`/membership?plan=${plan}`, next)),
   });

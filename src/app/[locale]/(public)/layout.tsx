@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { routing } from "@/i18n/routing";
+import { TestPanel } from "@/modules/memberships/components/test-panel";
 
 export default async function PublicLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
@@ -17,6 +18,7 @@ export default async function PublicLayout({ children, params }: LayoutProps<"/[
       <SiteHeader />
       <main className="flex-1">{children}</main>
       <SiteFooter />
+      <TestPanel />
     </>
   );
 }

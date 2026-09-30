@@ -7,6 +7,7 @@ import { Container } from "@/components/layout/container";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { TestPanel } from "@/modules/memberships/components/test-panel";
 
 // Standalone like the Stitch auth screens: brand + language only, no site navigation.
 export default async function AuthLayout({ children, params }: LayoutProps<"/[locale]">) {
@@ -27,6 +28,7 @@ export default async function AuthLayout({ children, params }: LayoutProps<"/[lo
         </Container>
       </header>
       <main className="flex flex-1 flex-col">{children}</main>
+      <TestPanel />
     </>
   );
 }

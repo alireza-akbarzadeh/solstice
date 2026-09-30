@@ -1,6 +1,6 @@
 // Solstice service worker: offline support + Web Push. Hand-written, no build step.
 // Bump VERSION when caching rules change so old caches are cleared on activate.
-const VERSION = "v4";
+const VERSION = "v5";
 const STATIC_CACHE = `solstice-static-${VERSION}`;
 const PAGE_CACHE = `solstice-pages-${VERSION}`;
 const MAX_PAGES = 40;
@@ -12,7 +12,8 @@ const OFFLINE_PAGES = { en: "/offline", fa: "/fa/offline" };
 const PRECACHE = [...Object.values(OFFLINE_PAGES), "/icons/icon-192.png", "/icons/badge-96.png"];
 
 // Personal areas are never stored on the device.
-const PRIVATE_PATH = /^(\/fa)?\/(dashboard|profile|progress|my-practices|community|instructor|sign-in|sign-up)(\/|$)/;
+const PRIVATE_PATH =
+  /^(\/fa)?\/(dashboard|profile|progress|my-practices|community|instructor|sign-in|sign-up|forgot-password|reset-password|verify-email|checkout|membership\/welcome)(\/|$)/;
 
 const localeOf = (pathname) => (pathname === "/fa" || pathname.startsWith("/fa/") ? "fa" : "en");
 
