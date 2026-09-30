@@ -323,7 +323,8 @@
       "submit": "Enter Sanctuary",
       "submitting": "Entering…",
       "noAccount": "Not yet a member?",
-      "createAccount": "Create an account"
+      "createAccount": "Create an account",
+      "forgot": "Forgot password?"
     },
     "signUp": {
       "metaTitle": "Create account",
@@ -377,6 +378,33 @@
       "weakPassword": "Use at least 8 characters.",
       "termsRequired": "Please accept the Terms of Practice to continue.",
       "generic": "Something went wrong. Please try again."
+    },
+    "recovery": {
+      "eyebrow": "Sanctuary access",
+      "forgotTitle": "Reset your password",
+      "forgotLede": "Enter the email you signed up with and we’ll send a link to choose a new password.",
+      "send": "Send reset link",
+      "sentTitle": "Check your inbox",
+      "sentBody": "If an account exists for that email, a reset link is on its way. It works for one hour.",
+      "openMailbox": "Open the test mailbox",
+      "backToSignIn": "Back to sign in",
+      "resetPageTitle": "Choose a new password",
+      "resetLede": "You’ll be signed out on other devices once it’s saved.",
+      "newPassword": "New password",
+      "save": "Save new password",
+      "resetTitle": "Password updated",
+      "resetBody": "Sign in with your new password to return to your practice.",
+      "invalidToken": "This reset link has expired or was already used.",
+      "requestNew": "Send a new link",
+      "verifyTitle": "Verify your email",
+      "verifiedTitle": "Email verified",
+      "verifiedBody": "Thank you — your email is confirmed.",
+      "toSanctuary": "Go to your sanctuary",
+      "verifyPending": "We sent a verification link to {email}. Didn’t get it? Send another.",
+      "verifySignIn": "Sign in to send a new verification link.",
+      "verifyFailed": "That verification link has expired or is invalid.",
+      "resend": "Send verification link",
+      "resent": "Link sent"
     }
   },
   "Membership": {
@@ -554,7 +582,15 @@
       "checkout": "Go through checkout",
       "accountCreated": "Test account created and signed in",
       "signedOut": "Signed out",
-      "failed": "That didn’t work — try again"
+      "failed": "That didn’t work — try again",
+      "mailbox": "Test mailbox (emails)"
+    },
+    "mailbox": {
+      "eyebrow": "Test mode",
+      "title": "Test mailbox",
+      "lede": "Email isn’t connected yet, so messages land here. Only test accounts’ mail is shown.",
+      "empty": "No messages yet. Try “Forgot password?” with a test account.",
+      "open": "Open link"
     }
   },
   "Reflections": {
@@ -1130,5 +1166,15 @@
       "three": "Choose “Only Elena” for anything you’d rather keep private."
     },
     "notes": "Elena’s studio notes"
+  },
+  "Email": {
+    "reset": {
+      "subject": "Reset your Solstice password",
+      "body": "Hello {name},\n\nSomeone asked to reset the password for your Solstice account. If it was you, choose a new one here (the link works for one hour):\n\n{url}\n\nIf it wasn’t you, you can ignore this email.\n\n— Solstice Sanctuary"
+    },
+    "verify": {
+      "subject": "Confirm your email for Solstice",
+      "body": "Hello {name},\n\nWelcome to the sanctuary. Please confirm your email address:\n\n{url}\n\n— Elena & Solstice Sanctuary"
+    }
   }
 }

@@ -4,6 +4,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 
 import { env } from "@/env";
+import { sendAuthEmail } from "@/modules/auth/server/emails";
 import { db } from "@/server/db";
 
 export const auth = betterAuth({
@@ -16,8 +17,15 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     autoSignIn: true,
-    // TODO(email): require verification once an EmailProvider exists (infrastructure/email).
+    // Verification is sent but not required to sign in: members can practice right away.
     requireEmailVerification: false,
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url }) => sendAuthEmail("reset", user, url),
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => sendAuthEmail("verify", user, url),
   },
   session: {
     // "Keep me signed in" = 30 days; unchecked sign-ins get a browser-session cookie.

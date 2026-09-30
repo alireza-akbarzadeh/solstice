@@ -1,6 +1,6 @@
 "use client";
 
-import { FlaskConicalIcon, LoaderCircleIcon, LogInIcon, LogOutIcon, UserPlusIcon } from "lucide-react";
+import { FlaskConicalIcon, InboxIcon, LoaderCircleIcon, LogInIcon, LogOutIcon, UserPlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { toast } from "sonner";
@@ -141,6 +141,13 @@ export function TestPanelMenu({ user, hasAccess, preset, periodEnd, daysLeft, pa
             </DropdownMenuItem>
           </>
         )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/test/mailbox">
+            <InboxIcon />
+            {t("mailbox")}
+          </Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

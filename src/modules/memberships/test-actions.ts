@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect as redirectExternal } from "next/navigation";
 
-import { redirect } from "@/i18n/navigation";
+import { getPathname, redirect } from "@/i18n/navigation";
 import { paymentProvider } from "@/infrastructure/payment";
 import { formText } from "@/lib/form-data";
 import { auth } from "@/server/better-auth";
@@ -76,7 +76,12 @@ export async function createTestAccount() {
   assertTestMode();
   const id = randomBytes(3).toString("hex");
   await auth.api.signUpEmail({
-    body: { name: `Test Member ${id}`, email: `test-${id}@solstice.test`, password: TEST_PASSWORD },
+    body: {
+      name: `Test Member ${id}`,
+      email: `test-${id}@solstice.test`,
+      password: TEST_PASSWORD,
+      callbackURL: getPathname({ href: "/verify-email", locale: await getLocale() }),
+    },
     headers: await headers(),
   });
   revalidatePath("/", "layout");

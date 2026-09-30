@@ -4,7 +4,7 @@ import { ArrowRightIcon, AtSignIcon, CheckIcon, LoaderCircleIcon } from "lucide-
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { formText } from "@/lib/form-data";
 import { authClient } from "@/server/better-auth/client";
 
@@ -56,7 +56,16 @@ export function SignInForm({ next }: { next: string }) {
         </div>
       </div>
 
-      <PasswordField id="password" label={t("password")} autoComplete="current-password" />
+      <PasswordField
+        id="password"
+        label={t("password")}
+        autoComplete="current-password"
+        trailing={
+          <Link href="/forgot-password" className="font-label-sm text-label-sm text-clay underline-offset-4 hover:underline">
+            {t("signIn.forgot")}
+          </Link>
+        }
+      />
 
       <label className="group flex cursor-pointer items-center gap-3 pt-1 select-none">
         <input type="checkbox" name="remember" defaultChecked className="peer sr-only" />

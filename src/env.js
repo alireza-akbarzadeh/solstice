@@ -27,6 +27,9 @@ export const env = createEnv({
     // Which PaymentProvider handles checkout. "mock" grants memberships without charging.
     PAYMENT_PROVIDER: z.enum(["mock"]).default("mock"),
 
+    // Which EmailProvider sends mail. "outbox" stores messages for the test mailbox instead.
+    EMAIL_PROVIDER: z.enum(["outbox"]).default("outbox"),
+
     // Stand-in video for every practice until a VideoProvider exists.
     MOCK_VIDEO_URL: z.string().url().optional(),
 
@@ -70,6 +73,8 @@ export const env = createEnv({
       process.env.BETTER_AUTH_GITHUB_CLIENT_SECRET,
 
     PAYMENT_PROVIDER: process.env.PAYMENT_PROVIDER,
+
+    EMAIL_PROVIDER: process.env.EMAIL_PROVIDER,
 
     MOCK_VIDEO_URL: process.env.MOCK_VIDEO_URL,
 

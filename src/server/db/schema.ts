@@ -262,6 +262,24 @@ export const newsletterSubscribers = createTable("newsletter_subscriber", (d) =>
     .notNull(),
 }));
 
+// Messages sent by the "outbox" EmailProvider (no real delivery): read them in /test/mailbox.
+export const emailOutbox = createTable(
+  "email_outbox",
+  (d) => ({
+    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+    to: d.text().notNull(),
+    subject: d.text().notNull(),
+    text: d.text().notNull(),
+    /** The main link in the message (reset, verify), shown as a button in the mailbox. */
+    actionUrl: d.text(),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  }),
+  (t) => [index("email_outbox_created_idx").on(t.createdAt)],
+);
+
 // A member following a program. Days unlock from startedAt (for daily-paced programs).
 export const programEnrollments = createTable(
   "program_enrollment",

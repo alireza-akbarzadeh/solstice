@@ -1,10 +1,10 @@
 "use client";
 
 import { ArrowRightIcon, CheckIcon, LoaderCircleIcon, MailIcon, MoonIcon, SunriseIcon, UserIcon, WindIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
-import { Link, useRouter } from "@/i18n/navigation";
+import { getPathname, Link, useRouter } from "@/i18n/navigation";
 import { formText } from "@/lib/form-data";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/server/better-auth/client";
@@ -37,6 +37,7 @@ function Checkbox({ name, required, defaultChecked, children }: { name: string; 
 export function SignUpForm({ next, signInHref }: { next: string; signInHref: string }) {
   const t = useTranslations("Auth");
   const router = useRouter();
+  const locale = useLocale();
   const [rhythm, setRhythm] = useState<Rhythm>("morning");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -53,6 +54,8 @@ export function SignUpForm({ next, signInHref }: { next: string; signInHref: str
         password: formText(form, "password"),
         practiceRhythm: rhythm,
         marketingOptIn: form.get("newsletter") === "on",
+        // Where the verification email link lands.
+        callbackURL: getPathname({ href: "/verify-email", locale }),
       });
       if (error) {
         const code = error.code ?? "";

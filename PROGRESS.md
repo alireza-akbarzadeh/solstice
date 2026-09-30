@@ -8,7 +8,7 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** Auth recovery (`/forgot-password`, `/reset-password`, `/verify-email`) with a dev `EmailProvider`, then the instructor area.
+> **Next up:** Instructor area — `/instructor` overview, `/instructor/videos`, `/instructor/members` (+ revenue), `/instructor/posts`, `/instructor/community`.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -24,7 +24,7 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Google OAuth provider | 🟡 | Code done; needs `BETTER_AUTH_GOOGLE_CLIENT_ID/SECRET` in `.env` |
 | GitHub OAuth provider | 🟡 | Code done; needs `BETTER_AUTH_GITHUB_CLIENT_ID/SECRET`. Buttons render only for configured providers (`enabledSocialProviders`) |
 | Email/password auth | ✅ | `/sign-in`, `/sign-up`; 8-char minimum, "keep me signed in" (30 days), safe `?next=` redirects (`src/lib/safe-next.ts`). No email verification yet |
-| Email verification / password reset | ⬜ | Needs an `EmailProvider` in `infrastructure/email` |
+| Email verification / password reset | ✅ | `EmailProvider` boundary (`infrastructure/email`), `outbox` provider stores mail in `solstice_email_outbox`; read it at `/test/mailbox` (test accounts only outside dev). Verification is sent on sign-up but not required |
 | `member` / `instructor` roles | 🟡 | `user.role` column (not settable at sign-up; promote in the DB). Instructors get full access. No instructor routes/guards yet |
 | shadcn/ui (radix-nova, RTL) | ✅ | `components.json`, `src/components/ui` |
 | next-intl (`en`, `fa`) + RTL direction | ✅ | `src/i18n`, `messages/`, `src/middleware.ts` |
@@ -71,9 +71,9 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | --- | --- | --- | --- |
 | `/sign-in` | ✅ | 🎨 | Email/password + Google/GitHub; `member-sign-in-desktop` / `-mobile` |
 | `/sign-up` | ✅ | 🎨 | `member-registration-desktop`, `create-account-mobile`. Collects practice rhythm + marketing opt-in |
-| `/forgot-password` | ⬜ | ? | |
-| `/reset-password` | ⬜ | ? | |
-| `/verify-email` | ⬜ | ? | |
+| `/forgot-password` | ✅ | — | Same answer whether or not the account exists |
+| `/reset-password` | ✅ | — | Token from the email link; signs out other sessions |
+| `/verify-email` | ✅ | — | Result of the email link + resend |
 
 ## Member — `src/app/[locale]/(member)`
 
@@ -135,3 +135,5 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 - **2026-09-30** — Member area: `(member)` layout with tabs, Today, My practices, Progress,
   Community (circle feed + posts), Profile. Account menu links to it. Comments may now have no
   practice (circle posts). Account deletion enabled in Better Auth.
+- **2026-09-30** — Account recovery: forgot/reset password and email verification through an
+  `EmailProvider` (outbox) with a test mailbox. Tested reset end to end with a test account.
