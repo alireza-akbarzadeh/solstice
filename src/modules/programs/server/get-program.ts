@@ -1,12 +1,13 @@
 import type { Locale } from "@/i18n/routing";
 import { localize } from "@/lib/localized";
-import { samplePractices } from "@/modules/practices/sample-data";
-import { toPracticeSummary } from "@/modules/practices/server/to-summary";
+import { getAllPracticeSummaries } from "@/modules/practices/server/get-practice";
+import type { PracticeSummary } from "@/modules/practices/types";
 
 import { type SampleProgram, samplePrograms } from "../sample-data";
 import type { ProgramDay, ProgramDetail } from "../types";
 
-function toDetail(p: SampleProgram, locale: Locale): ProgramDetail {
+// Day numbers stay fixed even if one of a program's practices is unpublished.
+function toDetail(p: SampleProgram, locale: Locale, library: Map<string, PracticeSummary>): ProgramDetail {
   let day = 0;
   const weeks = p.weeks.map((week, index) => ({
     index,
@@ -15,9 +16,9 @@ function toDetail(p: SampleProgram, locale: Locale): ProgramDetail {
     description: localize(week.description, locale),
     focus: localize(week.focus, locale),
     days: week.practices.flatMap((slug): ProgramDay[] => {
-      const practice = samplePractices.find((s) => s.slug === slug);
+      const practice = library.get(slug);
       day += 1;
-      return practice ? [{ day, practice: toPracticeSummary(practice, locale) }] : [];
+      return practice ? [{ day, practice }] : [];
     }),
   }));
   const minutes = weeks.flatMap((w) => w.days.map((d) => d.practice.durationMinutes));
@@ -43,13 +44,16 @@ function toDetail(p: SampleProgram, locale: Locale): ProgramDetail {
 }
 
 // TODO(db): read programs, weeks and days from Drizzle once the programs schema exists.
+const libraryOf = async (locale: Locale) => new Map((await getAllPracticeSummaries(locale)).map((p) => [p.slug, p]));
+
 export async function getPrograms(locale: Locale): Promise<ProgramDetail[]> {
-  return samplePrograms.map((p) => toDetail(p, locale));
+  const library = await libraryOf(locale);
+  return samplePrograms.map((p) => toDetail(p, locale, library));
 }
 
 export async function getProgram(locale: Locale, slug: string): Promise<ProgramDetail | null> {
   const program = samplePrograms.find((p) => p.slug === slug);
-  return program ? toDetail(program, locale) : null;
+  return program ? toDetail(program, locale, await libraryOf(locale)) : null;
 }
 
 /** Validates ?program=…&day=… on a practice page: the day must be this practice. */

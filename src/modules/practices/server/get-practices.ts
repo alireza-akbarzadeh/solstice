@@ -1,7 +1,7 @@
 import type { Locale } from "@/i18n/routing";
 
-import { samplePractices } from "../sample-data";
 import type { DurationRange, PracticeFilters, PracticeSummary } from "../types";
+import { getPublishedRows } from "./library";
 import { toPracticeSummary } from "./to-summary";
 
 export const PRACTICES_PAGE_SIZE = 6;
@@ -22,11 +22,11 @@ export type PracticePage = {
   library: { total: number; open: number };
 };
 
-// TODO(db): move filtering and paging into a Drizzle query once the videos schema exists.
 export async function getPractices(locale: Locale, filters: PracticeFilters): Promise<PracticePage> {
   const q = filters.q?.trim().toLocaleLowerCase(locale);
 
-  const matching = samplePractices
+  const library = await getPublishedRows();
+  const matching = library
     .map((p) => toPracticeSummary(p, locale))
     .filter((p) => {
       if (filters.category && p.category !== filters.category) return false;
@@ -52,8 +52,8 @@ export async function getPractices(locale: Locale, filters: PracticeFilters): Pr
     page,
     pageCount,
     library: {
-      total: samplePractices.length,
-      open: samplePractices.filter((p) => p.access === "open").length,
+      total: library.length,
+      open: library.filter((p) => p.access === "open").length,
     },
   };
 }

@@ -10,6 +10,10 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
+// Type-only imports: scripts/seed-practices.ts loads this file straight from Node.
+import type { Localized } from "@/lib/localized";
+import type { ImplementKind, IntensityLevel, PracticeAccess, PracticeCategory, PropSetup } from "@/modules/practices/types";
+
 export const createTable = pgTableCreator((name) => `solstice_${name}`);
 
 export const posts = createTable(
@@ -163,7 +167,53 @@ export const memberships = createTable(
   (t) => [index("membership_status_idx").on(t.status)],
 );
 
-// Practices aren't in the database yet (sample data), so rows point at them by slug.
+// The practice library. Text the member reads is stored per locale ({ en, fa }).
+// Seeded from modules/practices/sample-*.ts with `pnpm db:seed`; edited in /instructor/videos.
+export const practices = createTable(
+  "practice",
+  (d) => ({
+    slug: d.text().primaryKey(),
+    status: d.text().$type<"draft" | "published">().default("draft").notNull(),
+    featured: d.boolean().default(false).notNull(),
+    title: d.jsonb().$type<Localized>().notNull(),
+    summary: d.jsonb().$type<Localized>().notNull(),
+    /** Series or style line shown above the title. */
+    series: d.jsonb().$type<Localized>().notNull(),
+    category: d.text().$type<PracticeCategory>().notNull(),
+    intensityLevel: d.text().$type<IntensityLevel>().notNull(),
+    intensityLabel: d.jsonb().$type<Localized>().notNull(),
+    props: d.text().$type<PropSetup>().notNull(),
+    durationMinutes: d.integer().notNull(),
+    rating: d.real().default(0).notNull(),
+    reviewCount: d.integer().default(0).notNull(),
+    access: d.text().$type<PracticeAccess>().notNull(),
+    /** Members-only practices: free preview length for non-members; null for none. */
+    previewSeconds: d.integer(),
+    image: d.text().notNull(),
+    imageAlt: d.jsonb().$type<Localized>().notNull(),
+    poster: d.text(),
+    instructorNote: d.jsonb().$type<Localized>(),
+    focus: d.jsonb().$type<Localized[]>().default([]).notNull(),
+    implements: d.jsonb().$type<{ kind: ImplementKind; name: Localized; detail: Localized }[]>().default([]).notNull(),
+    chapters: d.jsonb().$type<{ title: Localized; description: Localized; startSeconds: number }[]>().default([]).notNull(),
+    /** Which VideoProvider holds the video, and its id there (the mock: a video URL). */
+    videoProvider: d.text(),
+    videoAssetId: d.text(),
+    publishedAt: d.timestamp({ withTimezone: true }),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .$onUpdate(() => new Date())
+      .notNull(),
+  }),
+  (t) => [index("practice_status_idx").on(t.status)],
+);
+
+// Programs and journal posts are still sample data, so rows point at practices by slug.
 
 // A reflection under a practice, or (no practice) a post in the community circle.
 // Replies are one level deep (parentId → a top-level comment).

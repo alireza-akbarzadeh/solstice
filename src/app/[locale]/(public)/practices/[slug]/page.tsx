@@ -94,7 +94,7 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
           : hasCompletedRecently(viewer.user.id, practice.slug),
       ])
     : [false, false];
-  const playback = access.mode === "locked" ? null : await videoProvider.getPlayback(practice.slug, toPlaybackGrant(access));
+  const playback = access.mode === "locked" ? null : await videoProvider.getPlayback(practice.videoAssetId, toPlaybackGrant(access));
 
   // Account first, then payment, then straight back to this practice.
   const here = programDay

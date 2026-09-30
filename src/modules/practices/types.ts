@@ -47,6 +47,9 @@ export type PracticeChapter = {
 };
 
 export type PracticeDetail = PracticeSummary & {
+  status: "draft" | "published";
+  /** The video at the VideoProvider (the mock: a URL); null until one is attached. */
+  videoAssetId: string | null;
   /** Large still shown before playback. */
   poster: string;
   /** Free preview length for non-members (members-only practices). */
