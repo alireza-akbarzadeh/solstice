@@ -22,8 +22,10 @@ English lives at `/`, Persian at `/fa/…`.
 | `member` / `instructor` roles | ⬜ | |
 | shadcn/ui (radix-nova, RTL) | ✅ | `components.json`, `src/components/ui` |
 | next-intl (`en`, `fa`) + RTL direction | ✅ | `src/i18n`, `messages/`, `src/middleware.ts` |
-| Fonts: Geist (Latin) + Vazirmatn (Persian) | ✅ | Replace if the Stitch design specifies other fonts |
-| Stitch theme → `globals.css` tokens | ⬜ | Blocked: Stitch MCP tools need a session restart |
+| Fonts: Playfair Display + Plus Jakarta Sans (Latin), Vazirmatn (Persian) | ✅ | From Stitch; `src/app/[locale]/layout.tsx` |
+| Stitch theme → `globals.css` tokens | ✅ | Stitch tokens exposed 1:1 (`bg-surface-container-low`, `font-headline-sm text-headline-sm`, `px-margin`…); Stitch `secondary` → `clay` |
+| Stitch screens pulled locally | ✅ | `design/stitch/`: DESIGN.md, 23 screens (HTML + PNG), `screens.json` |
+| Better Auth Dash (`@better-auth/infra`) | ⬜ | Needs `pnpm add @better-auth/infra zod@^4` + `dash()` plugin, then redeploy |
 | Site header / footer / nav | ⬜ | Locale switcher exists: `src/components/layout/locale-switcher.tsx` |
 | Module structure (`src/modules/*`) | ⬜ | Per README |
 
@@ -31,22 +33,22 @@ English lives at `/`, Persian at `/fa/…`.
 
 | Route | Status | Stitch | Notes |
 | --- | --- | --- | --- |
-| `/` Home | 🟡 | ? | Placeholder with Google sign-in, awaiting design |
-| `/practices` | ⬜ | ? | |
-| `/practices/[slug]` | ⬜ | ? | |
+| `/` Home | 🟡 | 🎨 | Placeholder; design: `solstice-studio-desktop-home` |
+| `/practices` | ⬜ | 🎨 | `practice-library-desktop`, `practice-library` (mobile) |
+| `/practices/[slug]` | ⬜ | 🎨 | `practice-detail-player-desktop`, `practice-player`, plus locked variants |
 | `/programs` | ⬜ | ? | |
 | `/programs/[slug]` | ⬜ | ? | |
-| `/journal` | ⬜ | ? | |
+| `/journal` | ⬜ | 🎨 | `the-solstice-chronicle-editorial-journal` |
 | `/journal/[slug]` | ⬜ | ? | |
-| `/about` | ⬜ | ? | |
-| `/membership` | ⬜ | ? | |
+| `/about` | ⬜ | 🎨 | `about-elena-vance-desktop` |
+| `/membership` | ⬜ | 🎨 | `sanctuary-checkout-pricing-desktop`, `sanctuary-checkout-access-pass` |
 
 ## Auth — `src/app/[locale]/(auth)`
 
 | Route | Status | Stitch | Notes |
 | --- | --- | --- | --- |
-| `/sign-in` | ⬜ | ? | Email/password + Google |
-| `/sign-up` | ⬜ | ? | |
+| `/sign-in` | ⬜ | 🎨 | Email/password + Google; `member-sign-in-desktop` / `-mobile` |
+| `/sign-up` | ⬜ | 🎨 | `member-registration-desktop`, `create-account-mobile` |
 | `/forgot-password` | ⬜ | ? | |
 | `/reset-password` | ⬜ | ? | |
 | `/verify-email` | ⬜ | ? | |
@@ -55,10 +57,10 @@ English lives at `/`, Persian at `/fa/…`.
 
 | Route | Status | Stitch | Notes |
 | --- | --- | --- | --- |
-| `/dashboard` | ⬜ | ? | |
+| `/dashboard` | ⬜ | 🎨 | `today-sanctuary` (mobile) |
 | `/my-practices` | ⬜ | ? | Favorites / saved |
 | `/progress` | ⬜ | ? | |
-| `/community` | ⬜ | ? | |
+| `/community` | ⬜ | 🎨 | `community-reflections`, `live-sangha-virtual-sanctuary-room` |
 | `/profile` | ⬜ | ? | Membership + profile |
 
 ## Instructor — `src/app/[locale]/(instructor)/instructor`
@@ -66,9 +68,9 @@ English lives at `/`, Persian at `/fa/…`.
 | Route | Status | Stitch | Notes |
 | --- | --- | --- | --- |
 | `/instructor` | ⬜ | ? | Overview |
-| `/instructor/videos` | ⬜ | ? | Upload/manage (via `VideoProvider`) |
+| `/instructor/videos` | ⬜ | 🎨 | Upload/manage (via `VideoProvider`); `studio-admin-content-video-publisher` |
 | `/instructor/programs` | ⬜ | ? | |
-| `/instructor/members` | ⬜ | ? | |
+| `/instructor/members` | ⬜ | 🎨 | `studio-admin-members-access`; `studio-admin-transactions-revenue` has no route yet |
 | `/instructor/posts` | ⬜ | ? | Announcements |
 | `/instructor/community` | ⬜ | ? | Moderation |
 
@@ -79,3 +81,6 @@ English lives at `/`, Persian at `/fa/…`.
 - **2026-09-30** — Neon linked; Better Auth pointed at Neon; Google provider; shadcn
   (RTL) initialized; next-intl with `en`/`fa`; placeholder home verified at `/` and
   `/fa`. Stitch MCP added but not yet readable in-session.
+- **2026-09-30** — Pulled Stitch project "Sanctuary Yoga Studio" into `design/stitch/`;
+  theme tokens and fonts applied to `globals.css` and the locale layout; verified `/`
+  and `/fa` render.
