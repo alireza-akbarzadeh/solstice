@@ -11,10 +11,13 @@ const html = readFileSync(`design/stitch/screens/${screen}.html`, "utf8");
 const outDir = `public/images/${name}`;
 mkdirSync(outDir, { recursive: true });
 
+// <img src="…"> and CSS backgrounds: style="background-image: url('…')".
+const tags = html.matchAll(/<img\b[^>]*>|<[a-z]+\b[^>]*style="[^"]*url\('[^']+'\)[^"]*"[^>]*>/g);
+
 const seen = new Map();
 const manifest = [];
-for (const [tag] of html.matchAll(/<img\b[^>]*>/g)) {
-  const src = tag.match(/\bsrc="([^"]+)"/)?.[1];
+for (const [tag] of tags) {
+  const src = tag.match(/\bsrc="([^"]+)"/)?.[1] ?? tag.match(/url\('([^']+)'\)/)?.[1];
   if (!src?.startsWith("http")) continue;
   const alt = (tag.match(/\bdata-alt="([^"]*)"/) ?? tag.match(/\balt="([^"]*)"/))?.[1] ?? "";
   if (seen.has(src)) continue;

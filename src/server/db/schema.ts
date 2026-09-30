@@ -249,6 +249,18 @@ export const practiceCompletions = createTable(
   (t) => [index("practice_completion_user_idx").on(t.userId, t.completedAt)],
 );
 
+// "The New Moon Epistle" sign-ups (footer + journal). Sending waits for an EmailProvider.
+export const newsletterSubscribers = createTable("newsletter_subscriber", (d) => ({
+  id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+  email: d.text().notNull().unique(),
+  locale: d.varchar({ length: 8 }).notNull(),
+  source: d.text().$type<"footer" | "journal">().notNull(),
+  createdAt: d
+    .timestamp({ withTimezone: true })
+    .$defaultFn(() => new Date())
+    .notNull(),
+}));
+
 // A member following a program. Days unlock from startedAt (for daily-paced programs).
 export const programEnrollments = createTable(
   "program_enrollment",

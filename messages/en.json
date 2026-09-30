@@ -694,5 +694,167 @@
     "eyebrow": "Guided journeys",
     "title": "Programs",
     "lede": "Structured paths through the library — a daily immersion that unfolds one morning at a time, and self-paced series to return to whenever you need them."
+  },
+  "About": {
+    "metaTitle": "About Elena Vance",
+    "metaDescription": "Elena Vance, founder of Solstice Sanctuary: lineage, teaching philosophy and a personal letter to the practitioner.",
+    "hero": {
+      "eyebrow": "Guide, Teacher & Lineage Holder",
+      "title": "Guiding you back to your natural cadence of breath and stillness.",
+      "body": "I founded Solstice Sanctuary as an architectural refuge from the relentless pace of modern life — a physical and digital haven where movement is stripped of performance and restored to sacred self-inquiry.",
+      "letterCta": "Read Elena’s letter",
+      "lineageCta": "Our lineage & ethics",
+      "stats": [
+        {
+          "value": "15+",
+          "label": "Years teaching"
+        },
+        {
+          "value": "3,400+",
+          "label": "Guided hours"
+        },
+        {
+          "value": "E-RYT 500",
+          "label": "Somatic certified"
+        }
+      ],
+      "portraitAlt": "Elena Vance, founder of Solstice Sanctuary",
+      "role": "Sole instructor & curator"
+    },
+    "lineage": {
+      "eyebrow": "01 / The Lineage",
+      "title": "Rooted in rigor, softened by compassion.",
+      "body": "Elena’s teaching bridges classical Eastern discipline with Western trauma-informed neurobiology, offering an authentic sanctuary for modern nervous systems.",
+      "credentialsTitle": "Formal credentials",
+      "credentials": [
+        "Ashtanga Vinyasa Research Institute (Mysore, India)",
+        "Advanced Iyengar Precision Alignment (700h)",
+        "Somatic Experiencing Trauma-Informed Facilitator",
+        "Classical Pranayama & Yoga Nidra Mastership"
+      ],
+      "story": [
+        "My journey began over fifteen years ago in high-intensity classical ashtanga shalas. While the fire of discipline shaped my inner architecture, I witnessed countless practitioners — including myself — trade nervous system regulation for structural contortion. True yoga was never meant to be an aesthetic conquest.",
+        "A decade spent studying precision biomechanics alongside renowned Iyengar masters unraveled my approach to form: alignment is not about looking flawless from the outside, but feeling resonant and structurally sovereign from within.",
+        "Integrating somatic resolution practices and polyvagal theory transformed Solstice from an exercise studio into a true refuge for the nervous system. Here, we invite the subtle body to exhale its stored hypervigilance. We honor the threshold between exertion and stillness."
+      ],
+      "quote": "“The pose does not demand that you reshape your humanity to fit its geometry. Rather, the geometry yields, cradling the exact truth of who you are today.”",
+      "quoteSource": "— Elena Vance, On Conscious Biomechanics",
+      "milestones": [
+        {
+          "period": "2010 – 2015",
+          "title": "Foundation in Mysore",
+          "body": "Immersive primary and intermediate Ashtanga series under traditional lineage masters, developing unwavering discipline and daily breath cadence."
+        },
+        {
+          "period": "2016 – 2020",
+          "title": "Precision & Props",
+          "body": "A deep dive into Iyengar props, structural integration, and restorative postures that invite profound neuromuscular release."
+        },
+        {
+          "period": "2021 – 2023",
+          "title": "Somatic Synthesis",
+          "body": "Trauma-informed polyvagal awareness woven into daily sequencing, so each movement communicates safety to the autonomic nervous system."
+        },
+        {
+          "period": "Present day",
+          "title": "Solstice Sanctuary",
+          "body": "Guiding an international digital community alongside seasonal in-person retreats centered on quiet longevity."
+        }
+      ]
+    },
+    "pillars": {
+      "eyebrow": "The Solstice philosophy",
+      "title": "Four Pillars of Our Teaching",
+      "body": "Every sequence, breath practice, and silent sit we curate is anchored firmly in four immovable principles.",
+      "label": "Pillar {n}",
+      "items": [
+        {
+          "title": "Breath as Anchor",
+          "body": "We never sacrifice respiratory smoothness for physical extension. The diaphragm is our compass, telling us whether to advance or soften.",
+          "tag": "Pranayama core"
+        },
+        {
+          "title": "Sustainable Alignment",
+          "body": "Precise geometry rooted in joint longevity. We build postures from the ground up, honoring bone architecture over visual performance.",
+          "tag": "Functional asana"
+        },
+        {
+          "title": "The Art of Pausing",
+          "body": "Stillness is where integration happens. In unhurried transitions and deliberate rests, the body has space to absorb the medicine of motion.",
+          "tag": "Restorative nidra"
+        },
+        {
+          "title": "Living Practice Off-Mat",
+          "body": "Equanimity forged on the mat is tested in daily relationships, work, and unexpected friction. We practice to show up more softly and bravely for the world.",
+          "tag": "Embodied living"
+        }
+      ]
+    },
+    "studio": {
+      "eyebrow": "Physical sanctuary",
+      "title": "An altar of linen, limestone, and unadorned light.",
+      "body": "Our physical space in the coastal hills was shaped to quiet sensory overwhelm. Every material was chosen for its grounding honesty.",
+      "hall": {
+        "eyebrow": "The great practice hall",
+        "title": "Acoustic hush & eastern sunlight",
+        "body": "Curved lime plaster diffuses sound, so Elena’s spoken cues land softly without amplification.",
+        "alt": "Sunlit practice hall with arched windows, oak floors and linen bolsters"
+      },
+      "linen": {
+        "title": "Tactile materiality",
+        "body": "Unbleached fibers & reclaimed cedar",
+        "alt": "Undyed linen bolster on warm sandstone tile"
+      },
+      "tea": {
+        "title": "Silent tea commons",
+        "body": "Herbal infusions between sessions",
+        "alt": "Ceramic tea bowls on a low wooden table beside a single branch"
+      },
+      "materials": [
+        "Passive solar light",
+        "No synthetic finishes",
+        "Wildcrafted cedar aromatics",
+        "Sound-isolated envelope"
+      ]
+    },
+    "letter": {
+      "eyebrow": "Epistle to the practitioner",
+      "title": "From Elena’s desk",
+      "paragraphs": [
+        "Dear traveler, whether you step into our physical studio with salt-laden hair or roll out your mat in the corner of your bedroom thousands of miles away, I want to release you from an invisible burden: you do not need to arrive here already calm.",
+        "You are permitted to arrive disoriented, tight-shouldered, exhausted from holding the architecture of your family or career together. Yoga is not a trophy reserved for the already peaceful. It is the kiln in which our fractures are tenderly attended to.",
+        "I do not consider myself a guru. I am simply a practitioner who has walked the path of somatic listening long enough to recognize the signposts. I will never ask you to perform for me. My only commitment is to hold a safe perimeter around your practice so you can unbind your breath, trust your gravity, and remember the quiet truth that has always lived underneath your hurry.",
+        "Take your time. Drink a cup of warm water. When you are ready, I will be here waiting at the threshold."
+      ],
+      "signOff": "With reverence and steady breath,",
+      "role": "Sanctuary founder & lead practitioner"
+    },
+    "faq": {
+      "eyebrow": "Practitioner guidance",
+      "title": "Frequently Explored Questions",
+      "items": [
+        {
+          "q": "Is this practice suitable for beginners or recovering bodies?",
+          "a": "Yes. Elena designs each sequence with non-hierarchical modifications. The restorative, breath and mobility practices are especially suited to joint sensitivity, past injuries, or a depleted nervous system."
+        },
+        {
+          "q": "How does the digital sanctuary differ from in-person retreats?",
+          "a": "The digital sanctuary gives daily on-demand access to the full practice library and guided programs, with reflections shared alongside each practice. In-person retreats offer silent immersion and personal postural adjustments."
+        },
+        {
+          "q": "What props will I need to practice alongside Elena?",
+          "a": "A firm mat, two cork or foam blocks, one woven blanket, and a cotton strap are ideal. For restorative practices a bolster helps, though household pillows and rolled towels work beautifully."
+        }
+      ]
+    },
+    "cta": {
+      "eyebrow": "An open invitation to stillness",
+      "title": "Begin your practice alongside Elena today.",
+      "body": "Experience the complete sanctuary library free for {days, number} days — from short morning breath attunements to long restorative practices.",
+      "trial": "Start your {days, number}-day free trial",
+      "member": "Continue your practice",
+      "explore": "Explore the practice library",
+      "note": "No long-term commitment. Cancel any time."
+    }
   }
 }
