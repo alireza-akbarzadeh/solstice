@@ -549,5 +549,69 @@
       "signedOut": "Signed out",
       "failed": "That didn’t work — try again"
     }
+  },
+  "Reflections": {
+    "eyebrow": "Sanctuary Circle",
+    "title": "Practice Reflections & Inquiries",
+    "count": "{count, plural, =0 {No reflections yet} one {# Reflection} other {# Reflections}}",
+    "filtersLabel": "Filter reflections",
+    "filters": {
+      "all": "All reflections",
+      "guide": "Elena’s responses",
+      "notes": "Somatic notes"
+    },
+    "gate": {
+      "signIn": "Sign in to share a somatic observation, a breath sensation or a question for Elena.",
+      "signInCta": "Sign in to reflect",
+      "members": "Reflections on members’ practices are shared by members of the sanctuary.",
+      "membersCta": "Become a member"
+    },
+    "empty": "No reflections yet. Be the first to share what you noticed.",
+    "emptyFiltered": "Nothing here yet.",
+    "showAll": "Read all {count, number} reflections",
+    "showLess": "Show fewer",
+    "errors": {
+      "signIn": "Sign in to do that.",
+      "members": "Only members can reflect on this practice.",
+      "forbidden": "You can’t do that.",
+      "generic": "That didn’t go through — please try again."
+    },
+    "composer": {
+      "label": "Your reflection",
+      "placeholder": "Record your somatic observation, breath sensation, or inquiry for Elena…",
+      "tagsLabel": "What kind of reflection",
+      "timeHint": "Attach the current moment in the video",
+      "privacyHint": "Choose who can see this",
+      "circle": "Sanctuary Circle",
+      "private": "Only Elena",
+      "submit": "Share reflection"
+    },
+    "tags": {
+      "epiphany": "Epiphany",
+      "breath": "Breath shift",
+      "release": "Deep release",
+      "inquiry": "Teacher inquiry"
+    },
+    "shared": "Reflection shared with the circle",
+    "sharedPrivately": "Reflection sent privately to Elena",
+    "leadGuide": "Lead Guide",
+    "jumpTo": "Play from {time}",
+    "privateBadge": "Private",
+    "pinned": "Pinned guide note",
+    "more": "More actions",
+    "pin": "Pin to top",
+    "unpin": "Unpin",
+    "delete": "Delete",
+    "held": "Held in heart ({count, number})",
+    "reply": "Reply",
+    "replyCount": "Reply ({count, number})",
+    "replyLabel": "Reply to {name}",
+    "replyPlaceholder": "Reply to {name}…",
+    "cancel": "Cancel",
+    "sendReply": "Reply",
+    "notification": {
+      "title": "{name} replied to your reflection",
+      "body": "Open the practice to read the reply."
+    }
   }
 }

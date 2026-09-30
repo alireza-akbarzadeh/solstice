@@ -1,8 +1,10 @@
 import { relations } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   boolean,
   index,
   pgTable,
+  primaryKey,
   pgTableCreator,
   text,
   timestamp,
@@ -159,4 +161,87 @@ export const memberships = createTable(
       .notNull(),
   }),
   (t) => [index("membership_status_idx").on(t.status)],
+);
+
+// Practices aren't in the database yet (sample data), so rows point at them by slug.
+
+// A reflection under a practice. Replies are one level deep (parentId → a top-level comment).
+export const comments = createTable(
+  "comment",
+  (d) => ({
+    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+    practiceSlug: d.text().notNull(),
+    userId: d
+      .text()
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    parentId: d.integer().references((): AnyPgColumn => comments.id, { onDelete: "cascade" }),
+    body: d.text().notNull(),
+    tag: d.text().$type<"epiphany" | "breath" | "release" | "inquiry">(),
+    /** Moment in the video the reflection is about. */
+    atSeconds: d.integer(),
+    /** "private": only the author and the instructor see it. */
+    visibility: d.text().$type<"circle" | "private">().default("circle").notNull(),
+    pinned: d.boolean().default(false).notNull(),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  }),
+  (t) => [index("comment_practice_idx").on(t.practiceSlug, t.createdAt), index("comment_parent_idx").on(t.parentId)],
+);
+
+export const commentLikes = createTable(
+  "comment_like",
+  (d) => ({
+    commentId: d
+      .integer()
+      .notNull()
+      .references(() => comments.id, { onDelete: "cascade" }),
+    userId: d
+      .text()
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  }),
+  (t) => [primaryKey({ columns: [t.commentId, t.userId] })],
+);
+
+// "Save to Sanctuary".
+export const favorites = createTable(
+  "favorite",
+  (d) => ({
+    userId: d
+      .text()
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    practiceSlug: d.text().notNull(),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  }),
+  (t) => [primaryKey({ columns: [t.userId, t.practiceSlug] })],
+);
+
+// One row per "Mark complete" — the history behind progress, streaks and minutes practiced.
+export const practiceCompletions = createTable(
+  "practice_completion",
+  (d) => ({
+    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+    userId: d
+      .text()
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    practiceSlug: d.text().notNull(),
+    minutes: d.integer().notNull(),
+    completedAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  }),
+  (t) => [index("practice_completion_user_idx").on(t.userId, t.completedAt)],
 );

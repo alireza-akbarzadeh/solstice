@@ -24,6 +24,7 @@ import { PracticePlayer } from "@/modules/practices/components/practice-player";
 import { PracticeStage } from "@/modules/practices/components/practice-stage";
 import { videoProvider } from "@/infrastructure/video";
 import { withNext } from "@/lib/safe-next";
+import { PracticeReflections } from "@/modules/community/components/practice-reflections";
 import { sanctuaryPlan } from "@/modules/memberships/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { resolvePracticeAccess, toPlaybackGrant } from "@/modules/practices/server/access";
@@ -114,8 +115,9 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
         </ol>
       </nav>
 
-      <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
-        <PracticeStage hasVideo={!!playback} limitSeconds={playback?.limitSeconds}>
+      {/* One stage for the player, chapters and reflections: timestamps seek the video. */}
+      <PracticeStage hasVideo={!!playback} limitSeconds={playback?.limitSeconds}>
+        <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
           <section className="flex flex-col gap-space-lg lg:col-span-8">
             {playback ? (
               <PracticePlayer
@@ -230,48 +232,50 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
               <PracticeChapters chapters={practice.chapters} durationSeconds={durationSeconds} />
             )}
           </section>
-        </PracticeStage>
 
-        <aside className="flex flex-col gap-space-lg lg:col-span-4">
-          <section className="space-y-space-md rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="font-headline-sm text-headline-sm text-on-surface">{t("relatedTitle")}</h2>
-              <Link href="/practices" className="font-label-sm text-label-sm tracking-wider text-clay uppercase transition-colors hover:text-primary">
-                {t("viewAll")}
-              </Link>
-            </div>
-            <ul className="space-y-3">
-              {related.map((item) => (
-                <li key={item.slug}>
-                  <Link href={`/practices/${item.slug}`} className="group flex gap-3 rounded-lg p-2 transition-colors hover:bg-surface-container">
-                    <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-md bg-surface-dim">
-                      <Image
-                        src={item.image}
-                        alt=""
-                        fill
-                        sizes="96px"
-                        className="object-cover transition-transform group-hover:scale-105"
-                      />
-                      <span className="absolute end-1 bottom-1 rounded bg-black/60 px-1.5 py-0.5 font-label-sm text-[10px] text-white">
-                        {tPractice("minutes", { count: item.durationMinutes })}
-                      </span>
-                    </div>
-                    <div className="flex min-w-0 flex-col justify-center">
-                      <span className="truncate font-label-sm text-label-sm tracking-wider text-clay uppercase">{item.series}</span>
-                      <h3 className="line-clamp-2 font-heading text-[0.95rem] leading-tight text-on-surface transition-colors group-hover:text-primary">
-                        {item.title}
-                      </h3>
-                      <span className="mt-0.5 font-body-sm text-[12px] text-outline">
-                        {item.intensity.label} • {tPractice(`categories.${item.category}`)}
-                      </span>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        </aside>
-      </div>
+          <aside className="flex flex-col gap-space-lg lg:col-span-4">
+            <section className="space-y-space-md rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
+              <div className="flex items-center justify-between">
+                <h2 className="font-headline-sm text-headline-sm text-on-surface">{t("relatedTitle")}</h2>
+                <Link href="/practices" className="font-label-sm text-label-sm tracking-wider text-clay uppercase transition-colors hover:text-primary">
+                  {t("viewAll")}
+                </Link>
+              </div>
+              <ul className="space-y-3">
+                {related.map((item) => (
+                  <li key={item.slug}>
+                    <Link href={`/practices/${item.slug}`} className="group flex gap-3 rounded-lg p-2 transition-colors hover:bg-surface-container">
+                      <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-md bg-surface-dim">
+                        <Image
+                          src={item.image}
+                          alt=""
+                          fill
+                          sizes="96px"
+                          className="object-cover transition-transform group-hover:scale-105"
+                        />
+                        <span className="absolute end-1 bottom-1 rounded bg-black/60 px-1.5 py-0.5 font-label-sm text-[10px] text-white">
+                          {tPractice("minutes", { count: item.durationMinutes })}
+                        </span>
+                      </div>
+                      <div className="flex min-w-0 flex-col justify-center">
+                        <span className="truncate font-label-sm text-label-sm tracking-wider text-clay uppercase">{item.series}</span>
+                        <h3 className="line-clamp-2 font-heading text-[0.95rem] leading-tight text-on-surface transition-colors group-hover:text-primary">
+                          {item.title}
+                        </h3>
+                        <span className="mt-0.5 font-body-sm text-[12px] text-outline">
+                          {item.intensity.label} • {tPractice(`categories.${item.category}`)}
+                        </span>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+              <PracticeReflections practice={practice} viewer={viewer} signInHref={gate.signInHref} membershipHref={gate.primaryHref} />
+          </aside>
+        </div>
+      </PracticeStage>
     </Container>
   );
 }
