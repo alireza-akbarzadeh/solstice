@@ -238,10 +238,30 @@ export const practiceCompletions = createTable(
       .references(() => user.id, { onDelete: "cascade" }),
     practiceSlug: d.text().notNull(),
     minutes: d.integer().notNull(),
+    /** Set when completed as a day of a program the member is enrolled in. */
+    programSlug: d.text(),
+    programDay: d.integer(),
     completedAt: d
       .timestamp({ withTimezone: true })
       .$defaultFn(() => new Date())
       .notNull(),
   }),
   (t) => [index("practice_completion_user_idx").on(t.userId, t.completedAt)],
+);
+
+// A member following a program. Days unlock from startedAt (for daily-paced programs).
+export const programEnrollments = createTable(
+  "program_enrollment",
+  (d) => ({
+    userId: d
+      .text()
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    programSlug: d.text().notNull(),
+    startedAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  }),
+  (t) => [primaryKey({ columns: [t.userId, t.programSlug] })],
 );

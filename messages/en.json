@@ -174,7 +174,8 @@
       "signIn": "I already have an account",
       "replay": "Watch the preview again",
       "lockedChapter": "Members only"
-    }
+    },
+    "programDay": "Day {day, number} • {series}"
   },
   "Home": {
     "hero": {
@@ -627,5 +628,71 @@
       "members": "This practice is for members.",
       "generic": "That didn’t go through — please try again."
     }
+  },
+  "Program": {
+    "pulseDaily": "Guided immersion · {days, number} continuous days · one new practice each morning",
+    "pulseSelf": "Self-paced series · {days, number} sessions · all open from the start",
+    "practitioners": "{count, plural, one {# practitioner} other {# practitioners}} moving together",
+    "start": "Begin Day {day, number}",
+    "resume": "Resume Day {day, number} practice",
+    "revisit": "Revisit the journey",
+    "waiting": "Today’s practice is done — see the syllabus",
+    "enroll": "Begin the program",
+    "enrollWithMembership": "Begin with membership",
+    "viewSyllabus": "View the syllabus",
+    "card": {
+      "eyebrow": "Your sacred continuum",
+      "completed": "Day {done, number} of {total, number} completed",
+      "progress": "Journey rhythm",
+      "percent": "{percent, number, percent}",
+      "streak": "{count, plural, =0 {Start your streak today} one {#-day streak} other {#-day streak}}",
+      "tomorrow": "Tomorrow: {title}",
+      "next": "Next somatic threshold",
+      "nextDay": "Day {day, number}: {title} ({minutes, number} min)",
+      "finished": "Every day complete. Revisit any practice whenever you need it.",
+      "restDay": "{count, plural, one {Your next practice opens tomorrow.} other {Your next practice opens in # days.}}",
+      "restart": "Start over"
+    },
+    "facts": {
+      "eyebrow": "The journey",
+      "days": "{count, plural, one {# day} other {# days}} of guided practice",
+      "minutes": "{min, number}–{max, number} minutes a day",
+      "daily": "One new practice opens each morning",
+      "self": "Every session open — move at your own pace"
+    },
+    "syllabus": {
+      "eyebrow": "Curricular architecture",
+      "title": "{count, plural, one {# somatic portal} other {The # somatic portals}}",
+      "bodyDaily": "Each week isolates one focus, progressing from grounded stability toward fluid expression and restful stillness.",
+      "bodySelf": "Three phases, each building on the last. Take them in order, and return to any session when you need it.",
+      "weeksLabel": "Program weeks",
+      "currentFocus": "Current focus",
+      "weekRange": "{label} · Days {first, number}–{last, number}",
+      "locked": "Locked",
+      "unlocksIn": "{count, plural, one {Unlocks tomorrow} other {Unlocks in # days}}",
+      "complete": "{done, number} / {total, number} complete",
+      "daysCount": "{count, plural, one {# day} other {# days}}",
+      "pathwayEyebrow": "Syllabus stream",
+      "pathwayTitle": "{label} pathway · {title}",
+      "today": "Today’s practice · Day {day, number}",
+      "completed": "Completed",
+      "tomorrow": "Tomorrow",
+      "dayLabel": "Day {day, number} practice",
+      "replay": "Replay",
+      "begin": "Begin class",
+      "preview": "Preview"
+    },
+    "context": {
+      "eyebrow": "Active program",
+      "day": "Day {day, number} of {total, number}",
+      "remaining": "{count, plural, =0 {Journey complete} one {# day remaining} other {# days remaining}}",
+      "next": "Next: Day {day, number} · {title}"
+    }
+  },
+  "Programs": {
+    "metaTitle": "Programs",
+    "eyebrow": "Guided journeys",
+    "title": "Programs",
+    "lede": "Structured paths through the library — a daily immersion that unfolds one morning at a time, and self-paced series to return to whenever you need them."
   }
 }

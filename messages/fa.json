@@ -174,7 +174,8 @@
       "signIn": "حساب دارم؛ ورود",
       "replay": "دیدن دوبارهٔ پیش‌نمایش",
       "lockedChapter": "ویژهٔ اعضا"
-    }
+    },
+    "programDay": "روز {day, number} • {series}"
   },
   "Home": {
     "hero": {
@@ -627,5 +628,71 @@
       "members": "این تمرین ویژهٔ اعضاست.",
       "generic": "انجام نشد؛ لطفاً دوباره تلاش کنید."
     }
+  },
+  "Program": {
+    "pulseDaily": "غوطه‌وری هدایت‌شده · {days, number} روز پیوسته · هر صبح یک تمرین تازه",
+    "pulseSelf": "مجموعهٔ خودگام · {days, number} جلسه · همه از ابتدا باز",
+    "practitioners": "{count, number} تمرین‌کننده همراه هم",
+    "start": "شروع روز {day, number}",
+    "resume": "ادامهٔ تمرین روز {day, number}",
+    "revisit": "مرور دوبارهٔ سفر",
+    "waiting": "تمرین امروز انجام شد؛ سرفصل‌ها را ببینید",
+    "enroll": "شروع برنامه",
+    "enrollWithMembership": "شروع با عضویت",
+    "viewSyllabus": "مشاهدهٔ سرفصل‌ها",
+    "card": {
+      "eyebrow": "پیوستار مقدس شما",
+      "completed": "{done, number} روز از {total, number} روز انجام شد",
+      "progress": "ریتم سفر",
+      "percent": "{percent, number, percent}",
+      "streak": "{count, plural, =0 {زنجیرهٔ خود را امروز آغاز کنید} other {زنجیرهٔ # روزه}}",
+      "tomorrow": "فردا: {title}",
+      "next": "آستانهٔ بعدی",
+      "nextDay": "روز {day, number}: {title} ({minutes, number} دقیقه)",
+      "finished": "همهٔ روزها کامل شد. هر وقت خواستید به هر تمرین برگردید.",
+      "restDay": "{count, plural, one {تمرین بعدی شما فردا باز می‌شود.} other {تمرین بعدی شما # روز دیگر باز می‌شود.}}",
+      "restart": "شروع دوباره"
+    },
+    "facts": {
+      "eyebrow": "سفر",
+      "days": "{count, number} روز تمرین هدایت‌شده",
+      "minutes": "روزانه {min, number} تا {max, number} دقیقه",
+      "daily": "هر صبح یک تمرین تازه باز می‌شود",
+      "self": "همهٔ جلسه‌ها باز است؛ با سرعت خودتان پیش بروید"
+    },
+    "syllabus": {
+      "eyebrow": "معماری برنامه",
+      "title": "{count, number} دروازهٔ سوماتیک",
+      "bodyDaily": "هر هفته بر یک کانون تمرکز دارد و از ثبات ریشه‌دار به‌سوی بیان روان و سکونی آرام پیش می‌رود.",
+      "bodySelf": "سه مرحله که هر کدام بر پایهٔ قبلی بنا شده است. به ترتیب پیش بروید و هر وقت لازم بود به هر جلسه برگردید.",
+      "weeksLabel": "هفته‌های برنامه",
+      "currentFocus": "تمرکز کنونی",
+      "weekRange": "{label} · روزهای {first, number} تا {last, number}",
+      "locked": "قفل",
+      "unlocksIn": "{count, plural, one {فردا باز می‌شود} other {# روز دیگر باز می‌شود}}",
+      "complete": "{done, number} از {total, number} انجام شد",
+      "daysCount": "{count, number} روز",
+      "pathwayEyebrow": "جریان سرفصل‌ها",
+      "pathwayTitle": "مسیر {label} · {title}",
+      "today": "تمرین امروز · روز {day, number}",
+      "completed": "انجام شد",
+      "tomorrow": "فردا",
+      "dayLabel": "تمرین روز {day, number}",
+      "replay": "پخش دوباره",
+      "begin": "شروع کلاس",
+      "preview": "پیش‌نمایش"
+    },
+    "context": {
+      "eyebrow": "برنامهٔ فعال",
+      "day": "روز {day, number} از {total, number}",
+      "remaining": "{count, plural, =0 {سفر کامل شد} other {# روز باقی‌مانده}}",
+      "next": "بعدی: روز {day, number} · {title}"
+    }
+  },
+  "Programs": {
+    "metaTitle": "برنامه‌ها",
+    "eyebrow": "سفرهای هدایت‌شده",
+    "title": "برنامه‌ها",
+    "lede": "مسیرهایی ساختارمند در میان تمرین‌ها؛ غوطه‌وری روزانه‌ای که صبح به صبح گشوده می‌شود و مجموعه‌هایی خودگام که هر وقت لازم بود به آن‌ها برمی‌گردید."
   }
 }

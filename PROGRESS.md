@@ -8,7 +8,7 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** Program `/programs/[slug]` — `30-day-awakening-immersion-hub-desktop`.
+> **Next up:** About `/about` — `about-elena-vance-desktop`.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -56,9 +56,9 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | --- | --- | --- | --- |
 | `/` Home | ✅ | 🎨 | `solstice-studio-desktop-home`; sections in `src/components/marketing/home/`. Sign-in lives in the header account menu (`account-menu.tsx`) |
 | `/practices` | ✅ | 🎨 | Search, category pills, duration/props/intensity filters, pagination — all in the URL (`src/modules/practices/filters.ts`). Bookmark saves to favorites (sign-in link when signed out) |
-| `/practices/[slug]` | ✅ | 🎨 | Custom player (play, ±10s, seek, volume, speed, mirror, fullscreen), seekable chapters, related, share. Members-only practices: full for members, a `previewSeconds` preview or locked state otherwise. Save to Sanctuary, Mark complete (auto when the video ends), reflections (comments) with timestamps that seek the player. Not yet: program progress card, soundscape chips |
-| `/programs` | ⬜ | ? | |
-| `/programs/[slug]` | ⬜ | 🎨 | `30-day-awakening-immersion-hub-desktop` |
+| `/practices/[slug]` | ✅ | 🎨 | Custom player (play, ±10s, seek, volume, speed, mirror, fullscreen), seekable chapters, related, share. Members-only practices: full for members, a `previewSeconds` preview or locked state otherwise. Save to Sanctuary, Mark complete (auto when the video ends), reflections (comments) with timestamps that seek the player. Program progress card when opened from a program day. Not yet: soundscape chips |
+| `/programs` | ✅ | — | Composed from the home program spotlights |
+| `/programs/[slug]` | ✅ | 🎨 | `30-day-awakening-immersion-hub-desktop`. Enroll (members), weeks as tabs, day cards (done / today / open / locked), progress card with streak, start over. Daily pacing unlocks one day per day; self-paced opens all. Days open practices with `?program=&day=` → breadcrumb, “Active program” card, completion counts for the day. Not built: live-sit notice, PDF workbook, journey artifacts (no content yet) |
 | `/journal` | ⬜ | 🎨 | `the-solstice-chronicle-editorial-journal` |
 | `/journal/[slug]` | ⬜ | 🎨 | `the-vagus-nerve-in-movement-essay-reader` |
 | `/about` | ⬜ | 🎨 | `about-elena-vance-desktop` |
@@ -128,3 +128,5 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
   still needs a hands-on run.
 - **2026-09-30** — Test mode (mock hosted checkout with test cards + test panel for account
   states), practice reflections (comments), Save / Mark complete. New tables pushed to Neon.
+- **2026-09-30** — Programs: `/programs`, `/programs/[slug]` with enrollment, daily unlocking,
+  per-day completion and streaks (`solstice_program_enrollment`, program columns on completions).

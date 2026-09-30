@@ -28,6 +28,9 @@ import { PracticeReflections } from "@/modules/community/components/practice-ref
 import { CompleteButton, SaveButton } from "@/modules/progress/components/practice-actions";
 import { hasCompletedRecently } from "@/modules/progress/server/completions";
 import { isFavorite } from "@/modules/progress/server/favorites";
+import { ProgramContextCard } from "@/modules/programs/components/program-context-card";
+import { resolveProgramDay } from "@/modules/programs/server/get-program";
+import { getProgramProgress } from "@/modules/programs/server/progress";
 import { sanctuaryPlan } from "@/modules/memberships/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { resolvePracticeAccess, toPlaybackGrant } from "@/modules/practices/server/access";
@@ -55,7 +58,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/practice
 }
 
 // Stitch: practice-detail-player-desktop.html, locked: practice-detail-locked-sanctuary-preview.html
-export default async function PracticePage({ params }: PageProps<"/[locale]/practices/[slug]">) {
+export default async function PracticePage({ params, searchParams }: PageProps<"/[locale]/practices/[slug]">) {
   const { locale, slug } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
@@ -72,13 +75,31 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
     getRelatedPractices(locale, practice),
   ]);
   const access = resolvePracticeAccess(practice, viewer);
+
+  // Opened as a day of a program (?program=…&day=…): show where it sits in the journey.
+  const query = await searchParams;
+  const programDay = await resolveProgramDay(locale, practice.slug, query.program, query.day);
+  const programProgress = programDay ? await getProgramProgress(viewer.user?.id ?? null, programDay.program) : null;
+  // Completing counts for the program only when the member follows it and the day is open.
+  const programContext =
+    programDay && programProgress?.enrolled && programDay.day <= programProgress.unlockedThrough
+      ? { slug: programDay.program.slug, day: programDay.day }
+      : undefined;
+
   const [saved, completed] = viewer.user
-    ? await Promise.all([isFavorite(viewer.user.id, practice.slug), hasCompletedRecently(viewer.user.id, practice.slug)])
+    ? await Promise.all([
+        isFavorite(viewer.user.id, practice.slug),
+        programContext
+          ? programProgress!.completed.includes(programContext.day)
+          : hasCompletedRecently(viewer.user.id, practice.slug),
+      ])
     : [false, false];
   const playback = access.mode === "locked" ? null : await videoProvider.getPlayback(practice.slug, toPlaybackGrant(access));
 
   // Account first, then payment, then straight back to this practice.
-  const here = `/practices/${practice.slug}`;
+  const here = programDay
+    ? `/practices/${practice.slug}?program=${programDay.program.slug}&day=${programDay.day}`
+    : `/practices/${practice.slug}`;
   const membershipHref = withNext("/membership", here);
   const gate = {
     signedIn: !!viewer.user,
@@ -107,16 +128,25 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
           </li>
           <ChevronRightIcon aria-hidden className="size-4 text-outline rtl:rotate-180" />
           <li>
-            <Link
-              href={`/practices?category=${practice.category}`}
-              className="font-label-md text-label-md tracking-widest uppercase transition-colors hover:text-primary"
-            >
-              {categoryLabel}
-            </Link>
+            {programDay ? (
+              <Link
+                href={`/programs/${programDay.program.slug}`}
+                className="font-label-md text-label-md tracking-widest uppercase transition-colors hover:text-primary"
+              >
+                {programDay.program.title}
+              </Link>
+            ) : (
+              <Link
+                href={`/practices?category=${practice.category}`}
+                className="font-label-md text-label-md tracking-widest uppercase transition-colors hover:text-primary"
+              >
+                {categoryLabel}
+              </Link>
+            )}
           </li>
           <ChevronRightIcon aria-hidden className="size-4 text-outline rtl:rotate-180" />
           <li aria-current="page" className="font-label-md text-label-md font-semibold tracking-widest text-primary uppercase">
-            {practice.series}
+            {programDay ? t("programDay", { day: programDay.day, series: practice.series }) : practice.series}
           </li>
         </ol>
       </nav>
@@ -163,7 +193,12 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
               <div className="flex flex-wrap items-center gap-2">
                 <SaveButton practiceSlug={practice.slug} saved={saved} signInHref={viewer.user ? undefined : gate.signInHref} />
                 {access.mode === "full" && (
-                  <CompleteButton practiceSlug={practice.slug} completed={completed} signInHref={viewer.user ? undefined : gate.signInHref} />
+                  <CompleteButton
+                    practiceSlug={practice.slug}
+                    completed={completed}
+                    signInHref={viewer.user ? undefined : gate.signInHref}
+                    program={programContext}
+                  />
                 )}
                 <ShareButton
                   title={practice.title}
@@ -246,6 +281,9 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
           </section>
 
           <aside className="flex flex-col gap-space-lg lg:col-span-4">
+            {programDay && programProgress?.enrolled && (
+              <ProgramContextCard program={programDay.program} day={programDay.day} next={programDay.next} progress={programProgress} />
+            )}
             <section className="space-y-space-md rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
               <div className="flex items-center justify-between">
                 <h2 className="font-headline-sm text-headline-sm text-on-surface">{t("relatedTitle")}</h2>

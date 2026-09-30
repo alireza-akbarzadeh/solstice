@@ -15,9 +15,9 @@ export async function getFeaturedPrograms(locale: Locale): Promise<ProgramSpotli
       badge: localize(p.badge, locale),
       title: localize(p.title, locale),
       description: localize(p.description, locale),
-      phases: p.phases.map((phase) => ({
-        label: localize(phase.label, locale),
-        title: localize(phase.title, locale),
+      phases: p.weeks.map((week) => ({
+        label: localize(week.label, locale),
+        title: localize(week.title, locale),
       })),
       cta: localize(p.cta, locale),
       note: localize(p.note, locale),

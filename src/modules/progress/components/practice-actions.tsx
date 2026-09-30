@@ -93,14 +93,17 @@ export function CompleteButton({
   practiceSlug,
   completed,
   signInHref,
+  program,
 }: {
   practiceSlug: string;
   completed: boolean;
   signInHref?: string;
+  /** Completing this practice as a program day. */
+  program?: { slug: string; day: number };
 }) {
   const t = useTranslations("PracticeActions");
   const { videoRef, hasVideo, limitSeconds } = usePracticeStage();
-  const { on, pending, toggle } = useToggle(completed, (next) => completePractice({ practiceSlug, on: next }));
+  const { on, pending, toggle } = useToggle(completed, (next) => completePractice({ practiceSlug, on: next, program }));
 
   const onRef = useRef(on);
   onRef.current = on;
