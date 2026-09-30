@@ -39,6 +39,8 @@ import { type ReflectionTag, reflectionTags, somaticTags } from "../types";
 
 export type ReflectionView = {
   id: number;
+  /** The practice it was written under; null for circle posts. */
+  practice: { slug: string; title: string } | null;
   author: {
     id: string;
     name: string;
@@ -134,8 +136,12 @@ export function ReflectionsPanel({
   isInstructor,
   signInHref,
   membershipHref,
+  variant = "practice",
 }: {
-  practiceSlug: string;
+  /** Null in the community circle: new posts belong to no practice. */
+  practiceSlug: string | null;
+  /** "circle": the community feed — shows which practice each thread came from. */
+  variant?: "practice" | "circle";
   reflections: ReflectionView[];
   total: number;
   access: ReflectAccess;
@@ -157,7 +163,8 @@ export function ReflectionsPanel({
       return r.tag !== null && somaticTags.includes(r.tag);
     return true;
   });
-  const shown = expanded ? visible : visible.slice(0, COLLAPSED_COUNT);
+  const collapsedCount = variant === "circle" ? 10 : COLLAPSED_COUNT;
+  const shown = expanded ? visible : visible.slice(0, collapsedCount);
 
   return (
     <section
@@ -168,10 +175,10 @@ export function ReflectionsPanel({
         <div className="flex items-start justify-between gap-3">
           <div>
             <span className="font-label-md text-label-md text-clay mb-1 block tracking-wider uppercase">
-              {t("eyebrow")}
+              {t(variant === "circle" ? "circle.eyebrow" : "eyebrow")}
             </span>
             <h2 className="font-headline-sm text-headline-sm text-on-surface">
-              {t("title")}
+              {t(variant === "circle" ? "circle.title" : "title")}
             </h2>
           </div>
           <span className="bg-surface font-label-sm text-label-sm text-primary shrink-0 rounded-full px-2.5 py-1 font-semibold shadow-2xs">
@@ -229,17 +236,18 @@ export function ReflectionsPanel({
             <li key={reflection.id}>
               <ReflectionItem
                 reflection={reflection}
-                practiceSlug={practiceSlug}
+                practiceSlug={reflection.practice?.slug ?? null}
                 canReply={access === "ok"}
                 canLike={access !== "signIn"}
                 isInstructor={isInstructor}
+                showPractice={variant === "circle"}
               />
             </li>
           ))}
         </ul>
       )}
 
-      {visible.length > COLLAPSED_COUNT && (
+      {visible.length > collapsedCount && (
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
@@ -268,7 +276,7 @@ function errorMessage(
     : t("errors.generic");
 }
 
-function Composer({ practiceSlug }: { practiceSlug: string }) {
+function Composer({ practiceSlug }: { practiceSlug: string | null }) {
   const t = useTranslations("Reflections");
   const clock = useClock();
   const { hasVideo, currentTime } = usePracticeStage();
@@ -314,7 +322,7 @@ function Composer({ practiceSlug }: { practiceSlug: string }) {
         onChange={(e) => setBody(e.target.value)}
         maxLength={REFLECTION_MAX_LENGTH}
         rows={3}
-        placeholder={t("composer.placeholder")}
+        placeholder={t(practiceSlug === null ? "circle.placeholder" : "composer.placeholder")}
         className="font-body-sm text-body-sm text-on-surface placeholder:text-outline w-full resize-none bg-transparent leading-relaxed focus:outline-none"
       />
       <div
@@ -396,13 +404,16 @@ function ReflectionItem({
   canLike,
   isInstructor,
   nested = false,
+  showPractice = false,
 }: {
   reflection: ReflectionView;
-  practiceSlug: string;
+  practiceSlug: string | null;
   canReply: boolean;
   canLike: boolean;
   isInstructor: boolean;
   nested?: boolean;
+  /** Community feed: name the practice the thread belongs to. */
+  showPractice?: boolean;
 }) {
   const t = useTranslations("Reflections");
   const clock = useClock();
@@ -587,6 +598,14 @@ function ReflectionItem({
         </div>
       </header>
 
+      {showPractice && reflection.practice && (
+        <Link
+          href={`/practices/${reflection.practice.slug}#reflections`}
+          className="font-label-sm text-label-sm text-clay inline-flex items-center gap-1 tracking-wider uppercase hover:underline"
+        >
+          {t("circle.after", { title: reflection.practice.title })}
+        </Link>
+      )}
       {/* Members write in either language: let each reflection pick its own direction. */}
       <p
         dir="auto"

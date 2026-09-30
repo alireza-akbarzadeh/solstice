@@ -9,7 +9,7 @@ import { paymentProvider } from "@/infrastructure/payment";
 import { safeNextPath, withNext } from "@/lib/safe-next";
 
 import { isBillingPlan, sanctuaryPlan } from "./plans";
-import { setCancelAtPeriodEnd, startMembership } from "./server/memberships";
+import { setCancelAtPeriodEnd, setPlan, startMembership } from "./server/memberships";
 import { getViewer } from "./server/viewer";
 
 export async function startCheckout(formData: FormData) {
@@ -49,26 +49,41 @@ export async function startCheckout(formData: FormData) {
   return redirect({ href: withNext("/membership/welcome", next), locale });
 }
 
-export async function cancelMembership() {
+export async function cancelMembership(formData?: FormData) {
   const locale = await getLocale();
+  const back = safeNextPath(formData?.get("back"), "/membership");
   const viewer = await getViewer();
-  if (!viewer.user || !viewer.membership) return redirect({ href: "/membership", locale });
+  if (!viewer.user || !viewer.membership) return redirect({ href: back, locale });
 
   if (viewer.membership.providerSubscriptionId) {
     await paymentProvider.cancelSubscription(viewer.membership.providerSubscriptionId);
   }
   await setCancelAtPeriodEnd(viewer.user.id, true);
-  return redirect({ href: "/membership", locale });
+  return redirect({ href: back, locale });
 }
 
-export async function resumeMembership() {
+export async function resumeMembership(formData?: FormData) {
   const locale = await getLocale();
+  const back = safeNextPath(formData?.get("back"), "/membership");
   const viewer = await getViewer();
-  if (!viewer.user || !viewer.membership) return redirect({ href: "/membership", locale });
+  if (!viewer.user || !viewer.membership) return redirect({ href: back, locale });
 
   if (viewer.membership.providerSubscriptionId) {
     await paymentProvider.resumeSubscription(viewer.membership.providerSubscriptionId);
   }
   await setCancelAtPeriodEnd(viewer.user.id, false);
-  return redirect({ href: "/membership", locale });
+  return redirect({ href: back, locale });
+}
+
+export async function changePlan(formData: FormData) {
+  const locale = await getLocale();
+  const plan = formData.get("plan");
+  const viewer = await getViewer();
+  if (!viewer.user || !viewer.membership || !isBillingPlan(plan)) return redirect({ href: "/profile", locale });
+
+  if (viewer.membership.providerSubscriptionId) {
+    await paymentProvider.changePlan(viewer.membership.providerSubscriptionId, plan);
+  }
+  await setPlan(viewer.user.id, plan);
+  return redirect({ href: "/profile", locale });
 }

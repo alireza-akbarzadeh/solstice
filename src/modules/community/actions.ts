@@ -24,18 +24,20 @@ type ActionResult =
   | { ok: true }
   | { ok: false; error: "signIn" | "members" | "invalid" | "forbidden" };
 
-const refresh = () => revalidatePath("/[locale]/practices/[slug]", "page");
+const refresh = () => {
+  revalidatePath("/[locale]/practices/[slug]", "page");
+  revalidatePath("/[locale]/community", "page");
+};
 
 export async function postReflection(input: unknown): Promise<ActionResult> {
   const parsed = newReflectionSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "invalid" };
 
-  const [viewer, practice] = await Promise.all([
-    getViewer(),
-    getPractice(await getLocale(), parsed.data.practiceSlug),
-  ]);
-  if (!practice) return { ok: false, error: "invalid" };
-  const access = reflectAccess(practice, viewer);
+  const slug = parsed.data.practiceSlug;
+  const [viewer, practice] = await Promise.all([getViewer(), slug === null ? null : getPractice(await getLocale(), slug)]);
+  if (slug !== null && !practice) return { ok: false, error: "invalid" };
+  // Circle posts (no practice) are for members, like members-only practices.
+  const access = reflectAccess(practice ?? { access: "members" }, viewer);
   if (access !== "ok" || !viewer.user)
     return { ok: false, error: access === "ok" ? "signIn" : access };
 
@@ -47,12 +49,7 @@ export async function postReflection(input: unknown): Promise<ActionResult> {
   if (!created) return { ok: false, error: "invalid" };
 
   if (parsed.data.parentId !== null)
-    await notifyReply(
-      created.id,
-      viewer.user.id,
-      viewer.user.name,
-      practice.slug,
-    );
+    await notifyReply(created.id, viewer.user.id, viewer.user.name, slug);
   refresh();
   return { ok: true };
 }
@@ -62,7 +59,7 @@ async function notifyReply(
   replyId: number,
   replierId: string,
   replierName: string,
-  practiceSlug: string,
+  practiceSlug: string | null,
 ) {
   if (!isPushConfigured()) return;
   const reply = await getReflectionOwner(replyId);
@@ -77,7 +74,8 @@ async function notifyReply(
         locale,
         namespace: "Reflections.notification",
       });
-      const url = `${getPathname({ href: `/practices/${practiceSlug}`, locale })}#reflections`;
+      const href = practiceSlug === null ? "/community" : `/practices/${practiceSlug}`;
+      const url = `${getPathname({ href, locale })}#reflections`;
       return [
         locale,
         {

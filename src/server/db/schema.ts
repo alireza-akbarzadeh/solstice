@@ -165,12 +165,13 @@ export const memberships = createTable(
 
 // Practices aren't in the database yet (sample data), so rows point at them by slug.
 
-// A reflection under a practice. Replies are one level deep (parentId → a top-level comment).
+// A reflection under a practice, or (no practice) a post in the community circle.
+// Replies are one level deep (parentId → a top-level comment).
 export const comments = createTable(
   "comment",
   (d) => ({
     id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    practiceSlug: d.text().notNull(),
+    practiceSlug: d.text(),
     userId: d
       .text()
       .notNull()

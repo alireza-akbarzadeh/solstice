@@ -44,6 +44,10 @@ export async function startMembership(input: {
     .onConflictDoUpdate({ target: memberships.userId, set: values });
 }
 
+export async function setPlan(userId: string, plan: BillingPlan) {
+  await db.update(memberships).set({ plan }).where(eq(memberships.userId, userId));
+}
+
 // Cancellation keeps access until the period ends, as promised on the checkout page.
 export async function setCancelAtPeriodEnd(userId: string, cancel: boolean) {
   await db.update(memberships).set({ cancelAtPeriodEnd: cancel }).where(eq(memberships.userId, userId));

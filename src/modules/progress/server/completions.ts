@@ -105,6 +105,8 @@ export async function getCompletions(userId: string) {
     .select({
       practiceSlug: practiceCompletions.practiceSlug,
       minutes: practiceCompletions.minutes,
+      programSlug: practiceCompletions.programSlug,
+      programDay: practiceCompletions.programDay,
       completedAt: practiceCompletions.completedAt,
     })
     .from(practiceCompletions)

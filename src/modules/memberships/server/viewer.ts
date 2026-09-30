@@ -1,5 +1,8 @@
 import { cache } from "react";
 
+import { redirect } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+import { withNext } from "@/lib/safe-next";
 import { getSession } from "@/server/better-auth/server";
 
 import { getMembership, isMembershipActive, type Membership } from "./memberships";
@@ -10,6 +13,15 @@ export type Viewer = {
   /** Entitled to members-only content: an active membership, or the instructor. */
   hasAccess: boolean;
 };
+
+export type SignedInViewer = Viewer & { user: NonNullable<Viewer["user"]> };
+
+/** Member pages: signed-out visitors go to sign-in and come back to `here`. */
+export async function requireUser(locale: Locale, here: string): Promise<SignedInViewer> {
+  const viewer = await getViewer();
+  if (!viewer.user) return redirect({ href: withNext("/sign-in", here), locale });
+  return viewer as SignedInViewer;
+}
 
 // Authentication (session) + membership (entitlement), resolved once per request.
 export const getViewer = cache(async (): Promise<Viewer> => {

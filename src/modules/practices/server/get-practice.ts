@@ -30,6 +30,18 @@ export async function getPractice(locale: Locale, slug: string): Promise<Practic
   };
 }
 
+/** Summaries for the given slugs, in that order; unknown slugs are skipped. */
+export async function getPracticeSummaries(locale: Locale, slugs: string[]): Promise<PracticeSummary[]> {
+  return slugs.flatMap((slug) => {
+    const practice = samplePractices.find((p) => p.slug === slug);
+    return practice ? [toPracticeSummary(practice, locale)] : [];
+  });
+}
+
+export async function getAllPracticeSummaries(locale: Locale): Promise<PracticeSummary[]> {
+  return samplePractices.map((p) => toPracticeSummary(p, locale));
+}
+
 // Same category first, then the rest of the library; never the practice itself.
 export async function getRelatedPractices(locale: Locale, practice: PracticeSummary, limit = 3) {
   const others = samplePractices.filter((p) => p.slug !== practice.slug);

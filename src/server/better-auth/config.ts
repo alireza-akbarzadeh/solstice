@@ -25,6 +25,8 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24,
   },
   user: {
+    // Members can close their account from /profile (password confirmed). App rows cascade.
+    deleteUser: { enabled: true },
     additionalFields: {
       // Never settable from sign-up; promote instructors in the database.
       role: { type: "string", defaultValue: "member", input: false },

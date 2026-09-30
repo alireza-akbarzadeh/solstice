@@ -1,4 +1,4 @@
-import { and, count, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 
 import { db } from "@/server/db";
 import { practiceCompletions, programEnrollments } from "@/server/db/schema";
@@ -30,6 +30,16 @@ export async function getEnrollment(userId: string, programSlug: string) {
     .where(and(eq(programEnrollments.userId, userId), eq(programEnrollments.programSlug, programSlug)))
     .limit(1);
   return row ?? null;
+}
+
+/** Programs the member follows, most recently started first. */
+export async function getEnrolledProgramSlugs(userId: string) {
+  const rows = await db
+    .select({ slug: programEnrollments.programSlug })
+    .from(programEnrollments)
+    .where(eq(programEnrollments.userId, userId))
+    .orderBy(desc(programEnrollments.startedAt));
+  return rows.map((r) => r.slug);
 }
 
 export async function enroll(userId: string, programSlug: string) {

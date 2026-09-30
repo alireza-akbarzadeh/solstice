@@ -36,6 +36,7 @@ export async function PracticeReflections({
     );
 
   const toView = (r: Reflection): ReflectionView => ({
+    practice: { slug: practice.slug, title: practice.title },
     id: r.id,
     author: r.author,
     body: r.body,

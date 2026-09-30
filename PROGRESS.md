@@ -8,7 +8,7 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** Member area — `/dashboard` (`today-sanctuary`), then `/my-practices`, `/progress`, `/profile`, `/community`.
+> **Next up:** Auth recovery (`/forgot-password`, `/reset-password`, `/verify-email`) with a dev `EmailProvider`, then the instructor area.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -79,11 +79,11 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
 | Route | Status | Stitch | Notes |
 | --- | --- | --- | --- |
-| `/dashboard` | ⬜ | 🎨 | `today-sanctuary` (mobile) |
-| `/my-practices` | ⬜ | ? | Favorites / saved |
-| `/progress` | ⬜ | ? | |
-| `/community` | ⬜ | 🎨 | `community-reflections`, `live-sangha-virtual-sanctuary-room`, `live-satsang-sanctuary-room-mobile` |
-| `/profile` | ⬜ | 🎨 | Membership + profile; `member-sanctuary-account-rhythm-settings` |
+| `/dashboard` | ✅ | 🎨 | `today-sanctuary`: greeting (local time), continue card (program day → saved → suggestion), weekly rhythm in the member’s timezone, suggestions, programs, membership notice |
+| `/my-practices` | ✅ | — | Saved practices (library cards) + recent sessions |
+| `/progress` | ✅ | — | Sessions, minutes, current/longest streak, 12-week calendar (local days), programs, minutes by style |
+| `/community` | ✅ | 🎨 | `community-reflections`: feed of all circle reflections (linked to their practice) + circle posts (members), pinned instructor post = weekly intention. Live rooms (`live-sangha…`, `live-satsang…`) not built — no live video yet |
+| `/profile` | ✅ | 🎨 | `member-sanctuary-account-rhythm-settings`: membership (switch plan, cancel/resume), profile & rhythm, password, delete account. Not built: audio mixer, invoices, pause (no real payments/audio yet) |
 
 ## Instructor — `src/app/[locale]/(instructor)/instructor`
 
@@ -132,3 +132,6 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
   per-day completion and streaks (`solstice_program_enrollment`, program columns on completions).
 - **2026-09-30** — About, Journal index and essay reader (en/fa). Newsletter sign-ups stored.
   `pnpm stitch:images` now also downloads CSS background images.
+- **2026-09-30** — Member area: `(member)` layout with tabs, Today, My practices, Progress,
+  Community (circle feed + posts), Profile. Account menu links to it. Comments may now have no
+  practice (circle posts). Account deletion enabled in Better Auth.

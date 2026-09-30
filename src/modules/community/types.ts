@@ -13,6 +13,8 @@ export type ReflectionVisibility = "circle" | "private";
 
 export type Reflection = {
   id: number;
+  /** Null for posts made in the community circle itself. */
+  practiceSlug: string | null;
   author: {
     id: string;
     name: string;

@@ -32,6 +32,8 @@ export interface PaymentProvider {
   testMode: boolean;
   startCheckout(input: CheckoutInput): Promise<CheckoutResult>;
   cancelSubscription(providerSubscriptionId: string): Promise<void>;
+  /** Monthly ↔ annual; takes effect at the next renewal. */
+  changePlan(providerSubscriptionId: string, plan: BillingPlan): Promise<void>;
   resumeSubscription(providerSubscriptionId: string): Promise<void>;
 }
 
@@ -49,6 +51,9 @@ const mockPaymentProvider: PaymentProvider = {
   },
   async cancelSubscription() {
     // Nothing to cancel: the mock never bills.
+  },
+  async changePlan() {
+    // Nothing to change: the mock never bills.
   },
   async resumeSubscription() {
     // Nothing to resume: the mock never bills.

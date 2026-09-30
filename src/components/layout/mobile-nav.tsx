@@ -10,7 +10,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { getDirection } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
-import { isActivePath, publicNavItems } from "./nav-items";
+import { isActivePath, memberNavItems, publicNavItems } from "./nav-items";
 
 export function MobileNav({ signedIn }: { signedIn: boolean }) {
   const t = useTranslations("Nav");
@@ -49,6 +49,28 @@ export function MobileNav({ signedIn }: { signedIn: boolean }) {
             );
           })}
         </nav>
+        {signedIn && (
+          <nav aria-label={t("member")} className="mt-space-md flex flex-col">
+            <span className="mb-1 font-label-sm text-label-sm tracking-widest text-clay uppercase">{t("account")}</span>
+            {memberNavItems.map((item) => {
+              const active = isActivePath(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "py-2 font-label-lg text-label-lg transition-colors",
+                    active ? "text-primary" : "text-on-surface-variant hover:text-primary",
+                  )}
+                >
+                  {t(item.label)}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
         {!signedIn && (
           <div className="mt-auto flex flex-col gap-space-sm">
             <Link

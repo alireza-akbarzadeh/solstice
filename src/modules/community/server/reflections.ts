@@ -1,4 +1,4 @@
-import { and, asc, eq, or, type SQL, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, or, type SQL, sql } from "drizzle-orm";
 
 import { db } from "@/server/db";
 import { commentLikes, comments, user } from "@/server/db/schema";
@@ -20,46 +20,46 @@ function visibleTo(reader: Reader): SQL | undefined {
   );
 }
 
-/** Top-level reflections (pinned first, newest next) with their replies (oldest first). */
-export async function getPracticeReflections(
-  practiceSlug: string,
-  reader: Reader,
-): Promise<Reflection[]> {
-  const rows = await db
-    .select({
-      id: comments.id,
-      parentId: comments.parentId,
-      body: comments.body,
-      tag: comments.tag,
-      atSeconds: comments.atSeconds,
-      visibility: comments.visibility,
-      pinned: comments.pinned,
-      createdAt: comments.createdAt,
-      authorId: user.id,
-      authorName: user.name,
-      authorImage: user.image,
-      authorRole: user.role,
-      likes: sql<number>`(select count(*)::int from ${commentLikes} where ${commentLikes.commentId} = ${comments.id})`,
-      liked: reader
-        ? sql<boolean>`exists(select 1 from ${commentLikes} where ${commentLikes.commentId} = ${comments.id} and ${commentLikes.userId} = ${reader.id})`
-        : sql<boolean>`false`,
-    })
+const reflectionColumns = (reader: Reader) => ({
+  id: comments.id,
+  parentId: comments.parentId,
+  practiceSlug: comments.practiceSlug,
+  body: comments.body,
+  tag: comments.tag,
+  atSeconds: comments.atSeconds,
+  visibility: comments.visibility,
+  pinned: comments.pinned,
+  createdAt: comments.createdAt,
+  authorId: user.id,
+  authorName: user.name,
+  authorImage: user.image,
+  authorRole: user.role,
+  likes: sql<number>`(select count(*)::int from ${commentLikes} where ${commentLikes.commentId} = ${comments.id})`,
+  liked: reader
+    ? sql<boolean>`exists(select 1 from ${commentLikes} where ${commentLikes.commentId} = ${comments.id} and ${commentLikes.userId} = ${reader.id})`
+    : sql<boolean>`false`,
+});
+
+type Row = Awaited<ReturnType<typeof selectReflections>>[number];
+
+function selectReflections(reader: Reader, where: SQL | undefined) {
+  return db
+    .select(reflectionColumns(reader))
     .from(comments)
     .innerJoin(user, eq(user.id, comments.userId))
-    .where(and(eq(comments.practiceSlug, practiceSlug), visibleTo(reader)))
+    .where(and(where, visibleTo(reader)))
     .orderBy(asc(comments.createdAt));
+}
 
+/** Threads from rows (tops + replies); replies whose parent is hidden from this reader are dropped. */
+function toThreads(rows: Row[]): Reflection[] {
   const byId = new Map<number, Reflection>();
   const top: Reflection[] = [];
   for (const row of rows) {
     const reflection: Reflection = {
       id: row.id,
-      author: {
-        id: row.authorId,
-        name: row.authorName,
-        image: row.authorImage,
-        isInstructor: row.authorRole === "instructor",
-      },
+      practiceSlug: row.practiceSlug,
+      author: { id: row.authorId, name: row.authorName, image: row.authorImage, isInstructor: row.authorRole === "instructor" },
       body: row.body,
       tag: row.tag,
       atSeconds: row.atSeconds,
@@ -72,14 +72,29 @@ export async function getPracticeReflections(
     };
     byId.set(row.id, reflection);
     if (row.parentId === null) top.push(reflection);
-    else byId.get(row.parentId)?.replies.push(reflection); // parent hidden from this reader: drop the reply
+    else byId.get(row.parentId)?.replies.push(reflection);
   }
+  return top;
+}
 
-  return top.sort(
-    (a, b) =>
-      Number(b.pinned) - Number(a.pinned) ||
-      b.createdAt.getTime() - a.createdAt.getTime(),
-  );
+/** A practice's reflections: pinned first, then newest, each with its replies (oldest first). */
+export async function getPracticeReflections(practiceSlug: string, reader: Reader): Promise<Reflection[]> {
+  const threads = toThreads(await selectReflections(reader, eq(comments.practiceSlug, practiceSlug)));
+  return threads.sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.createdAt.getTime() - a.createdAt.getTime());
+}
+
+/** The community feed: the newest threads across every practice and the circle itself. */
+export async function getCircleFeed(reader: Reader, limit = 30): Promise<Reflection[]> {
+  const tops = await db
+    .select({ id: comments.id })
+    .from(comments)
+    .where(and(isNull(comments.parentId), visibleTo(reader)))
+    .orderBy(desc(comments.createdAt))
+    .limit(limit);
+  if (tops.length === 0) return [];
+  const ids = tops.map((t) => t.id);
+  const threads = toThreads(await selectReflections(reader, or(inArray(comments.id, ids), inArray(comments.parentId, ids))));
+  return threads.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 }
 
 export async function createReflection(

@@ -17,12 +17,15 @@ const barTone = ["bg-error", "bg-tertiary-container", "bg-secondary-fixed-dim", 
 
 export function PasswordField({
   id,
+  name = "password",
   label,
   autoComplete,
   showStrength = false,
   trailing,
 }: {
   id: string;
+  /** Form field name; defaults to "password". */
+  name?: string;
   label: string;
   autoComplete: "current-password" | "new-password";
   showStrength?: boolean;
@@ -47,7 +50,7 @@ export function PasswordField({
         <KeyRoundIcon aria-hidden className="pointer-events-none absolute start-3.5 top-1/2 size-5 -translate-y-1/2 text-on-surface-variant" />
         <input
           id={id}
-          name="password"
+          name={name}
           type={visible ? "text" : "password"}
           required
           minLength={8}

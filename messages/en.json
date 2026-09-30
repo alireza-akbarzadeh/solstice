@@ -26,7 +26,13 @@
     "join": "Join Sanctuary",
     "account": "Your account",
     "openMenu": "Open menu",
-    "menuTitle": "Menu"
+    "menuTitle": "Menu",
+    "member": "Your sanctuary",
+    "today": "Today",
+    "myPractices": "My practices",
+    "progress": "Progress",
+    "community": "Community",
+    "profile": "Profile"
   },
   "Footer": {
     "eyebrow": "A Sanctuary for Conscious Movement",
@@ -613,6 +619,12 @@
     "notification": {
       "title": "{name} replied to your reflection",
       "body": "Open the practice to read the reply."
+    },
+    "circle": {
+      "eyebrow": "Community feed",
+      "title": "Recent reflections",
+      "placeholder": "How did your practice feel today? Share a sensation, a release or a question with the circle…",
+      "after": "After {title}"
     }
   },
   "PracticeActions": {
@@ -919,5 +931,204 @@
     "submit": "Subscribe",
     "done": "Welcome to the circle. The next epistle arrives with the new moon.",
     "invalid": "Please enter a valid email address."
+  },
+  "Dashboard": {
+    "metaTitle": "Today",
+    "greeting": {
+      "day": "Welcome back, {name}",
+      "morning": "Good morning, {name}",
+      "afternoon": "Good afternoon, {name}",
+      "evening": "Good evening, {name}"
+    },
+    "intention": "Breathe in intention. Step onto the mat today.",
+    "notice": {
+      "freeTitle": "You’re on a free account",
+      "endedTitle": "Your membership has ended",
+      "pastDueTitle": "Your last payment didn’t go through",
+      "body": "Open practices are yours; members-only practices, programs and the circle open with membership.",
+      "join": "Begin free trial",
+      "renew": "Renew membership"
+    },
+    "hero": {
+      "programDay": "Day {day, number} of {total, number} · {program}",
+      "begin": "Begin today’s practice",
+      "resume": "Continue your journey",
+      "saved": "From your saved practices",
+      "suggested": "Suggested for today",
+      "start": "Start practice",
+      "progress": "{percent, number, percent} of the program complete"
+    },
+    "suggestions": {
+      "title": "Selected for you",
+      "body": "Practices you haven’t met this week",
+      "explore": "Explore"
+    },
+    "rhythm": {
+      "title": "Your rhythm this week",
+      "more": "Progress",
+      "practiced": "practiced",
+      "rest": "rest",
+      "thisWeek": "{count, plural, =0 {No practices yet this week} one {# conscious practice this week} other {# conscious practices this week}}",
+      "streak": "{count, plural, =0 {Begin a streak today} one {# day in flow} other {# days in flow}}"
+    },
+    "programs": {
+      "title": "Your programs",
+      "empty": "Follow a guided program — one practice at a time.",
+      "days": "{done, number} of {total, number} days complete"
+    },
+    "membership": {
+      "eyebrow": "Membership",
+      "trial": "Free trial until {date}.",
+      "renews": "Renews on {date}.",
+      "ends": "Access until {date}; it won’t renew.",
+      "manage": "Manage membership"
+    },
+    "journal": "From the Chronicle"
+  },
+  "MyPractices": {
+    "metaTitle": "My practices",
+    "eyebrow": "Your sanctuary",
+    "title": "My practices",
+    "saved": {
+      "title": "Saved to your sanctuary",
+      "count": "{count, plural, =0 {Nothing saved yet} one {# practice} other {# practices}}",
+      "empty": "Tap the bookmark on any practice to keep it here for the days you need it.",
+      "browse": "Browse the library"
+    },
+    "history": {
+      "title": "Recently practiced",
+      "empty": "Your completed practices will gather here.",
+      "programDay": "{program}, day {day, number}"
+    }
+  },
+  "Progress": {
+    "metaTitle": "Progress",
+    "eyebrow": "Your sanctuary",
+    "title": "Your practice, gently counted",
+    "lede": "Not a scoreboard — a record of the mornings and evenings you came back to the mat.",
+    "stats": {
+      "sessions": "Sessions",
+      "minutes": "Minutes on the mat",
+      "streak": "Current streak",
+      "longest": "Longest streak",
+      "days": "{count, plural, one {# day} other {# days}}"
+    },
+    "calendar": {
+      "title": "The last {weeks, number} weeks",
+      "minutes": "{count, plural, =0 {no practice} one {# minute} other {# minutes}}",
+      "less": "Less",
+      "more": "More"
+    },
+    "programs": {
+      "title": "Programs",
+      "empty": "You aren’t following a program yet.",
+      "days": "{done, number} of {total, number} days complete"
+    },
+    "categories": {
+      "title": "Where your minutes went",
+      "empty": "Complete a practice to see your balance of styles."
+    }
+  },
+  "Profile": {
+    "metaTitle": "Profile",
+    "active": "Inner sanctuary active",
+    "inactive": "Free account",
+    "title": "Your private sanctuary space, {name}.",
+    "memberSince": "With us since {date}",
+    "status": {
+      "none": "No membership",
+      "instructor": "Instructor access — the whole library is open",
+      "pastDue": "Last payment didn’t go through",
+      "ended": "Membership ended on {date}",
+      "canceling": "Access until {date}, then it ends",
+      "trial": "Free trial until {date}",
+      "renews": "Renews on {date}"
+    },
+    "stats": {
+      "sessions": "Practices completed",
+      "hours": "Hours on the mat",
+      "rhythm": "Your rhythm"
+    },
+    "tabsLabel": "Profile sections",
+    "tabs": {
+      "membership": "Membership",
+      "details": "Profile & rhythm",
+      "security": "Password",
+      "privacy": "Privacy"
+    },
+    "plan": {
+      "billedYearly": "Billed yearly",
+      "billedMonthly": "Billed monthly",
+      "priceAnnual": "{perMonth} / month ({total} billed annually).",
+      "priceMonthly": "{price} / month, billed monthly.",
+      "renew": "Renew membership",
+      "switchMonthly": "Switch to monthly ({price}/mo) at renewal",
+      "switchAnnual": "Switch to annual ({price}/yr) at renewal",
+      "noneTitle": "You don’t have a membership",
+      "noneBody": "Open practices are yours to keep. Members-only practices, programs and the circle open with membership.",
+      "join": "See membership",
+      "cancelNote": "Leaving? You keep access until the end of the period.",
+      "resumeNote": "Changed your mind? Your membership can continue as before.",
+      "cancel": "Cancel membership",
+      "resume": "Keep my membership"
+    },
+    "ledger": {
+      "title": "Billing summary",
+      "method": "Payment method",
+      "testCard": "Test card •••• 4242",
+      "onFile": "Card on file",
+      "nextDate": "Next renewal",
+      "accessUntil": "Access until",
+      "amount": "Renewal amount",
+      "receipts": "Receipts to"
+    },
+    "details": {
+      "title": "Profile & practice rhythm",
+      "name": "Name",
+      "email": "Email",
+      "save": "Save changes",
+      "saved": "Profile saved",
+      "error": "Couldn’t save — please check your name."
+    },
+    "security": {
+      "title": "Change password",
+      "body": "Other devices will be signed out after a change.",
+      "current": "Current password",
+      "new": "New password",
+      "hint": "At least 8 characters.",
+      "submit": "Change password",
+      "changed": "Password changed",
+      "wrongPassword": "Your current password isn’t right.",
+      "tooShort": "The new password is too short.",
+      "error": "Couldn’t change the password. Accounts that sign in with Google or GitHub have no password here."
+    },
+    "privacy": {
+      "title": "Close your account",
+      "body": "This deletes your account, reflections, saved practices and progress. It can’t be undone.",
+      "start": "Delete my account…",
+      "warning": "Enter your password to confirm. Everything connected to your account will be deleted.",
+      "password": "Password",
+      "confirm": "Delete forever",
+      "cancel": "Keep my account",
+      "deleted": "Your account has been deleted",
+      "wrongPassword": "That password isn’t right.",
+      "error": "Couldn’t delete the account. Please try again."
+    }
+  },
+  "Community": {
+    "metaTitle": "Community",
+    "eyebrow": "Sanctuary Sangha",
+    "title": "Studio Circle",
+    "lede": "A calm, supportive space to share reflections, insights and questions with Elena and fellow practitioners.",
+    "intention": {
+      "label": "This week’s intention"
+    },
+    "care": {
+      "title": "Circle care",
+      "one": "Speak from your own body and experience; advice is offered, never pressed.",
+      "two": "Questions for {name} are welcome — mark them as a teacher inquiry.",
+      "three": "Choose “Only Elena” for anything you’d rather keep private."
+    },
+    "notes": "Elena’s studio notes"
   }
 }
