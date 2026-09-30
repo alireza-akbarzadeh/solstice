@@ -3,16 +3,22 @@ import "@/styles/globals.css";
 import { type Metadata } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Geist, Vazirmatn } from "next/font/google";
+import { Playfair_Display, Plus_Jakarta_Sans, Vazirmatn } from "next/font/google";
 import { notFound } from "next/navigation";
 
 import { DirectionProvider } from "@/components/ui/direction";
 import { Toaster } from "@/components/ui/sonner";
 import { getDirection, routing } from "@/i18n/routing";
 
-const geist = Geist({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
 });
 
 const vazirmatn = Vazirmatn({
@@ -52,7 +58,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html
       lang={locale}
       dir={dir}
-      className={`${geist.variable} ${vazirmatn.variable}`}
+      className={`${playfair.variable} ${jakarta.variable} ${vazirmatn.variable}`}
       suppressHydrationWarning
     >
       <body>

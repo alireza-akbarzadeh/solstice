@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary": "#ffffff", "on-surface-variant": "#444842", "inverse-on-surface": "#f6f0ec", "surface-container-highest": "#e7e1de", "tertiary-container": "#924a3b", "primary-fixed": "#d6e8d0", "on-secondary": "#ffffff", "on-primary-fixed-variant": "#3b4b39", "on-secondary-fixed-variant": "#584324", "surface-tint": "#536350", "surface-container": "#f3ede9", "outline-variant": "#c4c8bf", "background": "#fef8f4", "on-error": "#ffffff", "on-primary-fixed": "#111f10", "tertiary": "#743426", "on-tertiary-container": "#ffcec3", "on-tertiary-fixed": "#3b0902", "secondary": "#715b39", "inverse-primary": "#baccb4", "primary": "#3c4b39", "secondary-fixed": "#fddeb3", "surface-bright": "#fef8f4", "primary-container": "#536350", "on-tertiary-fixed-variant": "#743326", "on-primary": "#ffffff", "secondary-container": "#fddeb3", "surface-dim": "#dfd9d5", "primary-fixed-dim": "#baccb4", "on-surface": "#1d1b19", "on-secondary-container": "#78613f", "surface-container-high": "#ede7e3", "surface-container-lowest": "#ffffff", "tertiary-fixed": "#ffdad3", "on-error-container": "#93000a", "inverse-surface": "#32302e", "on-primary-container": "#ccdec6", "error-container": "#ffdad6", "surface-container-low": "#f9f2ef", "tertiary-fixed-dim": "#ffb4a4", "surface-variant": "#e7e1de", "surface": "#fef8f4", "outline": "#747871", "secondary-fixed-dim": "#e0c299", "on-background": "#1d1b19", "error": "#ba1a1a", "on-secondary-fixed": "#281901" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-xl": "3.5rem", "space-2xl": "5rem", "margin-mobile": "1.25rem", "space-xs": "0.375rem", "space-md": "1.25rem", "gutter-mobile": "1rem", "gutter": "1.5rem", "margin": "3rem", "space-lg": "2rem", "space-sm": "0.75rem" }, fontFamily: { "body-sm": ["Plus Jakarta Sans"], "headline-sm": ["Playfair Display"], "label-sm": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "display": ["Playfair Display"], "label-lg": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "body-md": ["Plus Jakarta Sans"], "display-mobile": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"] }, fontSize: { "body-sm": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }], "headline-sm": ["1.375rem", { "lineHeight": "1.875rem", "fontWeight": "500" }], "label-sm": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.05em", "fontWeight": "500" }], "headline-md": ["1.875rem", { "lineHeight": "2.375rem", "fontWeight": "500" }], "display": ["3.5rem", { "lineHeight": "4rem", "letterSpacing": "-0.02em", "fontWeight": "400" }], "label-lg": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.06em", "fontWeight": "600" }], "label-md": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.08em", "fontWeight": "600" }], "headline-lg": ["2.5rem", { "lineHeight": "3rem", "letterSpacing": "-0.015em", "fontWeight": "400" }], "body-md": ["1rem", { "lineHeight": "1.625rem", "fontWeight": "400" }], "display-mobile": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "400" }], "body-lg": ["1.125rem", { "lineHeight": "1.875rem", "fontWeight": "400" }], "headline-lg-mobile": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.01em", "fontWeight": "400" }] } } } }</script><style>@layer base { html, body { min-height: 100%; margin: 0; padding: 0; background-color: #fef8f4; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-full selection:bg-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-xs"><img alt="Solstice Yoga Studio Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XCK6OadcXyzd4YEu0FZ_skTjKhrW7RPGzWD-57gSXwggZp-q9Dl1Uo0IGfVjGtDUBv4UOctBkqE10LVTguvrSaAUG9OPKFiv0L_EjqJpk6YYoCljidxmv4yr6L6HDn5EwLHNrwmbnPXXTMkeVLaVCwE_yjJ1_wO9hV0HMkR9TNkFbgs10IElcMLDnMJIzYNRx-5RqqB7K12wSLFAgJEYpztLITaX_8TW9huhkm0vlqzlNPEV6Rzk9i1w"/><div class="flex flex-col"><span class="font-label-md text-label-md tracking-widest uppercase text-secondary">Solstice Sanctuary</span><span class="font-headline-sm text-headline-sm text-on-surface leading-tight">Community</span></div></div><div class="flex items-center gap-space-xs"><button aria-label="Soundscapes" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">graphic_eq</span></button><button aria-label="Notifications" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span></button><a class="ml-1 flex items-center justify-center" data-path="my-space" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJZ3BR8jTeBSfkhNkPJBnmngzJHuzvNk28TKotD6Tc4HhTshQq01VXtmkNR08hpk3Pl1yfYtytEdkk3sQ-4_oJuVmEGs4MewK_5D2mqBZkWNPr7bYjKp6HZwy77_H-gHhCNSm7og9XxAwvjym7uS3pYAoqCD9Ms6PTYrNKyqY8J6ACTEglr3bOa-TbYy92iQoTFCW5N0ymk_q_1ZZrwzhqwx9wIcZf1c-ydGSo_etwgc6LOB4SoVXo"/></a></div></div></header><main class="flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full">
+<div class="px-margin-mobile pt-space-xs pb-space-sm">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/40 text-on-secondary-container mb-2">
+<span class="material-symbols-outlined text-[14px]">spa</span>
+<span class="font-label-sm text-label-sm tracking-wider uppercase">Sanctuary Sangha</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight">Studio Circle</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1.5 leading-relaxed">
+      A calm, supportive space to share reflections, insights, and questions with Elena and fellow practitioners.
+    </p>
+</div>
+<div class="px-margin-mobile my-space-xs">
+<div class="relative overflow-hidden rounded-xl bg-surface-container-low shadow-[0_8px_24px_-6px_rgba(83,99,80,0.08)] p-space-md">
+<div class="absolute -right-12 -top-12 w-36 h-36 rounded-full bg-primary-fixed/30 blur-2xl pointer-events-none"></div>
+<div class="flex items-center justify-between gap-3 mb-space-sm relative">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-11 h-11 rounded-full object-cover shadow-sm" data-alt="Elena Vance, a serene yoga instructor with gentle smile, natural daylight, soft linen apparel, earthy minimalist architectural wellness studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByXNxjXxAcYOdoDGs2Lkfru_uApIBgy5qIyqJge8AlIcXIbnJwhHh2IF3vUukwpppRmxttRcF8wSd40jwB9tQ5CDRnkaOAZh8EvE_EiV83sgTR5OV_D5dDSp7-YwDx9Eg6Pai7BPHfPe8oz4hknL6AgEduE-xGsO5f3lSjrvQMy5sEy_L-SndpRQvqprgWpTJaLVMGC3OIJO3QonTD9-Q3pYqa1YJvKI6JrYB1hq1Up6pYFT3LUYD1"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[9px] text-on-primary">verified</span>
+</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg text-on-surface">Elena Vance</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant">Lead Guide</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">Weekly Intention · The Art of Pausing</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-[20px]">push_pin</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-on-surface mb-2 font-normal leading-snug">
+        “This week, we explore the space between breaths — the Kumbhaka. When you practice, observe what arises in stillness before the urge to move.”
+      </p>
+<div class="pt-3 mt-3 flex items-center justify-between border-t border-outline-variant/30 text-on-surface-variant">
+<div class="flex items-center gap-4 text-body-sm font-body-sm">
+<button class="inline-flex items-center gap-1.5 text-secondary hover:text-on-surface transition-colors" id="btn-intention-heart">
+<span class="material-symbols-outlined text-[18px] text-tertiary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-label-md text-label-md" id="intention-count">89</span>
+</button>
+<span class="inline-flex items-center gap-1.5 font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">forum</span>
+            42 reflections
+          </span>
+</div>
+<button class="px-4 py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md shadow-sm active:scale-95 transition-transform flex items-center gap-1.5">
+<span>Join Discussion</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="px-margin-mobile my-space-xs">
+<div class="p-space-md rounded-xl bg-surface-container shadow-sm flex flex-col gap-3">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0 text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[18px]">nature</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface">How did your practice feel on the mat today?</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Notice sensations, releases, or breath discoveries.</p>
+</div>
+</div>
+<div class="flex justify-end">
+<button class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-all flex items-center gap-2 shadow-sm" onclick="toggleComposer()">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Share a Reflection</span>
+</button>
+</div>
+<div class="hidden mt-2 pt-3 border-t border-outline-variant/30 flex flex-col gap-2" id="reflection-composer">
+<textarea class="w-full bg-surface rounded-lg p-3 text-body-sm font-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary resize-none h-24" placeholder="Write softly from your breath..."></textarea>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock_open</span> Shared with Studio Circle
+          </span>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 text-label-md font-label-md text-on-surface-variant" onclick="toggleComposer()">Cancel</button>
+<button class="px-4 py-1.5 rounded-lg bg-primary-container text-on-primary text-label-md font-label-md" onclick="toggleComposer()">Post</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="px-margin-mobile mt-space-sm mb-space-xs">
+<div class="rounded-xl bg-surface-container-high p-space-md relative overflow-hidden">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">menu_book</span> Elena’s Studio Notes
+        </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">5 min read</span>
+</div>
+<div class="flex gap-4 items-center">
+<div class="flex-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-tight mb-1">Why Less is More in Restorative Yoga</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">How resting deeply against props gently reprograms our sympathetic fight-or-flight stress loops.</p>
+</div>
+<div class="w-20 h-20 rounded-lg overflow-hidden shrink-0 shadow-sm relative">
+<img class="w-full h-full object-cover" data-alt="Warm serene editorial photography of folded linen yoga blankets and organic buckwheat bolster arranged neatly beside bleached timber floor and pale earthen wall" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAU40OfQC_ow90YBo4pP4zOYmgmYU-Pq_KcX7kwuEm4edMUENxNx_lI1J_W0IHfKcLjsOwIbXVgqLyAqO90EQFTxGnYWmuk5YVznYfXGf27R4H8gdkDQoWixm6idolXl23DShf3G_mnHLrBgsZnZmF5uZ5xfrxcTnxgdzfOgh-TIQ8D3Yu0pVq9MavZE_oPPJNv2WOrq-TNT1fjkm3XUuI8OSydVp3fZTemOmgcHRvVN410FrOC4fxi"/>
+<div class="absolute inset-0 bg-primary/10"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="w-8 h-8 rounded-full bg-surface/90 flex items-center justify-center text-primary shadow">
+<span class="material-symbols-outlined text-[18px]">headphones</span>
+</span>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-2.5 flex items-center justify-between border-t border-outline-variant/30">
+<div class="flex items-center gap-2 text-on-surface-variant text-label-sm font-label-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span> Audio edition narrated by Elena
+        </div>
+<button class="font-label-md text-label-md text-primary font-semibold flex items-center gap-1 hover:underline">
+          Listen &amp; Read <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="px-margin-mobile mt-space-md mb-2 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Community Feed</h3>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container rounded-full p-1">
+<button class="px-3 py-1 rounded-full text-label-sm font-label-sm bg-surface text-primary shadow-xs font-semibold">Recent</button>
+<button class="px-3 py-1 rounded-full text-label-sm font-label-sm text-on-surface-variant">Deep Dives</button>
+</div>
+</div>
+<div class="px-margin-mobile flex flex-col gap-space-sm mb-space-lg">
+<article class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of Marcus, a yoga practitioner with a calm gentle presence, warm natural morning window light, organic textured linen shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0E-89qxjHnB-qip1vs55hX6Rx2ATU6yJdB_qwOy6omCzuuTiVSHTSJcUjJe6AC4NcUFrzyXA2rn7bkR7oG4ydG3Mp3QWa9Ag2RgKYsjksba_-mPHw2wlelTNCLf6vYMlpZm_oRZIe0Yzzr6AFUNjNKQHMi-2_tSKl1nbS-O3K-JoM3bwdzwzCAkPwSWJ2_Mg4fD_6p2KiirKeewHOWkeZietJr3Kb3IGrRSkO8wABtk6RZ2ZsHvWM"/>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface">Marcus L.</span>
+<span class="text-on-surface-variant/40 font-body-sm">•</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 hours ago</span>
+</div>
+<div class="flex items-center gap-1 text-secondary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px]">wb_sunny</span>
+<span>After Morning Solar Flow</span>
+</div>
+</div>
+</div>
+<button aria-label="Options" class="text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed">
+        “Felt so much tension leave my upper back during the thread-the-needle series. Thank you Elena for the cue on softening the jaw!”
+      </p>
+<div class="rounded-lg bg-surface-container p-3 flex flex-col gap-1.5 ml-2 pl-3 border-l-2 border-primary-container">
+<div class="flex items-center gap-2">
+<img class="w-5 h-5 rounded-full object-cover" data-alt="Close-up of Elena Vance with warm radiant expression in natural yoga sanctuary lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1A9XoVrNJJ9ibtddQmgFlKWdQwT17p0DjieAp0L0T1qj2mlB13kcE61XMIMUfJZm87qYg-jvAsmxCawI-CvFx3ytd_lzVmHcP3FppCpMruprLXx8h4PHHqpni_KaauRe-roqOf6NzgynIqJC5_J6gaamhBWL3Qg3EQyagOo8lDlAypvS5hwrzHvjdDLxdhkG23xbyDQHejAiBOTOCRvxbBajloWrfO9EhHt15my3INHZX3AtaHozX"/>
+<span class="font-label-sm text-label-sm font-semibold text-primary">Elena Vance</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">1h ago</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          “So glad to hear this, Marcus. Softening the jaw immediately signals the nervous system to relax.”
+        </p>
+</div>
+<div class="flex items-center justify-between pt-2 text-on-surface-variant">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors warmth-btn" data-count="18">
+<span class="material-symbols-outlined text-[18px] text-tertiary">wb_twilight</span>
+<span class="font-label-md text-label-md"><span class="warmth-val">18</span> warmth</span>
+</button>
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">chat_bubble_outline</span>
+<span class="font-label-md text-label-md">2 comments</span>
+</button>
+</div>
+<button aria-label="Bookmark" class="text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">bookmark_border</span>
+</button>
+</div>
+</article>
+<article class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of Claire, smiling thoughtfully with hair tied back in a mindful natural aesthetic, soft sunlit indoor studio space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjI_dIZ8F67atrzLeV-yCtvNkN3Ml3tpvpRzBL9Ro6XgYJopdxE4NmOSS3SuwUIf1natbb2K0eamQQ9_EcTMWhrmB7TdvBclxLcNwnbQqC9B6bHG-42XGSMfLTFguB8xQLOWmGIg0cGvXqNi_GLEymUP51a3x1TBsD82XjremUFzmGy9nDzaoSe0wwUzP79X2xCI9NsTvd3gVWU6Q0503WZUbmQr7RCOJb3LrnB3Q7Z5Cy3fRGIhKY"/>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface">Claire D.</span>
+<span class="text-on-surface-variant/40 font-body-sm">•</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">5 hours ago</span>
+</div>
+<div class="flex items-center gap-1 text-secondary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px]">military_tech</span>
+<span>Day 21 of 30-Day Awakening</span>
+</div>
+</div>
+</div>
+<button aria-label="Options" class="text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed">
+        “Three weeks of consistent morning practice. My breath feels completely transformed.”
+      </p>
+<div class="flex items-center gap-2 py-1 px-3 rounded-lg bg-secondary-container/30 w-fit">
+<span class="material-symbols-outlined text-[16px] text-secondary">self_improvement</span>
+<span class="font-label-sm text-label-sm text-on-secondary-container">Completed 21 Consecutive Sunrise Sittings</span>
+</div>
+<div class="flex items-center justify-between pt-2 text-on-surface-variant">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors warmth-btn" data-count="34">
+<span class="material-symbols-outlined text-[18px] text-tertiary">wb_twilight</span>
+<span class="font-label-md text-label-md"><span class="warmth-val">34</span> warmth</span>
+</button>
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">chat_bubble_outline</span>
+<span class="font-label-md text-label-md">5 comments</span>
+</button>
+</div>
+<button aria-label="Bookmark" class="text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">bookmark_border</span>
+</button>
+</div>
+</article>
+<div class="py-space-md text-center flex flex-col items-center justify-center">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary mb-2">
+<span class="material-symbols-outlined text-[18px]">spa</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">You are current with the sanctuary circle</p>
+<p class="font-label-sm text-label-sm text-outline mt-0.5">Pause • Inhale deeply • Exhale fully</p>
+</div>
+</div>
+</div>
+<script>
+  function toggleComposer() {
+    const el = document.getElementById('reflection-composer');
+    if (el) {
+      el.classList.toggle('hidden');
+    }
+  }
+
+  document.querySelectorAll('.warmth-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const valSpan = this.querySelector('.warmth-val');
+      let current = parseInt(this.dataset.count, 10);
+      if (!this.dataset.reacted) {
+        this.dataset.reacted = "true";
+        this.dataset.count = current + 1;
+        valSpan.textContent = current + 1;
+        this.classList.add('text-tertiary');
+        const icon = this.querySelector('.material-symbols-outlined');
+        if (icon) icon.style.fontVariationSettings = "'FILL' 1";
+      } else {
+        delete this.dataset.reacted;
+        this.dataset.count = current - 1;
+        valSpan.textContent = current - 1;
+        this.classList.remove('text-tertiary');
+        const icon = this.querySelector('.material-symbols-outlined');
+        if (icon) icon.style.fontVariationSettings = "'FILL' 0";
+      }
+    });
+  });
+
+  const intentionHeart = document.getElementById('btn-intention-heart');
+  if (intentionHeart) {
+    let heartCount = 89;
+    let liked = false;
+    intentionHeart.addEventListener('click', () => {
+      const label = document.getElementById('intention-count');
+      liked = !liked;
+      heartCount = liked ? heartCount + 1 : heartCount - 1;
+      label.textContent = heartCount;
+      intentionHeart.classList.toggle('scale-110');
+      setTimeout(() => intentionHeart.classList.remove('scale-110'), 150);
+    });
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.03)]" data-active-classes="text-primary font-semibold [&amp;_.nav-dot]:opacity-100"><div class="flex justify-between items-center h-20 px-space-xs max-w-lg mx-auto"><a class="flex-1 flex flex-col items-center justify-center h-14 min-w-[44px] text-on-surface-variant transition-colors group" data-path="today" href="#"><span class="material-symbols-outlined text-[22px] transition-transform group-hover:scale-105">self_improvement</span><span class="font-label-sm text-label-sm tracking-normal mt-0.5">Today</span><span class="nav-dot w-1 h-1 rounded-full bg-primary-container mt-1 opacity-0 transition-opacity"></span></a><a class="flex-1 flex flex-col items-center justify-center h-14 min-w-[44px] text-on-surface-variant transition-colors group" data-path="library" href="#"><span class="material-symbols-outlined text-[22px] transition-transform group-hover:scale-105">spa</span><span class="font-label-sm text-label-sm tracking-normal mt-0.5">Library</span><span class="nav-dot w-1 h-1 rounded-full bg-primary-container mt-1 opacity-0 transition-opacity"></span></a><a class="flex-1 flex flex-col items-center justify-center h-14 min-w-[44px] text-on-surface-variant transition-colors group" data-path="programs" href="#"><span class="material-symbols-outlined text-[22px] transition-transform group-hover:scale-105">routine</span><span class="font-label-sm text-label-sm tracking-normal mt-0.5">Programs</span><span class="nav-dot w-1 h-1 rounded-full bg-primary-container mt-1 opacity-0 transition-opacity"></span></a><a aria-current="page" class="flex-1 flex flex-col items-center justify-center h-14 min-w-[44px] transition-colors group text-primary font-semibold [&amp;_.nav-dot]:opacity-100" data-path="community" href="#"><span class="material-symbols-outlined text-[22px] transition-transform group-hover:scale-105">nature_people</span><span class="font-label-sm text-label-sm tracking-normal mt-0.5">Community</span><span class="nav-dot w-1 h-1 rounded-full bg-primary-container mt-1 opacity-0 transition-opacity"></span></a><a class="flex-1 flex flex-col items-center justify-center h-14 min-w-[44px] text-on-surface-variant transition-colors group" data-path="my-space" href="#"><span class="material-symbols-outlined text-[22px] transition-transform group-hover:scale-105">wb_sunny</span><span class="font-label-sm text-label-sm tracking-normal mt-0.5">My Space</span><span class="nav-dot w-1 h-1 rounded-full bg-primary-container mt-1 opacity-0 transition-opacity"></span></a></div></nav></body></html>
