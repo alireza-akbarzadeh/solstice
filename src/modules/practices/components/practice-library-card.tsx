@@ -14,7 +14,16 @@ const intensityTone: Record<IntensityLevel, string> = {
 };
 
 // Library grid card (practice-library-desktop). Bookmarking arrives with favorites.
-export async function PracticeLibraryCard({ practice, priority = false }: { practice: PracticeSummary; priority?: boolean }) {
+export async function PracticeLibraryCard({
+  practice,
+  priority = false,
+  unlocked = false,
+}: {
+  practice: PracticeSummary;
+  priority?: boolean;
+  /** The viewer is entitled to members-only practices: hide the lock. */
+  unlocked?: boolean;
+}) {
   const [t, tBrand, format] = await Promise.all([getTranslations("Practice"), getTranslations("Brand"), getFormatter()]);
 
   return (
@@ -34,7 +43,7 @@ export async function PracticeLibraryCard({ practice, priority = false }: { prac
           {t(`categories.${practice.category}`)}
         </span>
         <div className="absolute end-3.5 top-3.5 flex items-center gap-2">
-          {practice.access === "members" && (
+          {practice.access === "members" && !unlocked && (
             <span className="flex items-center gap-1 rounded-md bg-surface/90 px-2 py-1 font-label-sm text-label-sm text-clay">
               <LockIcon className="size-3" />
               {t("membersOnly")}

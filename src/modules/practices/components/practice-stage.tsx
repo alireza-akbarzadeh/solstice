@@ -4,31 +4,70 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState } fro
 
 type StageContextValue = {
   videoRef: React.RefObject<HTMLVideoElement | null>;
-  /** True when a real video source is mounted (sample content has none). */
+  /** True when a playable source is mounted. */
   hasVideo: boolean;
+  /** Preview length for non-members; playback and seeking stop here. */
+  limitSeconds?: number;
   currentTime: number;
   setCurrentTime: (seconds: number) => void;
   seek: (seconds: number, opts?: { play?: boolean }) => void;
+  /** The "preview ended" invitation. */
+  gateOpen: boolean;
+  openGate: () => void;
+  closeGate: () => void;
 };
 
 const StageContext = createContext<StageContextValue | null>(null);
 
-// Shares one <video> between the player and the chapter list.
-export function PracticeStage({ hasVideo, children }: { hasVideo: boolean; children: React.ReactNode }) {
+// Shares one <video> between the player and the chapter list, and owns the preview limit.
+export function PracticeStage({
+  hasVideo,
+  limitSeconds,
+  children,
+}: {
+  hasVideo: boolean;
+  limitSeconds?: number;
+  children: React.ReactNode;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
+  const [gateOpen, setGateOpen] = useState(false);
 
-  const seek = useCallback((seconds: number, opts?: { play?: boolean }) => {
+  const openGate = useCallback(() => {
     const video = videoRef.current;
-    if (!video) return;
-    video.currentTime = Math.max(0, Math.min(seconds, Number.isFinite(video.duration) ? video.duration : seconds));
-    setCurrentTime(video.currentTime);
-    if (opts?.play) video.play().catch(() => undefined); // interrupted by pause: harmless
-  }, []);
+    if (video && limitSeconds !== undefined) {
+      video.pause();
+      video.currentTime = limitSeconds;
+    }
+    setGateOpen(true);
+  }, [limitSeconds]);
+
+  const seek = useCallback(
+    (seconds: number, opts?: { play?: boolean }) => {
+      const video = videoRef.current;
+      if (!video) return;
+      if (limitSeconds !== undefined && seconds >= limitSeconds) return openGate();
+      const end = Number.isFinite(video.duration) ? video.duration : seconds;
+      video.currentTime = Math.max(0, Math.min(seconds, end));
+      setCurrentTime(video.currentTime);
+      if (opts?.play) video.play().catch(() => undefined); // interrupted by pause: harmless
+    },
+    [limitSeconds, openGate],
+  );
 
   const value = useMemo(
-    () => ({ videoRef, hasVideo, currentTime, setCurrentTime, seek }),
-    [hasVideo, currentTime, seek],
+    () => ({
+      videoRef,
+      hasVideo,
+      limitSeconds,
+      currentTime,
+      setCurrentTime,
+      seek,
+      gateOpen,
+      openGate,
+      closeGate: () => setGateOpen(false),
+    }),
+    [hasVideo, limitSeconds, currentTime, seek, gateOpen, openGate],
   );
 
   return <StageContext.Provider value={value}>{children}</StageContext.Provider>;

@@ -10,12 +10,16 @@ export async function LockedPracticeStage({
   poster,
   posterAlt,
   durationMinutes,
-  signedIn,
+  primaryHref,
+  signInHref,
 }: {
   poster: string;
   posterAlt: string;
   durationMinutes: number;
-  signedIn: boolean;
+  /** Sign-up (guests) or checkout (signed in), returning to this practice. */
+  primaryHref: string;
+  /** Only for guests. */
+  signInHref?: string;
 }) {
   const t = await getTranslations("PracticeDetail.locked");
 
@@ -32,14 +36,14 @@ export async function LockedPracticeStage({
           {t("body", { minutes: durationMinutes, days: sanctuaryPlan.trialDays })}
         </p>
         <Link
-          href="/membership"
+          href={primaryHref}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-label-lg text-label-lg text-on-primary shadow-md transition-colors hover:bg-primary-container"
         >
           {t("cta", { days: sanctuaryPlan.trialDays })}
           <ArrowRightIcon className="size-4 rtl:rotate-180" />
         </Link>
-        {!signedIn && (
-          <Link href="/sign-in" className="font-label-md text-label-md text-inverse-on-surface/80 underline-offset-4 hover:underline">
+        {signInHref && (
+          <Link href={signInHref} className="font-label-md text-label-md text-inverse-on-surface/80 underline-offset-4 hover:underline">
             {t("signIn")}
           </Link>
         )}

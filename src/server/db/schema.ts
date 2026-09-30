@@ -45,6 +45,10 @@ export const user = pgTable("user", {
   updatedAt: timestamp("updated_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
+  // App fields, declared to Better Auth as `additionalFields` in better-auth/config.ts.
+  role: text("role").$type<"member" | "instructor">().default("member").notNull(),
+  practiceRhythm: text("practice_rhythm").$type<"morning" | "evening" | "breath">(),
+  marketingOptIn: boolean("marketing_opt_in").default(false).notNull(),
 });
 
 export const session = pgTable("session", {
@@ -124,4 +128,35 @@ export const pushSubscriptions = createTable(
       .notNull(),
   }),
   (t) => [index("push_subscription_user_idx").on(t.userId)],
+);
+
+// A member's subscription. One row per user; the payment provider keeps it in sync.
+export const memberships = createTable(
+  "membership",
+  (d) => ({
+    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+    userId: d
+      .text()
+      .notNull()
+      .unique()
+      .references(() => user.id, { onDelete: "cascade" }),
+    plan: d.text().$type<"monthly" | "annual">().notNull(),
+    status: d.text().$type<"trialing" | "active" | "past_due" | "canceled">().notNull(),
+    /** Which PaymentProvider manages this membership, e.g. "mock". */
+    provider: d.text().notNull(),
+    providerSubscriptionId: d.text(),
+    trialEndsAt: d.timestamp({ withTimezone: true }),
+    currentPeriodEnd: d.timestamp({ withTimezone: true }).notNull(),
+    cancelAtPeriodEnd: d.boolean().default(false).notNull(),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .$onUpdate(() => new Date())
+      .notNull(),
+  }),
+  (t) => [index("membership_status_idx").on(t.status)],
 );

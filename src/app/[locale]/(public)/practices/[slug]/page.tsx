@@ -22,10 +22,13 @@ import { LockedPracticeStage } from "@/modules/practices/components/locked-pract
 import { PracticeChapters } from "@/modules/practices/components/practice-chapters";
 import { PracticePlayer } from "@/modules/practices/components/practice-player";
 import { PracticeStage } from "@/modules/practices/components/practice-stage";
-import { canWatchPractice } from "@/modules/practices/server/can-watch";
+import { videoProvider } from "@/infrastructure/video";
+import { withNext } from "@/lib/safe-next";
+import { sanctuaryPlan } from "@/modules/memberships/plans";
+import { getViewer } from "@/modules/memberships/server/viewer";
+import { resolvePracticeAccess, toPlaybackGrant } from "@/modules/practices/server/access";
 import { getPractice, getRelatedPractices } from "@/modules/practices/server/get-practice";
 import type { ImplementKind } from "@/modules/practices/types";
-import { getSession } from "@/server/better-auth/server";
 
 const implementIcons: Record<ImplementKind, typeof BoxesIcon> = {
   blocks: BoxesIcon,
@@ -56,15 +59,26 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
   const practice = await getPractice(locale, slug);
   if (!practice) notFound();
 
-  const [t, tPractice, tBrand, tPractices, session, related] = await Promise.all([
+  const [t, tPractice, tBrand, tPractices, viewer, related] = await Promise.all([
     getTranslations("PracticeDetail"),
     getTranslations("Practice"),
     getTranslations("Brand"),
     getTranslations("Practices"),
-    getSession(),
+    getViewer(),
     getRelatedPractices(locale, practice),
   ]);
-  const canWatch = canWatchPractice(practice, session);
+  const access = resolvePracticeAccess(practice, viewer);
+  const playback = access.mode === "locked" ? null : await videoProvider.getPlayback(practice.slug, toPlaybackGrant(access));
+
+  // Account first, then payment, then straight back to this practice.
+  const here = `/practices/${practice.slug}`;
+  const membershipHref = withNext("/membership", here);
+  const gate = {
+    signedIn: !!viewer.user,
+    primaryHref: viewer.user ? membershipHref : withNext("/sign-up", membershipHref),
+    signInHref: withNext("/sign-in", here),
+    trialDays: sanctuaryPlan.trialDays,
+  };
   const categoryLabel = tPractice(`categories.${practice.category}`);
   const durationSeconds = practice.durationMinutes * 60;
 
@@ -101,22 +115,24 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
       </nav>
 
       <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
-        <PracticeStage hasVideo={canWatch && !!practice.videoUrl}>
+        <PracticeStage hasVideo={!!playback} limitSeconds={playback?.limitSeconds}>
           <section className="flex flex-col gap-space-lg lg:col-span-8">
-            {canWatch ? (
+            {playback ? (
               <PracticePlayer
-                videoUrl={practice.videoUrl}
+                videoUrl={playback.src}
                 poster={practice.poster}
                 posterAlt={practice.imageAlt}
                 categoryLabel={categoryLabel}
                 durationSeconds={durationSeconds}
+                gate={gate}
               />
             ) : (
               <LockedPracticeStage
                 poster={practice.poster}
                 posterAlt={practice.imageAlt}
                 durationMinutes={practice.durationMinutes}
-                signedIn={!!session}
+                primaryHref={gate.primaryHref}
+                signInHref={viewer.user ? undefined : gate.signInHref}
               />
             )}
 

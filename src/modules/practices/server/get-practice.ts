@@ -15,6 +15,7 @@ export async function getPractice(locale: Locale, slug: string): Promise<Practic
   return {
     ...toPracticeSummary(practice, locale),
     poster: detail?.poster ?? practice.image,
+    previewSeconds: practice.previewSeconds,
     instructorNote: detail && localize(detail.instructorNote, locale),
     focus: detail?.focus.map((f) => localize(f, locale)) ?? [],
     implements:

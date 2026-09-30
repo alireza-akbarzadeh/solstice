@@ -163,6 +163,17 @@
       "fullscreen": "Full screen",
       "exitFullscreen": "Exit full screen",
       "unavailable": "The video for this practice is being prepared."
+    },
+    "preview": {
+      "badge": "Free preview · {minutes, number} min",
+      "endedTitle": "Your free preview has ended",
+      "bodyGuest": "Create a free account, then start your {days, number}-day trial to watch the whole practice.",
+      "bodyMember": "Start your {days, number}-day free trial to continue this practice and unlock the full library.",
+      "ctaGuest": "Create free account",
+      "ctaMember": "Start {days, number}-day free trial",
+      "signIn": "I already have an account",
+      "replay": "Watch the preview again",
+      "lockedChapter": "Members only"
     }
   },
   "Home": {
@@ -276,5 +287,186 @@
   },
   "Pwa": {
     "description": "Practices, programs and a calm community with Elena Vance."
+  },
+  "Auth": {
+    "tagline": "Studio & Sanctuary",
+    "live": "Daily Flow Live",
+    "quoteLabel": "Daily Orientation",
+    "quote": "“True yoga was never meant to be an aesthetic conquest. It is an authentic homecoming to the nervous system.”",
+    "guideRole": "Founder & Somatic Guide",
+    "stat1": "140+ Mindful Practices",
+    "stat2": "Audio Soundscapes",
+    "stat3": "Weekly Sangha",
+    "orEmail": "Or continue with email",
+    "google": "Google",
+    "github": "GitHub",
+    "email": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "encrypted": "Encrypted connection",
+    "private": "Private sanctuary",
+    "signIn": {
+      "metaTitle": "Sign in",
+      "eyebrow": "Sanctuary Access",
+      "title": "Welcome back to your practice.",
+      "lede": "Sign in to access your programs, saved practices and community reflections.",
+      "remember": "Keep me signed in for 30 days",
+      "submit": "Enter Sanctuary",
+      "submitting": "Entering…",
+      "noAccount": "Not yet a member?",
+      "createAccount": "Create an account"
+    },
+    "signUp": {
+      "metaTitle": "Create account",
+      "eyebrow": "Begin your sanctuary membership",
+      "title": "Step onto the mat.",
+      "lede": "Create your account to begin your {days, number}-day free sanctuary trial.",
+      "name": "Full name",
+      "namePlaceholder": "Your name",
+      "password": "Create password",
+      "passwordHint": "At least 8 characters",
+      "strength": {
+        "0": "Too short",
+        "1": "Gentle",
+        "2": "Steady",
+        "3": "Strong",
+        "4": "Radiant"
+      },
+      "rhythmLabel": "Your primary practice rhythm",
+      "rhythms": {
+        "morning": {
+          "title": "Morning Awakening",
+          "sub": "Solar Prana Vinyasa"
+        },
+        "evening": {
+          "title": "Evening Nidra",
+          "sub": "Deep Nervous Reset"
+        },
+        "breath": {
+          "title": "Breath & Balance",
+          "sub": "Pranayama & Sound"
+        }
+      },
+      "terms": "I agree to the <link>Terms of Practice</link> and the Studio Code of Care.",
+      "newsletter": "Receive Elena’s monthly Solstice Chronicle & seasonal reflections.",
+      "submit": "Create account & continue",
+      "submitting": "Creating your account…",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in here",
+      "sideTitle": "A quiet digital refuge for conscious movement.",
+      "sideBody": "Leave competitive fitness behind. Solstice is a calm studio for practitioners seeking deliberate pacing, restorative breathwork and deep somatic grounding.",
+      "benefit1": "Unlimited access to 140+ cinematic practices",
+      "benefit2": "Structured multi-week immersions with progress tracking",
+      "benefit3": "Live Sunday Satsang & monthly workshops with Elena",
+      "benefit4": "A supportive Sangha community circle",
+      "passTitle": "{days, number}-Day Complimentary Pass",
+      "passBody": "{price}/mo thereafter • Cancel anytime in one click"
+    },
+    "errors": {
+      "invalidCredentials": "That email and password don’t match.",
+      "userExists": "An account with this email already exists. Sign in instead.",
+      "weakPassword": "Use at least 8 characters.",
+      "termsRequired": "Please accept the Terms of Practice to continue.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "Membership": {
+    "metaTitle": "Membership",
+    "stepGuest": "Step 1 of 2 · Create your account",
+    "stepMember": "Step 2 of 2 · Studio admission",
+    "invitation": "Sanctuary Membership Invitation",
+    "ribbon": "{days, number}-Day Complimentary Access · Unhurried Stillness · Cancel Anytime Online",
+    "eyebrow": "A gentle dedication to self",
+    "title": "Choose your cadence of practice",
+    "lede": "Begin with a two-week complimentary immersion into Elena Vance’s complete cinematic archive. No charge will be made today.",
+    "perMonth": "/ month",
+    "plans": {
+      "annual": {
+        "name": "Annual Sanctuary Pass",
+        "badge": "Recommended · Save 24%",
+        "body": "An uninterrupted year of mindful somatic alignment and seasonal retreats.",
+        "billing": "Billed annually as {price} after {days, number}-day trial"
+      },
+      "monthly": {
+        "name": "Monthly Sanctuary Pass",
+        "body": "Complete freedom to practice month by month. Pause or cancel in one click.",
+        "billing": "Billed monthly after {days, number}-day trial"
+      }
+    },
+    "features": {
+      "f1": "140+ cinematic practices",
+      "f2": "Offline downloads in the app",
+      "f3": "Live Sunday Satsangs with Elena",
+      "f4": "All structured immersions"
+    },
+    "timeline": {
+      "eyebrow": "Unhurried assurance",
+      "title": "Transparent {days, number}-day timeline",
+      "day": "Day {day, number}",
+      "arrivalTitle": "Moment of arrival",
+      "arrivalBody": "{zero} due today. The full studio unlocks instantly.",
+      "noticeTitle": "Gentle notice",
+      "noticeBody": "A reminder email before your trial concludes.",
+      "renewTitle": "Deepened path",
+      "renewAnnual": "Renews at {price}/year unless canceled online.",
+      "renewMonthly": "Renews at {price}/month unless canceled online."
+    },
+    "promise": {
+      "label": "Founder’s personal promise",
+      "quote": "“Your practice is a sacred commitment to your nervous system. If Solstice does not bring quiet clarity to your mornings, you may cancel effortlessly from your account anytime.”"
+    },
+    "checkout": {
+      "title": "Checkout & admission",
+      "secure": "Secure",
+      "testModeTitle": "Test mode",
+      "testModeBody": "Payments aren’t connected yet. Starting a membership here is free — no card needed.",
+      "ledger": "Order summary",
+      "trialLine": "{days, number}-day free sanctuary access",
+      "renewsAnnual": "Renews on day {days, number} (annual)",
+      "renewsMonthly": "Renews on day {days, number} (monthly)",
+      "perYear": "/yr",
+      "perMonth": "/mo",
+      "taxes": "Taxes",
+      "dueNow": "Due right now",
+      "firstCharge": "First charge on day {days, number}",
+      "cta": "Begin {days, number}-day free sanctuary access",
+      "ctaGuest": "Create account to continue",
+      "guestNote": "Your plan choice is kept while you create your account.",
+      "instant": "Instant studio unlock",
+      "cancelAnytime": "One-click cancel"
+    },
+    "active": {
+      "title": "You’re a member",
+      "trial": "Your free trial ends on {date}. Your {plan} membership starts then.",
+      "renews": "Your {plan} membership renews on {date}.",
+      "canceled": "Canceled — your access continues until {date}.",
+      "instructor": "You have full access as the studio’s instructor.",
+      "continue": "Continue your practice",
+      "cancel": "Cancel membership",
+      "resume": "Keep my membership",
+      "planNames": {
+        "monthly": "monthly",
+        "annual": "annual"
+      }
+    },
+    "welcome": {
+      "metaTitle": "Welcome",
+      "title": "Welcome to the sanctuary",
+      "body": "Your {days, number}-day free trial is active. Every practice is now open to you.",
+      "continue": "Continue to your practice",
+      "browse": "Browse the library"
+    }
+  },
+  "Account": {
+    "menu": "Account menu",
+    "statusMember": "Member",
+    "statusTrial": "Free trial",
+    "statusNone": "No membership",
+    "statusInstructor": "Instructor",
+    "membership": "Membership",
+    "signOut": "Sign out",
+    "profile": "Profile"
   }
 }

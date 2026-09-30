@@ -1,6 +1,6 @@
 "use client";
 
-import { AudioLinesIcon, CirclePlayIcon } from "lucide-react";
+import { AudioLinesIcon, CirclePlayIcon, LockIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
@@ -11,7 +11,7 @@ import { usePracticeStage } from "./practice-stage";
 export function PracticeChapters({ chapters, durationSeconds }: { chapters: PracticeChapter[]; durationSeconds: number }) {
   const t = useTranslations("PracticeDetail");
   const format = useFormatter();
-  const { hasVideo, currentTime, seek } = usePracticeStage();
+  const { hasVideo, currentTime, seek, limitSeconds, openGate } = usePracticeStage();
 
   const clock = (seconds: number) => {
     const two = (n: number) => format.number(n, { minimumIntegerDigits: 2, useGrouping: false });
@@ -38,6 +38,8 @@ export function PracticeChapters({ chapters, durationSeconds }: { chapters: Prac
         {chapters.map((chapter, i) => {
           const end = chapters[i + 1]?.startSeconds ?? durationSeconds;
           const active = i === activeIndex;
+          // Starts after the free preview: members only.
+          const locked = limitSeconds !== undefined && chapter.startSeconds >= limitSeconds;
           const body = (
             <>
               <div className="flex items-center gap-3 text-start">
@@ -67,8 +69,13 @@ export function PracticeChapters({ chapters, durationSeconds }: { chapters: Prac
                 <span dir="ltr" className="tabular-nums">
                   {clock(chapter.startSeconds)} – {clock(end)}
                 </span>
-                {hasVideo && !active && (
-                  <CirclePlayIcon className="size-5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+                {locked ? (
+                  <LockIcon aria-label={t("preview.lockedChapter")} className="size-4 text-clay" />
+                ) : (
+                  hasVideo &&
+                  !active && (
+                    <CirclePlayIcon className="size-5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+                  )
                 )}
               </div>
             </>
@@ -84,7 +91,7 @@ export function PracticeChapters({ chapters, durationSeconds }: { chapters: Prac
               {hasVideo ? (
                 <button
                   type="button"
-                  onClick={() => seek(chapter.startSeconds, { play: true })}
+                  onClick={() => (locked ? openGate() : seek(chapter.startSeconds, { play: true }))}
                   aria-label={t("playChapter", { time: clock(chapter.startSeconds) })}
                   aria-current={active ? "step" : undefined}
                   className={rowClass}

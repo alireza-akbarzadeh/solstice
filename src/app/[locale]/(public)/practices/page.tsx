@@ -8,6 +8,7 @@ import { Container } from "@/components/layout/container";
 import { Pagination } from "@/components/layout/pagination";
 import { routing } from "@/i18n/routing";
 import { LibraryUpsell } from "@/modules/memberships/components/library-upsell";
+import { getViewer } from "@/modules/memberships/server/viewer";
 import { LibraryAccessIndicator } from "@/modules/practices/components/library-access-indicator";
 import { PracticeFilters } from "@/modules/practices/components/practice-filters";
 import { PracticeLibraryCard } from "@/modules/practices/components/practice-library-card";
@@ -28,7 +29,7 @@ export default async function PracticesPage({ params, searchParams }: PageProps<
   setRequestLocale(locale);
 
   const filters = parsePracticeFilters(await searchParams);
-  const [t, result] = await Promise.all([getTranslations("Practices"), getPractices(locale, filters)]);
+  const [t, result, viewer] = await Promise.all([getTranslations("Practices"), getPractices(locale, filters), getViewer()]);
 
   return (
     <>
@@ -62,7 +63,7 @@ export default async function PracticesPage({ params, searchParams }: PageProps<
         {result.items.length > 0 ? (
           <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3">
             {result.items.map((practice, i) => (
-              <PracticeLibraryCard key={practice.slug} practice={practice} priority={i < 3} />
+              <PracticeLibraryCard key={practice.slug} practice={practice} priority={i < 3} unlocked={viewer.hasAccess} />
             ))}
           </div>
         ) : (
@@ -96,9 +97,11 @@ export default async function PracticesPage({ params, searchParams }: PageProps<
         )}
       </Container>
 
-      <Container className="pb-20">
-        <LibraryUpsell openCount={result.library.open} />
-      </Container>
+      {!viewer.hasAccess && (
+        <Container className="pb-20">
+          <LibraryUpsell openCount={result.library.open} />
+        </Container>
+      )}
     </>
   );
 }

@@ -16,6 +16,8 @@ export type SamplePractice = {
   rating: number;
   reviewCount: number;
   access: PracticeAccess;
+  /** Members-only practices: free preview length for non-members. Omit for no preview. */
+  previewSeconds?: number;
   image: string;
   imageAlt: Localized;
 };
@@ -59,6 +61,7 @@ export const samplePractices: SamplePractice[] = [
     rating: 5,
     reviewCount: 203,
     access: "members",
+    previewSeconds: 300,
     image: "/images/practices/restorative-twilight.jpg",
     imageAlt: {
       en: "Restorative posture on cotton bolsters and wool blankets in candlelight",
@@ -103,6 +106,7 @@ export const samplePractices: SamplePractice[] = [
     rating: 4.8,
     reviewCount: 115,
     access: "members",
+    previewSeconds: 600,
     image: "/images/practices/lower-back.jpg",
     imageAlt: {
       en: "Yogi reclining with legs elevated along an oak wall in soft daylight",
@@ -125,6 +129,7 @@ export const samplePractices: SamplePractice[] = [
     rating: 4.9,
     reviewCount: 176,
     access: "members",
+    previewSeconds: 300,
     image: "/images/practices/core-stability.jpg",
     imageAlt: {
       en: "Practitioner in a balanced side plank on a cork mat among terracotta pottery",
@@ -147,6 +152,7 @@ export const samplePractices: SamplePractice[] = [
     rating: 5,
     reviewCount: 264,
     access: "members",
+    previewSeconds: 600,
     image: "/images/practices/golden-hour.jpg",
     imageAlt: {
       en: "Dancer pose in golden afternoon light through linen curtains",
@@ -191,6 +197,7 @@ export const samplePractices: SamplePractice[] = [
     rating: 5,
     reviewCount: 187,
     access: "members",
+    previewSeconds: 300,
     image: "/images/home/05.jpg",
     imageAlt: {
       en: "Restorative setup with cotton bolsters, folded linen blankets and warm candlelight",

@@ -1,5 +1,7 @@
+import { dash } from "@better-auth/infra";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { nextCookies } from "better-auth/next-js";
 
 import { env } from "@/env";
 import { db } from "@/server/db";
@@ -12,19 +14,57 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 8,
+    autoSignIn: true,
+    // TODO(email): require verification once an EmailProvider exists (infrastructure/email).
+    requireEmailVerification: false,
+  },
+  session: {
+    // "Keep me signed in" = 30 days; unchecked sign-ins get a browser-session cookie.
+    expiresIn: 60 * 60 * 24 * 30,
+    updateAge: 60 * 60 * 24,
+  },
+  user: {
+    additionalFields: {
+      // Never settable from sign-up; promote instructors in the database.
+      role: { type: "string", defaultValue: "member", input: false },
+      practiceRhythm: { type: "string", required: false, input: true },
+      marketingOptIn: { type: "boolean", defaultValue: false, input: true },
+    },
   },
   socialProviders: {
-    // Google sign-in is only enabled once both OAuth credentials are set.
+    // Each provider is enabled only once both of its OAuth credentials are set.
     ...(env.BETTER_AUTH_GOOGLE_CLIENT_ID && env.BETTER_AUTH_GOOGLE_CLIENT_SECRET
       ? {
           google: {
             clientId: env.BETTER_AUTH_GOOGLE_CLIENT_ID,
             clientSecret: env.BETTER_AUTH_GOOGLE_CLIENT_SECRET,
-            redirectURI: `${env.BETTER_AUTH_URL}/api/auth/callback/google`,
+          },
+        }
+      : {}),
+    ...(env.BETTER_AUTH_GITHUB_CLIENT_ID && env.BETTER_AUTH_GITHUB_CLIENT_SECRET
+      ? {
+          github: {
+            clientId: env.BETTER_AUTH_GITHUB_CLIENT_ID,
+            clientSecret: env.BETTER_AUTH_GITHUB_CLIENT_SECRET,
           },
         }
       : {}),
   },
+  plugins: [
+    // Better Auth Dash (dashboard + analytics); reads BETTER_AUTH_API_KEY.
+    dash({ apiKey: env.BETTER_AUTH_API_KEY }),
+    // Lets server actions set auth cookies. Must stay last.
+    nextCookies(),
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;
+
+/** Social providers that are configured, for rendering sign-in buttons. */
+export const enabledSocialProviders = (["google", "github"] as const).filter((p) =>
+  p === "google"
+    ? !!(env.BETTER_AUTH_GOOGLE_CLIENT_ID && env.BETTER_AUTH_GOOGLE_CLIENT_SECRET)
+    : !!(env.BETTER_AUTH_GITHUB_CLIENT_ID && env.BETTER_AUTH_GITHUB_CLIENT_SECRET),
+);
+export type SocialProvider = (typeof enabledSocialProviders)[number];

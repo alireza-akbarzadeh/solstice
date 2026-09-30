@@ -1,24 +1,24 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "@/i18n/navigation";
 import { isPushConfigured } from "@/infrastructure/push/web-push";
+import { getViewer } from "@/modules/memberships/server/viewer";
 import { PushToggle } from "@/modules/notifications/components/push-toggle";
-import { getSession } from "@/server/better-auth/server";
 
+import { AccountMenu, type AccountStatus } from "./account-menu";
 import { Container } from "./container";
 import { LocaleSwitcher } from "./locale-switcher";
 import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 
 export async function SiteHeader() {
-  const [t, tBrand, session] = await Promise.all([
-    getTranslations("Nav"),
-    getTranslations("Brand"),
-    getSession(),
-  ]);
-  const user = session?.user;
+  const [t, tBrand, viewer] = await Promise.all([getTranslations("Nav"), getTranslations("Brand"), getViewer()]);
+  const { user } = viewer;
+
+  let status: AccountStatus = "none";
+  if (user?.role === "instructor") status = "instructor";
+  else if (viewer.hasAccess) status = viewer.membership?.status === "trialing" ? "trial" : "member";
 
   return (
     <header className="sticky top-0 z-50 bg-surface/85 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-md">
@@ -36,31 +36,23 @@ export async function SiteHeader() {
         <div className="flex items-center gap-space-xs md:gap-space-md">
           <LocaleSwitcher />
           {user && isPushConfigured() && <PushToggle />}
-          {user ? (
-            <Link href="/profile" aria-label={t("account")} className="rounded-full">
-              <Avatar>
-                {user.image && <AvatarImage src={user.image} alt="" />}
-                <AvatarFallback className="bg-primary-fixed font-heading text-primary">
-                  {user.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+          {!user && (
+            <Link
+              href="/sign-in"
+              className="hidden font-label-lg text-label-lg tracking-wide text-on-surface-variant transition-colors hover:text-primary sm:inline-block"
+            >
+              {t("signIn")}
             </Link>
-          ) : (
-            <>
-              <Link
-                href="/sign-in"
-                className="hidden font-label-lg text-label-lg tracking-wide text-on-surface-variant transition-colors hover:text-primary sm:inline-block"
-              >
-                {t("signIn")}
-              </Link>
-              <Link
-                href="/membership"
-                className="hidden items-center justify-center rounded-full bg-primary px-6 py-2.5 font-label-lg text-label-lg text-on-primary shadow-sm transition-colors duration-300 hover:bg-primary-container md:inline-flex"
-              >
-                {t("join")}
-              </Link>
-            </>
           )}
+          {!viewer.hasAccess && (
+            <Link
+              href="/membership"
+              className="hidden items-center justify-center rounded-full bg-primary px-6 py-2.5 font-label-lg text-label-lg text-on-primary shadow-sm transition-colors duration-300 hover:bg-primary-container md:inline-flex"
+            >
+              {t("join")}
+            </Link>
+          )}
+          {user && <AccountMenu user={user} status={status} />}
           <MobileNav signedIn={!!user} />
         </div>
       </Container>

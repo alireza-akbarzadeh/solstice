@@ -5,8 +5,7 @@ import { Link } from "@/i18n/navigation";
 
 import { sanctuaryPlan } from "../plans";
 
-// Membership invitation at the foot of the practice library.
-// TODO(memberships): hide for active members once memberships exist.
+// Membership invitation at the foot of the practice library (hidden for members by the page).
 export async function LibraryUpsell({ openCount }: { openCount: number }) {
   const [t, format] = await Promise.all([getTranslations("Practices.banner"), getFormatter()]);
   const benefits = [t("benefit1"), t("benefit2"), t("benefit3")];

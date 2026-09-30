@@ -20,6 +20,16 @@ export const env = createEnv({
 
     BETTER_AUTH_GOOGLE_CLIENT_SECRET: z.string().optional(),
 
+    BETTER_AUTH_GITHUB_CLIENT_ID: z.string().optional(),
+
+    BETTER_AUTH_GITHUB_CLIENT_SECRET: z.string().optional(),
+
+    // Which PaymentProvider handles checkout. "mock" grants memberships without charging.
+    PAYMENT_PROVIDER: z.enum(["mock"]).default("mock"),
+
+    // Stand-in video for every practice until a VideoProvider exists.
+    MOCK_VIDEO_URL: z.string().url().optional(),
+
     DATABASE_URL: z.string().url(),
 
     NODE_ENV: z
@@ -53,6 +63,15 @@ export const env = createEnv({
 
     BETTER_AUTH_GOOGLE_CLIENT_SECRET:
       process.env.BETTER_AUTH_GOOGLE_CLIENT_SECRET,
+
+    BETTER_AUTH_GITHUB_CLIENT_ID: process.env.BETTER_AUTH_GITHUB_CLIENT_ID,
+
+    BETTER_AUTH_GITHUB_CLIENT_SECRET:
+      process.env.BETTER_AUTH_GITHUB_CLIENT_SECRET,
+
+    PAYMENT_PROVIDER: process.env.PAYMENT_PROVIDER,
+
+    MOCK_VIDEO_URL: process.env.MOCK_VIDEO_URL,
 
     DATABASE_URL: process.env.DATABASE_URL,
 

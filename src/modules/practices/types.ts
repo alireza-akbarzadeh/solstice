@@ -49,8 +49,8 @@ export type PracticeChapter = {
 export type PracticeDetail = PracticeSummary & {
   /** Large still shown before playback. */
   poster: string;
-  /** Playable source once a VideoProvider exists; absent for sample content. */
-  videoUrl?: string;
+  /** Free preview length for non-members (members-only practices). */
+  previewSeconds?: number;
   instructorNote?: string;
   focus: string[];
   implements: { kind: ImplementKind; name: string; detail: string }[];
