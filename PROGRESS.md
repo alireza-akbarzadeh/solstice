@@ -8,8 +8,8 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** Practices `/practices` — `practice-library-desktop` + `practice-library` (mobile).
-> Reuse `PracticeCard` and extend `src/modules/practices` (`getPractices` with filters).
+> **Next up:** PWA + self-hosted push notifications (see Foundation rows), then Program
+> `/programs/[slug]` — `30-day-awakening-immersion-hub-desktop`.
 
 ---
 
@@ -32,18 +32,23 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Better Auth Dash (`@better-auth/infra`) | ⬜ | Needs `pnpm add @better-auth/infra zod@^4` + `dash()` plugin, then redeploy |
 | Site header / footer / nav | ✅ | `src/components/layout/` — sticky header, mobile sheet menu, footer; `(public)/layout.tsx` |
 | Module structure (`src/modules/*`) | 🟡 | `practices`, `programs` started: `types.ts`, `sample-data.ts`, `server/`, `components/` |
-| Sample content → database | ⬜ | `src/modules/*/sample-data.ts` + `TODO(db)` in `server/` functions |
+| Sample content → database | ⬜ | `src/modules/*/sample-*.ts` + `TODO(db)` in `server/` functions |
+| Video provider | ⬜ | Player plays any `videoUrl`; sample practices have none ("being prepared" state). Needs `VideoProvider` in `infrastructure/video` |
+| Membership entitlement | ⬜ | `canWatchPractice` only allows `access: "open"`; members-only practices are locked for everyone until memberships exist |
+| Pricing source | 🟡 | `src/modules/memberships/plans.ts` ($24/mo, $220/yr). Stitch screens disagree ($24 vs $48) — confirm the real price |
 | Newsletter signup (footer) | ⬜ | Form renders, not wired; needs `EmailProvider` |
 | Soundscape audio | ⬜ | Home atmosphere bar selects only; no audio assets/player yet |
 | Legal pages `/privacy`, `/terms`, `/ethics` | ⬜ | Linked from footer, no content yet |
+| PWA (installable, offline fallback) | ⬜ | Hand-written `public/sw.js` + `app/manifest.ts`; no paid service. Queued right after `/practices` |
+| Push notifications (self-hosted Web Push) | ⬜ | VAPID keys + `web-push` from our own server; subscriptions in Neon; opt-in UI in `/profile`. No third-party push platform |
 
 ## Public (SEO) — `src/app/[locale]/(public)`
 
 | Route | Status | Stitch | Notes |
 | --- | --- | --- | --- |
 | `/` Home | ✅ | 🎨 | `solstice-studio-desktop-home`; sections in `src/components/marketing/home/`. Google sign-in button moved out — returns with `/sign-in` |
-| `/practices` | ⬜ | 🎨 | `practice-library-desktop`, `practice-library` (mobile) |
-| `/practices/[slug]` | ⬜ | 🎨 | `practice-detail-player-desktop`, `practice-player`, plus locked variants |
+| `/practices` | ✅ | 🎨 | Search, category pills, duration/props/intensity filters, pagination — all in the URL (`src/modules/practices/filters.ts`). Bookmark icon waits for favorites |
+| `/practices/[slug]` | ✅ | 🎨 | Custom player (play, ±10s, seek, volume, speed, mirror, fullscreen), seekable chapters, locked members state, related, share. Not yet: Save / Mark complete (favorites + progress tables), program progress card, reflections (community), soundscape chips |
 | `/programs` | ⬜ | ? | |
 | `/programs/[slug]` | ⬜ | 🎨 | `30-day-awakening-immersion-hub-desktop` |
 | `/journal` | ⬜ | 🎨 | `the-solstice-chronicle-editorial-journal` |
@@ -99,3 +104,7 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
   names (it was dropping `text-body-sm`); letter-spacing reset for Persian.
 - **2026-09-30** — Persian now uses Vazirmatn for all text, headings included. Before,
   Vazirmatn never loaded: the Playfair/Jakarta system fallbacks rendered Persian first.
+- **2026-09-30** — Built `/practices` (filters, search, pagination, upsell) and
+  `/practices/[slug]` (player tested with a sample clip, chapters, locked state, related).
+  Fixed Latin digits in Persian (typed `{x, number}` placeholders). Installed the `arena`
+  skill in `.claude/skills/` (needs Python 3 on this machine). PWA + push planned next.

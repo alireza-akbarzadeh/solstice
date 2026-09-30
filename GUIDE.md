@@ -70,6 +70,12 @@ Keep Stitch's `uppercase` + `tracking-*` on labels: Persian has no case, and
 `globals.css` resets letter-spacing under `:lang(fa)` because tracking breaks joined
 letters. Italics are English-only: `italic rtl:not-italic`.
 
+**Numbers in messages.** Type every numeric placeholder: `{count, number}`, not `{count}`.
+Untyped placeholders print Latin digits in Persian. Years: `{year, number, ::group-off}`.
+Numbers rendered outside messages go through `format.number()` (`useFormatter` /
+`getFormatter`). After editing `messages/*.json`, restart the dev server if a page still
+shows old text: Turbopack can keep a stale render.
+
 **Icons.** Stitch uses Material Symbols; this app uses `lucide-react`. Common mappings:
 
 | Material | lucide | Material | lucide |

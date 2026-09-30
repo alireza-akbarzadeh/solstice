@@ -3,10 +3,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
-
-// TODO(memberships): read plan prices from the membership plans once they exist.
-const MONTHLY_USD = 24;
-const ANNUAL_USD = 220;
+import { sanctuaryPlan } from "@/modules/memberships/plans";
 
 export async function MembershipBanner() {
   const [t, format] = await Promise.all([getTranslations("Home.membership"), getFormatter()]);
@@ -48,12 +45,12 @@ export async function MembershipBanner() {
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="font-display text-display text-primary">{usd(MONTHLY_USD)}</span>
+                  <span className="font-display text-display text-primary">{usd(sanctuaryPlan.monthlyUsd)}</span>
                   <span className="font-body-md text-body-md text-outline">{t("perMonth")}</span>
                 </div>
                 <p className="font-body-sm text-body-sm text-on-surface-variant">
                   {t.rich("annual", {
-                    price: usd(ANNUAL_USD),
+                    price: usd(sanctuaryPlan.annualUsd),
                     strong: (chunks) => <strong className="text-on-surface">{chunks}</strong>,
                   })}
                 </p>

@@ -5,14 +5,19 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
-import type { PracticeSummary, PracticeTone } from "../types";
+import type { PracticeCategory, PracticeSummary } from "../types";
 
-const toneClass: Record<PracticeTone, string> = {
-  primary: "text-primary",
-  tertiary: "text-tertiary",
-  clay: "text-clay",
+const categoryTone: Record<PracticeCategory, string> = {
+  morning: "text-primary",
+  vinyasa: "text-primary",
+  mobility: "text-primary",
+  restorative: "text-tertiary",
+  yin: "text-tertiary",
+  pranayama: "text-clay",
+  evening: "text-clay",
 };
 
+// Featured card used on the home page.
 export async function PracticeCard({ practice }: { practice: PracticeSummary }) {
   const [t, tBrand] = await Promise.all([getTranslations("Practice"), getTranslations("Brand")]);
 
@@ -32,18 +37,18 @@ export async function PracticeCard({ practice }: { practice: PracticeSummary }) 
         <span
           className={cn(
             "absolute start-4 bottom-4 rounded-full bg-surface/90 px-3 py-1 font-label-sm text-label-sm font-semibold tracking-wider uppercase backdrop-blur-sm",
-            toneClass[practice.categoryTone],
+            categoryTone[practice.category],
           )}
         >
-          {practice.category}
+          {t(`categories.${practice.category}`)}
         </span>
       </div>
 
       <div className="flex flex-1 flex-col justify-between p-6">
         <div>
           <div className="mb-2 flex items-center justify-between gap-2 font-label-sm text-label-sm tracking-wider text-clay uppercase">
-            <span>{practice.style}</span>
-            <span className="rounded bg-secondary-fixed/50 px-2 py-0.5 text-on-secondary-fixed">{practice.intensity}</span>
+            <span>{practice.series}</span>
+            <span className="rounded bg-secondary-fixed/50 px-2 py-0.5 text-on-secondary-fixed">{practice.intensity.label}</span>
           </div>
           <h3 className="mb-3 font-headline-sm text-headline-sm text-on-surface transition-colors group-hover:text-primary">
             {/* The title link covers the whole card. */}

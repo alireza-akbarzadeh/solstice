@@ -48,3 +48,6 @@ yarn-error.log*
 
 # playwright mcp screenshots/logs
 /.playwright-mcp
+
+# arena skill run folders
+/.arena
