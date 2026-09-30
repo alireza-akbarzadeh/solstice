@@ -25,6 +25,9 @@ import { PracticeStage } from "@/modules/practices/components/practice-stage";
 import { videoProvider } from "@/infrastructure/video";
 import { withNext } from "@/lib/safe-next";
 import { PracticeReflections } from "@/modules/community/components/practice-reflections";
+import { CompleteButton, SaveButton } from "@/modules/progress/components/practice-actions";
+import { hasCompletedRecently } from "@/modules/progress/server/completions";
+import { isFavorite } from "@/modules/progress/server/favorites";
 import { sanctuaryPlan } from "@/modules/memberships/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { resolvePracticeAccess, toPlaybackGrant } from "@/modules/practices/server/access";
@@ -69,6 +72,9 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
     getRelatedPractices(locale, practice),
   ]);
   const access = resolvePracticeAccess(practice, viewer);
+  const [saved, completed] = viewer.user
+    ? await Promise.all([isFavorite(viewer.user.id, practice.slug), hasCompletedRecently(viewer.user.id, practice.slug)])
+    : [false, false];
   const playback = access.mode === "locked" ? null : await videoProvider.getPlayback(practice.slug, toPlaybackGrant(access));
 
   // Account first, then payment, then straight back to this practice.
@@ -154,12 +160,18 @@ export default async function PracticePage({ params }: PageProps<"/[locale]/prac
                   </li>
                 </ul>
               </div>
-              <ShareButton
-                title={practice.title}
-                label={t("shareTitle")}
-                copiedLabel={t("copied")}
-                className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-surface-container text-on-surface shadow-sm transition-colors hover:bg-surface-container-high"
-              />
+              <div className="flex flex-wrap items-center gap-2">
+                <SaveButton practiceSlug={practice.slug} saved={saved} signInHref={viewer.user ? undefined : gate.signInHref} />
+                {access.mode === "full" && (
+                  <CompleteButton practiceSlug={practice.slug} completed={completed} signInHref={viewer.user ? undefined : gate.signInHref} />
+                )}
+                <ShareButton
+                  title={practice.title}
+                  label={t("shareTitle")}
+                  copiedLabel={t("copied")}
+                  className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-surface-container text-on-surface shadow-sm transition-colors hover:bg-surface-container-high"
+                />
+              </div>
             </div>
 
             <p className="max-w-3xl font-body-lg text-body-lg text-on-surface-variant">{practice.summary}</p>

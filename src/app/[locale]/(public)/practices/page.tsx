@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Pagination } from "@/components/layout/pagination";
 import { routing } from "@/i18n/routing";
+import { withNext } from "@/lib/safe-next";
 import { LibraryUpsell } from "@/modules/memberships/components/library-upsell";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { LibraryAccessIndicator } from "@/modules/practices/components/library-access-indicator";
@@ -14,6 +15,7 @@ import { PracticeFilters } from "@/modules/practices/components/practice-filters
 import { PracticeLibraryCard } from "@/modules/practices/components/practice-library-card";
 import { parsePracticeFilters, practiceFiltersToQuery } from "@/modules/practices/filters";
 import { getPractices } from "@/modules/practices/server/get-practices";
+import { getFavoriteSlugs } from "@/modules/progress/server/favorites";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/practices">): Promise<Metadata> {
   const { locale } = await params;
@@ -30,6 +32,8 @@ export default async function PracticesPage({ params, searchParams }: PageProps<
 
   const filters = parsePracticeFilters(await searchParams);
   const [t, result, viewer] = await Promise.all([getTranslations("Practices"), getPractices(locale, filters), getViewer()]);
+  const savedSlugs = new Set(viewer.user ? await getFavoriteSlugs(viewer.user.id) : []);
+  const signInHref = viewer.user ? undefined : withNext("/sign-in", `/practices${practiceFiltersToQuery(filters)}`);
 
   return (
     <>
@@ -63,7 +67,14 @@ export default async function PracticesPage({ params, searchParams }: PageProps<
         {result.items.length > 0 ? (
           <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-3">
             {result.items.map((practice, i) => (
-              <PracticeLibraryCard key={practice.slug} practice={practice} priority={i < 3} unlocked={viewer.hasAccess} />
+              <PracticeLibraryCard
+                key={practice.slug}
+                practice={practice}
+                priority={i < 3}
+                unlocked={viewer.hasAccess}
+                saved={savedSlugs.has(practice.slug)}
+                signInHref={signInHref}
+              />
             ))}
           </div>
         ) : (

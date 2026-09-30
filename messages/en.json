@@ -613,5 +613,19 @@
       "title": "{name} replied to your reflection",
       "body": "Open the practice to read the reply."
     }
+  },
+  "PracticeActions": {
+    "save": "Save to Sanctuary",
+    "saved": "Saved in Sanctuary",
+    "savedToast": "Saved to your practices",
+    "signInToSave": "Sign in to save practices",
+    "complete": "Mark complete",
+    "completed": "Completed today",
+    "autoCompleted": "Practice complete — beautifully done",
+    "signInToComplete": "Sign in to track your practice",
+    "errors": {
+      "members": "This practice is for members.",
+      "generic": "That didn’t go through — please try again."
+    }
   }
 }

@@ -9,7 +9,9 @@ Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
 > **Next up:** Program `/programs/[slug]` — `30-day-awakening-immersion-hub-desktop`.
-> (Sign-up → mock checkout → members-only playback still wants one hands-on run with a real account.)
+> **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
+> account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
+> `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
 
 ---
 
@@ -36,7 +38,10 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Sample content → database | ⬜ | `src/modules/*/sample-*.ts` + `TODO(db)` in `server/` functions |
 | Video provider | 🟡 | `VideoProvider` boundary in `infrastructure/video` with a mock (`MOCK_VIDEO_URL` or a default clip). Previews are cut client-side only — a real provider must enforce them server-side |
 | Membership entitlement | ✅ | `solstice_membership` (one row per user, trial → period end); `getViewer()` resolves session + access once per request; `resolvePracticeAccess` → full / preview / locked |
-| Payment provider | 🟡 | `PaymentProvider` boundary in `infrastructure/payment`; only `mock` (grants the membership without charging, shown as test mode). Real provider + webhooks not built |
+| Payment provider | 🟡 | `PaymentProvider` boundary in `infrastructure/payment`; only `mock`: redirects to the in-app test checkout `/checkout/test` (test cards), which starts the membership. Real provider + webhooks not built |
+| Test mode | ✅ | Only while `PAYMENT_PROVIDER=mock`: test panel (`modules/memberships/components/test-panel*`), one-click test accounts (password `solstice-test`), membership presets, role switch. Disappears once a real provider is configured |
+| Favorites + completions | ✅ | `solstice_favorite`, `solstice_practice_completion`; `modules/progress`. Save on cards + detail; Mark complete (auto on video end) |
+| Community: practice reflections | ✅ | `solstice_comment`, `solstice_comment_like`; `modules/community`. Tags, video moments, private-to-instructor, replies, likes, pin (instructor), delete, reply push notification |
 | Pricing source | 🟡 | `src/modules/memberships/plans.ts` ($24/mo, $220/yr). Stitch screens disagree ($24 vs $48) — confirm the real price |
 | Newsletter signup (footer) | ⬜ | Form renders, not wired; needs `EmailProvider` |
 | Soundscape audio | ⬜ | Home atmosphere bar selects only; no audio assets/player yet |
@@ -50,8 +55,8 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Route | Status | Stitch | Notes |
 | --- | --- | --- | --- |
 | `/` Home | ✅ | 🎨 | `solstice-studio-desktop-home`; sections in `src/components/marketing/home/`. Sign-in lives in the header account menu (`account-menu.tsx`) |
-| `/practices` | ✅ | 🎨 | Search, category pills, duration/props/intensity filters, pagination — all in the URL (`src/modules/practices/filters.ts`). Bookmark icon waits for favorites |
-| `/practices/[slug]` | ✅ | 🎨 | Custom player (play, ±10s, seek, volume, speed, mirror, fullscreen), seekable chapters, related, share. Members-only practices: full for members, a `previewSeconds` preview or locked state otherwise. Not yet: Save / Mark complete (favorites + progress tables), program progress card, reflections (community), soundscape chips |
+| `/practices` | ✅ | 🎨 | Search, category pills, duration/props/intensity filters, pagination — all in the URL (`src/modules/practices/filters.ts`). Bookmark saves to favorites (sign-in link when signed out) |
+| `/practices/[slug]` | ✅ | 🎨 | Custom player (play, ±10s, seek, volume, speed, mirror, fullscreen), seekable chapters, related, share. Members-only practices: full for members, a `previewSeconds` preview or locked state otherwise. Save to Sanctuary, Mark complete (auto when the video ends), reflections (comments) with timestamps that seek the player. Not yet: program progress card, soundscape chips |
 | `/programs` | ⬜ | ? | |
 | `/programs/[slug]` | ⬜ | 🎨 | `30-day-awakening-immersion-hub-desktop` |
 | `/journal` | ⬜ | 🎨 | `the-solstice-chronicle-editorial-journal` |
@@ -121,3 +126,5 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
   locked), mock `VideoProvider`, Better Auth Dash. Schema is in Neon. Build, tsc and lint
   pass; every new route answers in `en` and `fa` (RTL). The full sign-up → checkout flow
   still needs a hands-on run.
+- **2026-09-30** — Test mode (mock hosted checkout with test cards + test panel for account
+  states), practice reflections (comments), Save / Mark complete. New tables pushed to Neon.

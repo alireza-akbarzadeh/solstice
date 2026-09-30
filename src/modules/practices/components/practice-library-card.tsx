@@ -4,6 +4,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { SaveButton } from "@/modules/progress/components/practice-actions";
 
 import type { IntensityLevel, PracticeSummary } from "../types";
 
@@ -13,16 +14,22 @@ const intensityTone: Record<IntensityLevel, string> = {
   fire: "text-tertiary-fixed [&>span]:bg-tertiary-fixed",
 };
 
-// Library grid card (practice-library-desktop). Bookmarking arrives with favorites.
+// Library grid card (practice-library-desktop).
 export async function PracticeLibraryCard({
   practice,
   priority = false,
   unlocked = false,
+  saved = false,
+  signInHref,
 }: {
   practice: PracticeSummary;
   priority?: boolean;
   /** The viewer is entitled to members-only practices: hide the lock. */
   unlocked?: boolean;
+  /** In the viewer's saved practices. */
+  saved?: boolean;
+  /** Set when signed out: the bookmark leads to sign-in. */
+  signInHref?: string;
 }) {
   const [t, tBrand, format] = await Promise.all([getTranslations("Practice"), getTranslations("Brand"), getFormatter()]);
 
@@ -53,6 +60,7 @@ export async function PracticeLibraryCard({
             <ClockIcon className="size-3" />
             {t("minutes", { count: practice.durationMinutes })}
           </span>
+          <SaveButton practiceSlug={practice.slug} saved={saved} signInHref={signInHref} variant="icon" />
         </div>
 
         <div className="absolute inset-x-3.5 bottom-3 flex items-center justify-between gap-2 text-inverse-on-surface">
