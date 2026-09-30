@@ -137,7 +137,7 @@ export async function pinReflection(
     return { ok: false, error: "forbidden" };
 
   const owner = await getReflectionOwner(parsed.data);
-  if (!owner || owner.parentId !== null) return { ok: false, error: "invalid" };
+  if (owner?.parentId !== null) return { ok: false, error: "invalid" };
 
   await setReflectionPinned(parsed.data, pinned);
   refresh();

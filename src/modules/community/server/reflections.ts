@@ -99,7 +99,7 @@ export async function createReflection(
       .from(comments)
       .where(eq(comments.id, parentId))
       .limit(1);
-    if (!parent || parent.practiceSlug !== input.practiceSlug) return null;
+    if (parent?.practiceSlug !== input.practiceSlug) return null;
     // Replies stay one level deep: answering a reply joins its thread.
     parentId = parent.parentId ?? parent.id;
     const [root] = await db
