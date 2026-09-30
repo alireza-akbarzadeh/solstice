@@ -6,16 +6,15 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { Button } from "@/components/ui/button";
 import { redirect } from "@/i18n/navigation";
-import { routing } from "@/i18n/routing";
+import { routing, type Locale } from "@/i18n/routing";
 import { auth } from "@/server/better-auth";
 import { getSession } from "@/server/better-auth/server";
 
 // Placeholder until the Stitch home design is implemented (see PROGRESS.md).
-export default async function HomePage({
-  params,
-}: PageProps<"/[locale]">) {
-  const { locale } = await params;
-  if (!hasLocale(routing.locales, locale)) notFound();
+export default async function HomePage({ params }: PageProps<"/[locale]">) {
+  const { locale: requested } = await params;
+  if (!hasLocale(routing.locales, requested)) notFound();
+  const locale: Locale = requested;
   setRequestLocale(locale);
 
   const t = await getTranslations("Home");
