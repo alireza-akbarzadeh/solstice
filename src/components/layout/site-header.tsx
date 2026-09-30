@@ -3,6 +3,8 @@ import { getTranslations } from "next-intl/server";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "@/i18n/navigation";
+import { isPushConfigured } from "@/infrastructure/push/web-push";
+import { PushToggle } from "@/modules/notifications/components/push-toggle";
 import { getSession } from "@/server/better-auth/server";
 
 import { Container } from "./container";
@@ -22,7 +24,7 @@ export async function SiteHeader() {
     <header className="sticky top-0 z-50 bg-surface/85 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-md">
       <Container className="flex h-16 items-center justify-between gap-space-md lg:h-20">
         <Link href="/" className="flex shrink-0 items-center gap-3">
-          <Image src="/images/brand/logo.png" alt={tBrand("logoAlt")} width={32} height={32} className="size-8" priority />
+          <Image src="/icons/mark.svg" alt={tBrand("logoAlt")} width={32} height={32} className="size-8" priority unoptimized />
           <span className="flex flex-col">
             <span className="font-headline-sm text-headline-sm tracking-tight text-primary">{tBrand("name")}</span>
             <span className="font-label-sm text-label-sm tracking-widest text-clay uppercase">{tBrand("studio")}</span>
@@ -33,6 +35,7 @@ export async function SiteHeader() {
 
         <div className="flex items-center gap-space-xs md:gap-space-md">
           <LocaleSwitcher />
+          {user && isPushConfigured() && <PushToggle />}
           {user ? (
             <Link href="/profile" aria-label={t("account")} className="rounded-full">
               <Avatar>

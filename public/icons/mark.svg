@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 188 188">
+  <!-- Solstice sun mark, redrawn from the Stitch logo (public/images/brand/logo.png). -->
+  <circle cx="94" cy="94" r="87" fill="none" stroke="#536350" stroke-width="7" stroke-dasharray="11 11.8" />
+  <circle cx="94" cy="94" r="52" fill="#f5f2eb" stroke="#536350" stroke-width="6" />
+  <g stroke="#bfa37c" stroke-width="6" stroke-linecap="round">
+    <line x1="94" y1="8" x2="94" y2="54" />
+    <line x1="94" y1="134" x2="94" y2="180" />
+    <line x1="8" y1="94" x2="54" y2="94" />
+    <line x1="134" y1="94" x2="180" y2="94" />
+  </g>
+</svg>

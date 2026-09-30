@@ -252,5 +252,29 @@
       "cta": "Begin 14-Day Free Sanctuary",
       "reassurance": "No commitment. No questions asked."
     }
+  },
+  "Notifications": {
+    "enable": "Turn on practice notifications",
+    "disable": "Turn off notifications",
+    "enabled": "Notifications are on for this device.",
+    "disabledToast": "Notifications turned off.",
+    "blocked": "Notifications are blocked in your browser settings.",
+    "unsupported": "This browser doesn’t support notifications. On iPhone, add Solstice to your Home Screen first.",
+    "failed": "Couldn’t update notifications. Please try again.",
+    "sendTest": "Send a test notification",
+    "testSent": "Test notification sent.",
+    "test": {
+      "title": "Solstice",
+      "body": "Notifications are working. We’ll only reach out for new practices and live sessions."
+    }
+  },
+  "Offline": {
+    "metaTitle": "Offline",
+    "title": "You’re offline",
+    "body": "This page isn’t saved on your device yet. Reconnect to continue your practice — pages you’ve opened before still work.",
+    "retry": "Try again"
+  },
+  "Pwa": {
+    "description": "Practices, programs and a calm community with Elena Vance."
   }
 }

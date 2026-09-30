@@ -103,3 +103,25 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const sessionRelations = relations(session, ({ one }) => ({
   user: one(user, { fields: [session.userId], references: [user.id] }),
 }));
+
+// One row per browser/device that opted in to Web Push.
+export const pushSubscriptions = createTable(
+  "push_subscription",
+  (d) => ({
+    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+    userId: d
+      .text()
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    endpoint: d.text().notNull().unique(),
+    p256dh: d.text().notNull(),
+    auth: d.text().notNull(),
+    locale: d.varchar({ length: 8 }).notNull(),
+    userAgent: d.text(),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  }),
+  (t) => [index("push_subscription_user_idx").on(t.userId)],
+);

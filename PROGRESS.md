@@ -8,8 +8,8 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** PWA + self-hosted push notifications (see Foundation rows), then Program
-> `/programs/[slug]` — `30-day-awakening-immersion-hub-desktop`.
+> **Next up:** Program `/programs/[slug]` — `30-day-awakening-immersion-hub-desktop`.
+> (Push still needs `pnpm db:push` + sign-in to test end to end — see Foundation.)
 
 ---
 
@@ -39,8 +39,9 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Newsletter signup (footer) | ⬜ | Form renders, not wired; needs `EmailProvider` |
 | Soundscape audio | ⬜ | Home atmosphere bar selects only; no audio assets/player yet |
 | Legal pages `/privacy`, `/terms`, `/ethics` | ⬜ | Linked from footer, no content yet |
-| PWA (installable, offline fallback) | ⬜ | Hand-written `public/sw.js` + `app/manifest.ts`; no paid service. Queued right after `/practices` |
-| Push notifications (self-hosted Web Push) | ⬜ | VAPID keys + `web-push` from our own server; subscriptions in Neon; opt-in UI in `/profile`. No third-party push platform |
+| PWA (installable, offline fallback) | ✅ | `public/sw.js`, `src/app/manifest.ts`, `/offline` + `/fa/offline`, icons via `pnpm icons`. Offline tested in a production build (cached pages, localized offline page, Persian font offline) |
+| Push notifications (self-hosted Web Push) | 🟡 | Built: VAPID keys in `.env`, `web-push` sender, `solstice_push_subscription` table, server actions, SW push/click handlers, header bell. Verified: real FCM subscription + send (201) and SW handler. **Blocked on:** `pnpm db:push` (table not in Neon yet) and a working sign-in to try the bell end to end. Add the VAPID vars to Vercel before deploying |
+| Localized 404 page | ⬜ | Unknown routes show Next's default English 404 |
 
 ## Public (SEO) — `src/app/[locale]/(public)`
 
@@ -108,3 +109,6 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
   `/practices/[slug]` (player tested with a sample clip, chapters, locked state, related).
   Fixed Latin digits in Persian (typed `{x, number}` placeholders). Installed the `arena`
   skill in `.claude/skills/` (needs Python 3 on this machine). PWA + push planned next.
+- **2026-09-30** — PWA + self-hosted Web Push. Header now uses the redrawn sun mark
+  (`public/icons/mark.svg`) instead of the squeezed wordmark. `public/` excluded from
+  tsc/eslint (service worker globals).

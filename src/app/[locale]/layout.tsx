@@ -1,13 +1,15 @@
 import "@/styles/globals.css";
 
-import { type Metadata } from "next";
+import { type Metadata, type Viewport } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Playfair_Display, Plus_Jakarta_Sans, Vazirmatn } from "next/font/google";
 import { notFound } from "next/navigation";
 
+import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { DirectionProvider } from "@/components/ui/direction";
 import { Toaster } from "@/components/ui/sonner";
+import { env } from "@/env";
 import { getDirection, routing } from "@/i18n/routing";
 
 const playfair = Playfair_Display({
@@ -35,6 +37,10 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+export const viewport: Viewport = {
+  themeColor: "#fef8f4",
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
@@ -43,7 +49,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: { default: t("title"), template: `%s · ${t("title")}` },
     description: t("description"),
-    icons: [{ rel: "icon", url: "/favicon.ico" }],
+    metadataBase: new URL(env.BETTER_AUTH_URL),
+    applicationName: t("title"),
+    icons: {
+      icon: [{ url: "/icons/mark.svg", type: "image/svg+xml" }, { url: "/favicon.ico", sizes: "any" }],
+      apple: "/icons/apple-touch-icon.png",
+    },
+    appleWebApp: { capable: true, title: t("title"), statusBarStyle: "default" },
   };
 }
 
@@ -66,6 +78,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <DirectionProvider dir={dir}>
             {children}
             <Toaster />
+            <ServiceWorkerRegister />
           </DirectionProvider>
         </NextIntlClientProvider>
       </body>

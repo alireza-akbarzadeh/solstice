@@ -25,6 +25,10 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+
+    // Web Push (VAPID). Push is disabled when these are unset.
+    VAPID_PRIVATE_KEY: z.string().optional(),
+    VAPID_SUBJECT: z.string().optional(),
   },
 
   /**
@@ -32,7 +36,7 @@ export const env = createEnv({
    * Variables exposed to the client must use the NEXT_PUBLIC_ prefix.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().optional(),
   },
 
   /**
@@ -53,6 +57,12 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
 
     NODE_ENV: process.env.NODE_ENV,
+
+    VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
+
+    VAPID_SUBJECT: process.env.VAPID_SUBJECT,
+
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
   },
 
   /**

@@ -105,7 +105,34 @@ styled with Stitch classes rather than hand-rolled equivalents when one fits.
 **Motion.** Keep Stitch's restraint: color/shadow transitions ~300ms, image hover
 `scale-105` over 500ms, `ease-sanctuary`. Respect `motion-reduce:`.
 
-## 5. Definition of done (per page)
+## 5. PWA and push notifications
+
+Self-hosted; no paid push or PWA service.
+
+- **Service worker:** `public/sw.js`, hand-written. Pages are network-first; public pages
+  you've visited are kept for offline use (at most 40). Personal areas (`/dashboard`,
+  `/profile`, `/instructor`, auth pages, …) are **never** cached — add new private
+  routes to `PRIVATE_PATH`. Static build files, `/images` and `/icons` are cache-first.
+  Unvisited pages fall back to `/offline` or `/fa/offline`.
+- **Bump `VERSION`** in `sw.js` whenever its caching rules change. In development it's
+  registered as `/sw.js?mode=development` and caches nothing.
+- **Manifest:** `src/app/manifest.ts`. Icons are generated from `public/icons/mark.svg`
+  with `pnpm icons`.
+- **Push:** the browser subscribes with our VAPID public key (the header bell,
+  `modules/notifications/components/push-toggle.tsx`). The subscription is stored in
+  `solstice_push_subscription`, and we send with `web-push` to the browser vendor's free
+  push service. Send from server code with `notifyUser(userId, copy)` or
+  `notifyEveryone(copy)`, passing copy per locale. Expired devices are removed automatically.
+- **Keys:** `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (see
+  `.env.example`). Use the same keys in every environment: new keys invalidate all
+  existing subscriptions.
+- **iPhone:** web push only works after the member adds Solstice to the Home Screen
+  (iOS 16.4+).
+- **Testing:** headless Playwright Chromium can subscribe, but never receives real pushes.
+  Test delivery in a real browser, or inject one via DevTools → Application → Service
+  Workers → Push.
+
+## 6. Definition of done (per page)
 
 - [ ] `/<route>` and `/fa/<route>` return 200 and render without console errors
 - [ ] Matches the Stitch screen at ~1440px wide and ~390px wide
@@ -113,7 +140,7 @@ styled with Stitch classes rather than hand-rolled equivalents when one fits.
 - [ ] `pnpm typecheck` and `pnpm lint` pass
 - [ ] `PROGRESS.md` row updated and **Next up** moved to the next page, with a log line
 
-## 6. Build order
+## 7. Build order
 
 1. Site shell — header (desktop nav + mobile sheet), footer, `(public)` layout
 2. Home `/`
