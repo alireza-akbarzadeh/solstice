@@ -2,20 +2,19 @@ import { BadgeCheckIcon, Flower2Icon, HeartHandshakeIcon, PinIcon } from "lucide
 import type { Metadata } from "next";
 import Image from "next/image";
 import { hasLocale } from "next-intl";
-import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { routing } from "@/i18n/routing";
-import { ReflectionsPanel, type ReflectionView } from "@/modules/community/components/reflections-panel";
+import { ReflectionsPanel } from "@/modules/community/components/reflections-panel";
 import { reflectAccess } from "@/modules/community/server/access";
 import { getCircleFeed } from "@/modules/community/server/reflections";
-import type { Reflection } from "@/modules/community/types";
+import { toReflectionViews } from "@/modules/community/server/views";
 import { ArticleCard } from "@/modules/journal/components/article-card";
 import { getJournal } from "@/modules/journal/server/get-articles";
 import { requireUser } from "@/modules/memberships/server/viewer";
 import { PracticeStage } from "@/modules/practices/components/practice-stage";
-import { getPracticeSummaries } from "@/modules/practices/server/get-practice";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/community">): Promise<Metadata> {
   const { locale } = await params;
@@ -33,34 +32,14 @@ export default async function CommunityPage({ params }: PageProps<"/[locale]/com
 
   const viewer = await requireUser(locale, "/community");
   const reader = { id: viewer.user.id, isInstructor: viewer.user.role === "instructor" };
-  const [t, tBrand, format, feed, journal] = await Promise.all([
+  const [t, tBrand, feed, journal] = await Promise.all([
     getTranslations("Community"),
     getTranslations("Brand"),
-    getFormatter(),
     getCircleFeed(reader),
     getJournal(locale, { page: 1 }),
   ]);
 
-  const slugs = [...new Set(feed.map((r) => r.practiceSlug).filter((s): s is string => s !== null))];
-  const titles = new Map((await getPracticeSummaries(locale, slugs)).map((p) => [p.slug, p.title]));
-  const now = new Date();
-
-  const toView = (r: Reflection): ReflectionView => ({
-    id: r.id,
-    practice: r.practiceSlug ? { slug: r.practiceSlug, title: titles.get(r.practiceSlug) ?? r.practiceSlug } : null,
-    author: r.author,
-    body: r.body,
-    tag: r.tag,
-    atSeconds: r.atSeconds,
-    atChapter: null,
-    private: r.visibility === "private",
-    pinned: r.pinned,
-    ago: format.relativeTime(r.createdAt, now),
-    likes: r.likes,
-    liked: r.likedByViewer,
-    canDelete: reader.isInstructor || reader.id === r.author.id,
-    replies: r.replies.map(toView),
-  });
+  const views = await toReflectionViews(feed, { locale, reader });
 
   const intention = feed.find((r) => r.pinned && r.author.isInstructor && r.practiceSlug === null);
 
@@ -108,7 +87,7 @@ export default async function CommunityPage({ params }: PageProps<"/[locale]/com
             <ReflectionsPanel
               variant="circle"
               practiceSlug={null}
-              reflections={feed.map(toView)}
+              reflections={views}
               total={feed.reduce((n, r) => n + 1 + r.replies.length, 0)}
               access={reflectAccess({ access: "members" }, viewer)}
               isInstructor={reader.isInstructor}

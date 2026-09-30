@@ -5,6 +5,7 @@ import {
   BookmarkIcon,
   ChartNoAxesColumnIcon,
   CreditCardIcon,
+  LayoutGridIcon,
   LogOutIcon,
   SunriseIcon,
   UserRoundIcon,
@@ -114,6 +115,14 @@ export function AccountMenu({ user, status }: { user: { name: string; email: str
               </DropdownMenuItem>
             );
           })}
+          {status === "instructor" && (
+            <DropdownMenuItem asChild className="cursor-pointer rounded-lg py-2">
+              <Link href="/instructor">
+                <LayoutGridIcon className="text-on-surface-variant" />
+                {t("studio")}
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem asChild className="cursor-pointer rounded-lg py-2">
             <Link href="/membership">
               <CreditCardIcon className="text-on-surface-variant" />

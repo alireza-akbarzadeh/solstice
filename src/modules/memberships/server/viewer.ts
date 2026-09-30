@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { cache } from "react";
 
 import { redirect } from "@/i18n/navigation";
@@ -21,6 +22,13 @@ export async function requireUser(locale: Locale, here: string): Promise<SignedI
   const viewer = await getViewer();
   if (!viewer.user) return redirect({ href: withNext("/sign-in", here), locale });
   return viewer as SignedInViewer;
+}
+
+/** Instructor pages: sign-in first; anyone else gets a 404 (the studio isn't advertised). */
+export async function requireInstructor(locale: Locale, here: string): Promise<SignedInViewer> {
+  const viewer = await requireUser(locale, here);
+  if (viewer.user.role !== "instructor") notFound();
+  return viewer;
 }
 
 // Authentication (session) + membership (entitlement), resolved once per request.

@@ -83,6 +83,13 @@ export async function getPracticeReflections(practiceSlug: string, reader: Reade
   return threads.sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.createdAt.getTime() - a.createdAt.getTime());
 }
 
+/** Specific threads (e.g. the instructor's reply queue), newest first. */
+export async function getThreadsByIds(reader: Reader, ids: number[]): Promise<Reflection[]> {
+  if (ids.length === 0) return [];
+  const threads = toThreads(await selectReflections(reader, or(inArray(comments.id, ids), inArray(comments.parentId, ids))));
+  return threads.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+}
+
 /** The community feed: the newest threads across every practice and the circle itself. */
 export async function getCircleFeed(reader: Reader, limit = 30): Promise<Reflection[]> {
   const tops = await db
