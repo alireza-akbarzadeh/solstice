@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Localized } from "@/lib/localized";
@@ -194,38 +194,24 @@ export function PracticeEditor({ practice }: { practice: EditablePractice }) {
           <div className="grid grid-cols-1 gap-space-md sm:grid-cols-3">
             <Field>
               <FieldLabel htmlFor="category">{t("fields.category")}</FieldLabel>
-              <Select value={form.category} onValueChange={(v) => set("category", v as PracticeCategory)}>
-                <SelectTrigger id="category">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {practiceCategories.map((c) => (
-                      <SelectItem key={c} value={c}>
-                        {tPractice(`categories.${c}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <ResponsiveSelect
+                id="category"
+                label={t("fields.category")}
+                value={form.category}
+                onValueChange={(v) => set("category", v as PracticeCategory)}
+                options={practiceCategories.map((c) => ({ value: c, label: tPractice(`categories.${c}`) }))}
+              />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="props">{t("fields.props")}</FieldLabel>
-              <Select value={form.props} onValueChange={(v) => set("props", v as PropSetup)}>
-                <SelectTrigger id="props">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {propSetups.map((p) => (
-                      <SelectItem key={p} value={p}>
-                        {tPractice(`props.${p}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <ResponsiveSelect
+                id="props"
+                label={t("fields.props")}
+                value={form.props}
+                onValueChange={(v) => set("props", v as PropSetup)}
+                options={propSetups.map((p) => ({ value: p, label: tPractice(`props.${p}`) }))}
+              />
             </Field>
 
             <Field>

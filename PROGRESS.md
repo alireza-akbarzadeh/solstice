@@ -47,6 +47,8 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Newsletter signup | 🟡 | Journal forms store to `solstice_newsletter_subscriber` (`modules/newsletter`). Footer form not wired yet; sending needs an `EmailProvider` |
 | Soundscape audio | ⬜ | Home atmosphere bar selects only; no audio assets/player yet |
 | Legal pages `/privacy`, `/terms`, `/ethics` | ⬜ | Linked from footer, no content yet |
+| Mobile app shell | ✅ | Fixed bottom tab bar (`components/layout/bottom-tabs.tsx`) from the Stitch mobile screens — Today · Library · Programs · Community · My Space. Phones only (`lg:hidden`) and signed-in only; signed-out visitors keep the header sheet, since every tab needs an account. `MemberNav` is desktop-only now; My practices and Progress stay reachable from the header account menu. `viewport-fit=cover` + `pb-safe` / `pb-safe-nav` utilities keep it clear of the iPhone home indicator |
+| Responsive overlays | ✅ | `ResponsiveDialog` (centred modal on desktop, drag-to-dismiss bottom sheet on phones) and `ResponsiveSelect` (dropdown ↔ sheet of full-width rows), both on shadcn `Drawer`/vaul. Used by the library filters, the practice editor, and the member dossier |
 | PWA (installable, offline fallback) | ✅ | `public/sw.js`, `src/app/manifest.ts`, `/offline` + `/fa/offline`, icons via `pnpm icons`. Offline tested in a production build (cached pages, localized offline page, Persian font offline) |
 | Push notifications (self-hosted Web Push) | 🟡 | Built: VAPID keys in `.env`, `web-push` sender, `solstice_push_subscription` table (now in Neon), server actions, SW push/click handlers, header bell. Verified: real FCM subscription + send (201) and SW handler. Left: try the bell end to end while signed in. Add the VAPID vars to Vercel before deploying |
 | Localized 404 page | ⬜ | Unknown routes show Next's default English 404 |
@@ -154,3 +156,11 @@ side in Persian. Draft and awaiting-reply counts ride on the nav as badges.
   snake_case column names (`r.user_id`) that don't exist — columns are camelCase, so it now
   goes through drizzle's `alias()`/`notExists()`; and `account-menu.tsx` called a missing
   `Account.studio` message, which had been failing `pnpm typecheck` since the account commit.
+- **2026-10-01** — Native mobile shell: the fixed bottom tab bar from the Stitch mobile screens,
+  safe-area handling (`viewport-fit=cover`, `pb-safe*`), and `ResponsiveDialog` /
+  `ResponsiveSelect` so overlays become drag-to-dismiss sheets on phones. Player fixes for touch:
+  while playing, the controls were `opacity-0` and only came back on **hover**, so on a phone they
+  could not be reached at all — a tap now reveals them for four seconds; the control bar also
+  tightened its padding and moved to 44px touch targets. Postgres connection now sets
+  `idle_timeout` / `max_lifetime` / `connect_timeout`, so a connection Neon closed while the
+  compute was suspended is retired before it is reused.

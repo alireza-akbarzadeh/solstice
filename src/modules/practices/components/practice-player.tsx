@@ -43,6 +43,12 @@ export function PracticePlayer({ videoUrl, poster, posterAlt, categoryLabel, dur
 
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState(durationSeconds);
+  /**
+   * While playing, the controls fade out and come back on hover — which a touch screen never
+   * reports, so on a phone they were unreachable. A tap reveals them instead, then they fade
+   * again a few seconds later.
+   */
+  const [touchControls, setTouchControls] = useState(false);
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState(1);
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
@@ -131,6 +137,11 @@ export function PracticePlayer({ videoUrl, poster, posterAlt, categoryLabel, dur
       ref={frameRef}
       role="region"
       aria-label={t("region")}
+      onPointerDown={(e) => {
+        if (e.pointerType === "mouse") return;
+        setTouchControls(true);
+        window.setTimeout(() => setTouchControls(false), 4000);
+      }}
       className="group relative aspect-video w-full overflow-hidden rounded-xl bg-inverse-surface shadow-2xl select-none"
     >
       <video
@@ -208,12 +219,12 @@ export function PracticePlayer({ videoUrl, poster, posterAlt, categoryLabel, dur
       <div
         dir="ltr"
         className={cn(
-          "absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-6 pt-10 pb-4 transition-opacity",
-          playing && "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
+          "absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-3 pt-10 pb-3 transition-opacity sm:px-6 sm:pb-4",
+          playing && !touchControls && "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
         )}
       >
         <div className="flex w-full items-center gap-3">
-          <span className="w-12 text-end font-label-sm text-label-sm text-white/90 tabular-nums">{clock(currentTime)}</span>
+          <span className="w-9 text-end font-label-sm text-label-sm text-white/90 tabular-nums sm:w-12">{clock(currentTime)}</span>
           <div className="relative flex flex-1 items-center">
             <input
               type="range"
@@ -236,18 +247,18 @@ export function PracticePlayer({ videoUrl, poster, posterAlt, categoryLabel, dur
               />
             )}
           </div>
-          <span className="w-12 font-label-sm text-label-sm text-white/60 tabular-nums">{clock(duration)}</span>
+          <span className="w-9 font-label-sm text-label-sm text-white/60 tabular-nums sm:w-12">{clock(duration)}</span>
         </div>
 
-        <div className="flex items-center justify-between pt-1 text-white/80">
-          <div className="flex items-center gap-3">
-            <button type="button" onClick={togglePlay} aria-label={playing ? t("pause") : t("play")} className="hover:text-white">
+        <div className="flex items-center justify-between text-white/80">
+          <div className="flex items-center gap-0.5 sm:gap-2">
+            <button type="button" onClick={togglePlay} aria-label={playing ? t("pause") : t("play")} className="flex size-11 items-center justify-center hover:text-white">
               {playing ? <PauseIcon className="size-6 fill-current" /> : <PlayIcon className="size-6 fill-current" />}
             </button>
-            <button type="button" onClick={() => seek(currentTime - 10)} aria-label={t("back")} className="hover:text-white">
+            <button type="button" onClick={() => seek(currentTime - 10)} aria-label={t("back")} className="flex size-11 items-center justify-center hover:text-white">
               <RotateCcwIcon className="size-5" />
             </button>
-            <button type="button" onClick={() => seek(currentTime + 10)} aria-label={t("forward")} className="hover:text-white">
+            <button type="button" onClick={() => seek(currentTime + 10)} aria-label={t("forward")} className="flex size-11 items-center justify-center hover:text-white">
               <RotateCwIcon className="size-5" />
             </button>
             <div className="ms-2 hidden items-center gap-1.5 sm:flex">
@@ -283,7 +294,7 @@ export function PracticePlayer({ videoUrl, poster, posterAlt, categoryLabel, dur
               />
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-0.5 sm:gap-2">
             <button
               type="button"
               onClick={() => {
@@ -292,7 +303,7 @@ export function PracticePlayer({ videoUrl, poster, posterAlt, categoryLabel, dur
                 setSpeed(next);
               }}
               aria-label={t("speed")}
-              className="font-label-sm text-label-sm tracking-widest hover:text-white"
+              className="flex h-11 min-w-11 items-center justify-center font-label-sm text-label-sm tracking-widest hover:text-white"
             >
               {format.number(speed, { minimumFractionDigits: speed === 1 ? 1 : 2 })}×
             </button>
@@ -300,7 +311,7 @@ export function PracticePlayer({ videoUrl, poster, posterAlt, categoryLabel, dur
               type="button"
               onClick={toggleFullscreen}
               aria-label={fullscreen ? t("exitFullscreen") : t("fullscreen")}
-              className="hover:text-white"
+              className="flex size-11 items-center justify-center hover:text-white"
             >
               {fullscreen ? <MinimizeIcon className="size-5" /> : <MaximizeIcon className="size-5" />}
             </button>

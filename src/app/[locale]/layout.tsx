@@ -39,6 +39,9 @@ export function generateStaticParams() {
 
 export const viewport: Viewport = {
   themeColor: "#fef8f4",
+  // The bottom tab bar sits against the home indicator, so the page must reach under it and
+  // pad itself back with env(safe-area-inset-*) — see `pb-safe` in globals.css.
+  viewportFit: "cover",
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

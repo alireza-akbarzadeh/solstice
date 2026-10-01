@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 import { Container } from "./container";
 
@@ -18,11 +19,11 @@ const legalLinks = [
   { href: "/ethics", label: "ethics" },
 ] as const;
 
-export async function SiteFooter() {
+export async function SiteFooter({ className }: { className?: string }) {
   const t = await getTranslations("Footer");
 
   return (
-    <footer className="w-full border-t border-border/40 bg-surface-container-low text-on-surface">
+    <footer className={cn("w-full border-t border-border/40 bg-surface-container-low text-on-surface", className)}>
       <Container className="pt-space-2xl pb-space-xl">
         {/* Main Grid */}
         <div className="mb-space-2xl grid grid-cols-1 gap-space-xl lg:grid-cols-12 lg:gap-gutter">

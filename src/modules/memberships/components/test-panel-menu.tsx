@@ -55,7 +55,8 @@ export function TestPanelMenu({ user, hasAccess, preset, periodEnd, daysLeft, pa
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="fixed end-4 bottom-4 z-[60] inline-flex items-center gap-2 rounded-full bg-inverse-surface px-3.5 py-2 font-label-md text-label-md text-inverse-on-surface shadow-lg transition-transform hover:scale-[1.03] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95"
+        // Lifted clear of the mobile tab bar; back to the corner once that bar is gone.
+        className="fixed end-4 bottom-[calc(var(--bottom-nav-height)+env(safe-area-inset-bottom,0px)+0.75rem)] z-[60] inline-flex items-center gap-2 rounded-full bg-inverse-surface px-3.5 py-2 font-label-md text-label-md text-inverse-on-surface shadow-lg transition-transform hover:scale-[1.03] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 lg:bottom-4"
         aria-label={t("open")}
       >
         {pending ? <LoaderCircleIcon className="size-4 animate-spin" /> : <FlaskConicalIcon className="size-4" />}

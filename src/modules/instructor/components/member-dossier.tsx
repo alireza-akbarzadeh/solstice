@@ -6,20 +6,19 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  ResponsiveDialog,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "@/i18n/navigation";
 import {
@@ -114,31 +113,23 @@ export function MemberDossierPanel({ dossier, isSelf }: { dossier: MemberDossier
       <section className="flex flex-col gap-space-sm">
         <span className="font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">{t("grantTitle")}</span>
         <div className="flex gap-space-xs">
-          <Select value={plan} onValueChange={(v) => setPlan(v as "monthly" | "annual")}>
-            <SelectTrigger className="flex-1" aria-label={t("grantPlan")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="monthly">{t("plans.monthly")}</SelectItem>
-                <SelectItem value="annual">{t("plans.annual")}</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select value={months} onValueChange={setMonths}>
-            <SelectTrigger className="w-28" aria-label={t("grantMonths")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {["1", "3", "6", "12"].map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {t("months", { count: Number(m) })}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <ResponsiveSelect
+            label={t("grantPlan")}
+            value={plan}
+            onValueChange={(v) => setPlan(v as "monthly" | "annual")}
+            className="flex-1"
+            options={[
+              { value: "monthly", label: t("plans.monthly") },
+              { value: "annual", label: t("plans.annual") },
+            ]}
+          />
+          <ResponsiveSelect
+            label={t("grantMonths")}
+            value={months}
+            onValueChange={setMonths}
+            className="w-28"
+            options={["1", "3", "6", "12"].map((m) => ({ value: m, label: t("months", { count: Number(m) }) }))}
+          />
         </div>
         <Button
           disabled={pending}
@@ -180,53 +171,63 @@ export function MemberDossierPanel({ dossier, isSelf }: { dossier: MemberDossier
           </Button>
 
           {!isSelf && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
+            <ResponsiveDialog>
+              <ResponsiveDialogTrigger asChild>
                 <Button variant="outline" disabled={pending}>
                   <ShieldIcon data-icon="inline-start" />
                   {account.role === "instructor" ? t("makeMember") : t("makeInstructor")}
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{account.role === "instructor" ? t("makeMember") : t("makeInstructor")}</AlertDialogTitle>
-                  <AlertDialogDescription>
+              </ResponsiveDialogTrigger>
+              <ResponsiveDialogContent>
+                <ResponsiveDialogHeader>
+                  <ResponsiveDialogTitle>{account.role === "instructor" ? t("makeMember") : t("makeInstructor")}</ResponsiveDialogTitle>
+                  <ResponsiveDialogDescription>
                     {account.role === "instructor" ? t("makeMemberBody", { name: account.name }) : t("makeInstructorBody", { name: account.name })}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>{t("cancelAction")}</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() =>
-                      run(() => changeMemberRole({ userId: account.id, role: account.role === "instructor" ? "member" : "instructor" }), t("roleChanged"))
-                    }
-                  >
-                    {t("confirm")}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                  </ResponsiveDialogDescription>
+                </ResponsiveDialogHeader>
+                <ResponsiveDialogFooter>
+                  <ResponsiveDialogClose asChild>
+                    <Button variant="outline">{t("cancelAction")}</Button>
+                  </ResponsiveDialogClose>
+                  <ResponsiveDialogClose asChild>
+                    <Button
+                      onClick={() =>
+                        run(() => changeMemberRole({ userId: account.id, role: account.role === "instructor" ? "member" : "instructor" }), t("roleChanged"))
+                      }
+                    >
+                      {t("confirm")}
+                    </Button>
+                  </ResponsiveDialogClose>
+                </ResponsiveDialogFooter>
+              </ResponsiveDialogContent>
+            </ResponsiveDialog>
           )}
 
           {membership && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
+            <ResponsiveDialog>
+              <ResponsiveDialogTrigger asChild>
                 <Button variant="outline" disabled={pending} className="text-destructive">
                   <CalendarOffIcon data-icon="inline-start" />
                   {t("endNow")}
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{t("endNow")}</AlertDialogTitle>
-                  <AlertDialogDescription>{t("endNowBody", { name: account.name })}</AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>{t("cancelAction")}</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => run(() => endMemberAccess({ userId: account.id }), t("ended"))}>{t("confirm")}</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+              </ResponsiveDialogTrigger>
+              <ResponsiveDialogContent>
+                <ResponsiveDialogHeader>
+                  <ResponsiveDialogTitle>{t("endNow")}</ResponsiveDialogTitle>
+                  <ResponsiveDialogDescription>{t("endNowBody", { name: account.name })}</ResponsiveDialogDescription>
+                </ResponsiveDialogHeader>
+                <ResponsiveDialogFooter>
+                  <ResponsiveDialogClose asChild>
+                    <Button variant="outline">{t("cancelAction")}</Button>
+                  </ResponsiveDialogClose>
+                  <ResponsiveDialogClose asChild>
+                    <Button variant="destructive" onClick={() => run(() => endMemberAccess({ userId: account.id }), t("ended"))}>
+                      {t("confirm")}
+                    </Button>
+                  </ResponsiveDialogClose>
+                </ResponsiveDialogFooter>
+              </ResponsiveDialogContent>
+            </ResponsiveDialog>
           )}
         </div>
       </section>

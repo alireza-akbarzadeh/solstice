@@ -339,3 +339,24 @@ html:lang(fa) {
 :lang(fa) * {
   letter-spacing: normal !important;
 }
+
+/*
+ * Safe-area helpers for the native-feeling mobile shell. The viewport is `viewport-fit=cover`
+ * (layout.tsx), so a bar pinned to the bottom reaches under the iPhone home indicator and has
+ * to pad itself back; `pb-safe-nav` is the matching clearance for scrolling content.
+ */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility pb-safe-nav {
+  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+}
+
+@utility bottom-safe {
+  bottom: env(safe-area-inset-bottom, 0px);
+}
+
+:root {
+  --bottom-nav-height: 4rem;
+}

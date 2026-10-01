@@ -16,13 +16,16 @@ const icons = {
   "/profile": UserRoundIcon,
 } as const;
 
-/** Tabs across the top of every member page. */
+/**
+ * Tabs across the top of every member page. Desktop only: on phones `BottomTabs` is the
+ * primary navigation, and the header's account menu still reaches the pages it doesn't carry.
+ */
 export function MemberNav() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
 
   return (
-    <nav aria-label={t("member")} className="border-b border-hairline bg-surface">
+    <nav aria-label={t("member")} className="hidden border-b border-hairline bg-surface lg:block">
       <ul className="mx-auto flex w-full max-w-content gap-1 overflow-x-auto px-margin-mobile [scrollbar-width:none] md:px-margin [&::-webkit-scrollbar]:hidden">
         {memberNavItems.map((item) => {
           const Icon = icons[item.href];

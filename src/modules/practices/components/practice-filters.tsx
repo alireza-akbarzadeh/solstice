@@ -1,9 +1,10 @@
 "use client";
 
-import { ChevronDownIcon, RotateCcwIcon, SearchIcon, SlidersHorizontalIcon } from "lucide-react";
+import { RotateCcwIcon, SearchIcon, SlidersHorizontalIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
 
+import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { getPathname, Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,10 @@ type Props = {
   shown: number;
   total: number;
 };
+
+// Radix rejects an empty-string option value, so "all" stands in for "no filter chosen".
+const ALL = "all";
+const pick = <T,>(value: string) => (value === ALL ? undefined : (value as T));
 
 export function PracticeFilters({ filters, shown, total }: Props) {
   const t = useTranslations("Practices");
@@ -101,56 +106,36 @@ export function PracticeFilters({ filters, shown, total }: Props) {
         <div className="flex flex-wrap items-center gap-3">
           <span className="me-1 font-label-sm text-label-sm font-bold tracking-wider text-clay uppercase">{t("refine")}</span>
 
-          <div className="relative">
-            <select
-              aria-label={t("durationLabel")}
-              value={filters.duration ?? ""}
-              onChange={(e) => navigate({ duration: (e.target.value || undefined) as Filters["duration"] })}
-              className={selectClass}
-            >
-              <option value="">{t("durationAll")}</option>
-              {durationRanges.map((d) => (
-                <option key={d} value={d}>
-                  {t(`durations.${d}`)}
-                </option>
-              ))}
-            </select>
-            <ChevronDownIcon className="pointer-events-none absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-outline" />
-          </div>
+          {/* A dropdown on desktop, a bottom sheet on phones — "" is the unfiltered option. */}
+          <ResponsiveSelect
+            label={t("durationLabel")}
+            value={filters.duration ?? ALL}
+            onValueChange={(v) => navigate({ duration: pick<Filters["duration"]>(v) })}
+            className={selectClass}
+            options={[
+              { value: ALL, label: t("durationAll") },
+              ...durationRanges.map((d) => ({ value: d, label: t(`durations.${d}`) })),
+            ]}
+          />
 
-          <div className="relative">
-            <select
-              aria-label={t("propsLabel")}
-              value={filters.props ?? ""}
-              onChange={(e) => navigate({ props: (e.target.value || undefined) as Filters["props"] })}
-              className={selectClass}
-            >
-              <option value="">{t("propsAll")}</option>
-              {propSetups.map((p) => (
-                <option key={p} value={p}>
-                  {tPractice(`props.${p}`)}
-                </option>
-              ))}
-            </select>
-            <ChevronDownIcon className="pointer-events-none absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-outline" />
-          </div>
+          <ResponsiveSelect
+            label={t("propsLabel")}
+            value={filters.props ?? ALL}
+            onValueChange={(v) => navigate({ props: pick<Filters["props"]>(v) })}
+            className={selectClass}
+            options={[{ value: ALL, label: t("propsAll") }, ...propSetups.map((p) => ({ value: p, label: tPractice(`props.${p}`) }))]}
+          />
 
-          <div className="relative">
-            <select
-              aria-label={t("intensityLabel")}
-              value={filters.intensity ?? ""}
-              onChange={(e) => navigate({ intensity: (e.target.value || undefined) as Filters["intensity"] })}
-              className={selectClass}
-            >
-              <option value="">{t("intensityAll")}</option>
-              {intensityLevels.map((level) => (
-                <option key={level} value={level}>
-                  {t(`intensities.${level}`)}
-                </option>
-              ))}
-            </select>
-            <ChevronDownIcon className="pointer-events-none absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-outline" />
-          </div>
+          <ResponsiveSelect
+            label={t("intensityLabel")}
+            value={filters.intensity ?? ALL}
+            onValueChange={(v) => navigate({ intensity: pick<Filters["intensity"]>(v) })}
+            className={selectClass}
+            options={[
+              { value: ALL, label: t("intensityAll") },
+              ...intensityLevels.map((level) => ({ value: level, label: t(`intensities.${level}`) })),
+            ]}
+          />
         </div>
 
         <div className="flex items-center gap-4">

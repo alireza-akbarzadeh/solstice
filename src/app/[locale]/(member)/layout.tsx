@@ -2,6 +2,7 @@ import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { BottomTabs } from "@/components/layout/bottom-tabs";
 import { MemberNav } from "@/components/layout/member-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -19,7 +20,8 @@ export default async function MemberLayout({ children, params }: LayoutProps<"/[
       <SiteHeader />
       <MemberNav />
       <main className="flex-1 bg-surface">{children}</main>
-      <SiteFooter />
+      <SiteFooter className="pb-safe-nav lg:pb-0" />
+      <BottomTabs />
       <TestPanel />
     </>
   );
