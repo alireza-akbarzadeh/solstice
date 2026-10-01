@@ -1,0 +1,15 @@
+{
+  "id": "session-1790856179698",
+  "startedAt": "2026-10-01T12:02:59.698Z",
+  "cwd": "/Users/alirezaakbarzadeh/workshop/solstice",
+  "context": {},
+  "metrics": {
+    "edits": 0,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "restoredAt": "2026-10-01T12:03:02.011Z",
+  "endedAt": "2026-10-01T12:03:05.350Z",
+  "duration": 5653
+}
