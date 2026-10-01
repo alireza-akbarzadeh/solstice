@@ -37,7 +37,7 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Site header / footer / nav | ✅ | `src/components/layout/` — sticky header, mobile sheet menu, footer; `(public)/layout.tsx` |
 | Module structure (`src/modules/*`) | 🟡 | `practices`, `programs` started: `types.ts`, `sample-data.ts`, `server/`, `components/` |
 | Sample content → database | ⬜ | `src/modules/*/sample-*.ts` + `TODO(db)` in `server/` functions |
-| Video provider | 🟡 | `VideoProvider` boundary in `infrastructure/video` with a mock (`MOCK_VIDEO_URL` or a default clip). Previews are cut client-side only — a real provider must enforce them server-side |
+| Video provider | 🟡 | Configurable registry in `infrastructure/video`, chosen with `VIDEO_PROVIDER`: `mock` (a media URL through the app's own player), `youtube`, `aparat`. Each practice stores the provider its video came from, so switching later doesn't strand published rows. **None of the three can gate members-only video** — an embed is public on the platform and a mock URL is readable in the page — so a members-only practice falls back to the locked state rather than leaking. Paid providers (Mux, Bunny, Cloudflare Stream, ArvanCloud) drop in as one file each |
 | Membership entitlement | ✅ | `solstice_membership` (one row per user, trial → period end); `getViewer()` resolves session + access once per request; `resolvePracticeAccess` → full / preview / locked |
 | Payment provider | 🟡 | `PaymentProvider` boundary in `infrastructure/payment`; only `mock`: redirects to the in-app test checkout `/checkout/test` (test cards), which starts the membership. Real provider + webhooks not built |
 | Test mode | ✅ | Only while `PAYMENT_PROVIDER=mock`: test panel (`modules/memberships/components/test-panel*`), one-click test accounts (password `solstice-test`), membership presets, role switch. Disappears once a real provider is configured |
@@ -171,3 +171,10 @@ member moves the dossier above the directory, and selects open as drawers.
 - **2026-10-01** — Studio on phones: the four data tables (practices, members, ledger, essays)
   now render as card lists below `lg` rather than scrolling sideways, and selecting a member
   lifts the dossier above the directory instead of burying it under the whole list.
+- **2026-10-01** — Video providers made configurable: `VIDEO_PROVIDER` picks `mock`, `youtube`
+  or `aparat`, each a file under `infrastructure/video/providers`. `Playback` is now a union of
+  `file` (our player: chapters, timestamps, preview cut-off, auto-complete) and `embed` (the
+  platform's iframe: none of those apply). Practices remember their own provider. Because an
+  embed cannot withhold a members-only video, a provider that `canGate === false` shows the
+  locked state instead of the embed — verified that a signed-out visitor gets no iframe on a
+  members-only practice.

@@ -12,6 +12,7 @@ import { PracticeInventory } from "@/modules/instructor/components/practice-inve
 import { StatCard } from "@/modules/instructor/components/stat-card";
 import { StudioFilterPills } from "@/modules/instructor/components/studio-filter-pills";
 import { StudioPageHeader } from "@/modules/instructor/components/studio-page-header";
+import { videoProvider } from "@/infrastructure/video";
 import { getContentInventory, getLibrarySummary, getPracticeRow } from "@/modules/instructor/server/content";
 import { requireInstructor } from "@/modules/memberships/server/viewer";
 
@@ -92,7 +93,10 @@ export default async function StudioPracticesPage({ params, searchParams }: Page
             access: editRow.access,
             previewSeconds: editRow.previewSeconds,
             videoAssetId: editRow.videoAssetId,
+            videoProvider: editRow.videoProvider,
           }}
+          assetHint={videoProvider.assetHint}
+          providerId={videoProvider.id}
         />
       ) : (
         <Empty className="rounded-xl bg-surface-container-low">

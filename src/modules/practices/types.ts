@@ -48,8 +48,10 @@ export type PracticeChapter = {
 
 export type PracticeDetail = PracticeSummary & {
   status: "draft" | "published";
-  /** The video at the VideoProvider (the mock: a URL); null until one is attached. */
+  /** The video at its VideoProvider (a URL, a YouTube id, an Aparat hash); null until attached. */
   videoAssetId: string | null;
+  /** Which provider holds it, so a library can mix sources and survive a provider switch. */
+  videoProvider: string | null;
   /** Large still shown before playback. */
   poster: string;
   /** Free preview length for non-members (members-only practices). */

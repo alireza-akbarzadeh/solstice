@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { env } from "@/env";
 import { getPathname } from "@/i18n/navigation";
+import { parseAssetForAnyProvider } from "@/infrastructure/video";
 import { REFLECTION_MAX_LENGTH } from "@/modules/community/schemas";
 import { createReflection, setReflectionPinned } from "@/modules/community/server/reflections";
 import { setCancelAtPeriodEnd } from "@/modules/memberships/server/memberships";
@@ -160,12 +161,15 @@ export async function featurePractice(input: unknown): Promise<StudioResult> {
  */
 export async function attachPracticeVideo(input: unknown): Promise<StudioResult> {
   if (!(await instructorOnly())) return { ok: false, error: "forbidden" };
-  const parsed = z
-    .object({ slug, url: z.union([z.string().url().max(2000), z.literal("")]) })
-    .safeParse(input);
+  const parsed = z.object({ slug, url: z.string().max(2000) }).safeParse(input);
   if (!parsed.success) return { ok: false, error: "invalid" };
 
-  const changed = await setPracticeVideo(parsed.data.slug, parsed.data.url || null);
+  const value = parsed.data.url.trim();
+  // An empty box detaches; anything else must be a link one of the providers recognises.
+  const asset = value ? parseAssetForAnyProvider(value) : null;
+  if (value && !asset) return { ok: false, error: "invalid" };
+
+  const changed = await setPracticeVideo(parsed.data.slug, asset);
   if (!changed) return { ok: false, error: "invalid" };
   refresh();
   return { ok: true };

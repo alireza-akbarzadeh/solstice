@@ -20,9 +20,10 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { LockedPracticeStage } from "@/modules/practices/components/locked-practice-stage";
 import { PracticeChapters } from "@/modules/practices/components/practice-chapters";
+import { EmbedPlayer } from "@/modules/practices/components/embed-player";
 import { PracticePlayer } from "@/modules/practices/components/practice-player";
 import { PracticeStage } from "@/modules/practices/components/practice-stage";
-import { videoProvider } from "@/infrastructure/video";
+import { providerFor } from "@/infrastructure/video";
 import { withNext } from "@/lib/safe-next";
 import { PracticeReflections } from "@/modules/community/components/practice-reflections";
 import { CompleteButton, SaveButton } from "@/modules/progress/components/practice-actions";
@@ -94,7 +95,16 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
           : hasCompletedRecently(viewer.user.id, practice.slug),
       ])
     : [false, false];
-  const playback = access.mode === "locked" ? null : await videoProvider.getPlayback(practice.videoAssetId, toPlaybackGrant(access));
+  /*
+   * An embed hands the whole video to the platform's player, so a preview cannot be cut short
+   * and the members-only gate would be decorative. Rather than leak the practice, a provider
+   * that can't gate shows the locked state to anyone who hasn't earned full access.
+   */
+  const provider = providerFor(practice.videoProvider);
+  const cannotHonourPreview = access.mode === "preview" && !provider.canGate;
+  const playback =
+    access.mode === "locked" || cannotHonourPreview ? null : await provider.getPlayback(practice.videoAssetId, toPlaybackGrant(access));
+  const fileLimit = playback?.kind === "file" ? playback.limitSeconds : undefined;
 
   // Account first, then payment, then straight back to this practice.
   const here = programDay
@@ -152,10 +162,13 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
       </nav>
 
       {/* One stage for the player, chapters and reflections: timestamps seek the video. */}
-      <PracticeStage hasVideo={!!playback} limitSeconds={playback?.limitSeconds}>
+      {/* Only a file-backed player shares its clock, so chapters and timestamps stand down for embeds. */}
+      <PracticeStage hasVideo={playback?.kind === "file"} limitSeconds={fileLimit}>
         <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
           <section className="flex flex-col gap-space-lg lg:col-span-8">
-            {playback ? (
+            {playback?.kind === "embed" ? (
+              <EmbedPlayer src={playback.src} title={playback.title} />
+            ) : playback ? (
               <PracticePlayer
                 videoUrl={playback.src}
                 poster={practice.poster}

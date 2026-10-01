@@ -21,6 +21,7 @@ export async function getPractice(
     poster: practice.poster ?? practice.image,
     previewSeconds: practice.previewSeconds ?? undefined,
     videoAssetId: practice.videoAssetId,
+    videoProvider: practice.videoProvider,
     instructorNote: practice.instructorNote ? localize(practice.instructorNote, locale) : undefined,
     focus: practice.focus.map((f) => localize(f, locale)),
     implements: practice.implements.map((i) => ({ kind: i.kind, name: localize(i.name, locale), detail: localize(i.detail, locale) })),

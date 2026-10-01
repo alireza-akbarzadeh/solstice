@@ -1,36 +1,50 @@
 import { env } from "@/env";
 
-// VideoProvider boundary (README: providers stay replaceable). Videos never live in Postgres.
+import { aparatProvider } from "./providers/aparat";
+import { mockVideoProvider } from "./providers/mock";
+import { youtubeProvider } from "./providers/youtube";
+import type { VideoProvider } from "./types";
 
-export type PlaybackGrant = { kind: "full" } | { kind: "preview"; limitSeconds: number };
-
-export type Playback = {
-  src: string;
-  /** Set for previews: the player stops here and shows the membership gate. */
-  limitSeconds?: number;
-};
-
-export interface VideoProvider {
-  id: string;
-  /** `assetId` is the practice's videoAssetId, or null when none is attached yet. */
-  getPlayback(assetId: string | null, grant: PlaybackGrant): Promise<Playback>;
-}
-
-// Open-licence stand-in (Big Buck Bunny, ~10 min) so previews and gating can be exercised.
-const DEFAULT_MOCK_VIDEO = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
+export type { Playback, PlaybackGrant, VideoProvider } from "./types";
 
 /**
- * Plays the practice's video URL when the instructor attached one, else one sample file. The preview limit is enforced by the player
- * only, so a determined viewer could reach the full file.
- * TODO(video): a real provider must enforce previews server-side — a separate preview
- * rendition or a signed URL that expires/ends at `limitSeconds` (Mux, Cloudflare Stream, …).
+ * Every provider the app can be pointed at, chosen with `VIDEO_PROVIDER` in the environment.
+ * Adding a paid one later (Mux, Bunny Stream, Cloudflare Stream, ArvanCloud) means writing one
+ * file next to these and adding its id here and to the env enum — nothing in the UI changes,
+ * because pages only ever see `Playback`.
+ *
+ * Today's choices are all free and none of them can gate members-only video; see `canGate`.
  */
-const mockVideoProvider: VideoProvider = {
-  id: "mock",
-  async getPlayback(assetId, grant) {
-    const src = assetId?.startsWith("https://") ? assetId : (env.MOCK_VIDEO_URL ?? DEFAULT_MOCK_VIDEO);
-    return grant.kind === "preview" ? { src, limitSeconds: grant.limitSeconds } : { src };
-  },
-};
+export const videoProviders = {
+  mock: mockVideoProvider,
+  youtube: youtubeProvider,
+  aparat: aparatProvider,
+} as const satisfies Record<string, VideoProvider>;
 
-export const videoProvider: VideoProvider = mockVideoProvider;
+export type VideoProviderId = keyof typeof videoProviders;
+
+export const videoProvider: VideoProvider = videoProviders[env.VIDEO_PROVIDER];
+
+/** Lets the instructor paste a link from any configured provider, not just the active one. */
+export function parseAssetForAnyProvider(input: string): { providerId: VideoProviderId; assetId: string } | null {
+  // The configured provider gets first refusal, so an ambiguous value resolves the way the
+  // studio is set up; the rest let a library mix sources.
+  const ordered: [VideoProviderId, VideoProvider][] = [
+    [env.VIDEO_PROVIDER, videoProviders[env.VIDEO_PROVIDER]],
+    ...(Object.entries(videoProviders) as [VideoProviderId, VideoProvider][]).filter(([id]) => id !== env.VIDEO_PROVIDER),
+  ];
+  for (const [providerId, provider] of ordered) {
+    const assetId = provider.parseAsset(input);
+    if (assetId) return { providerId, assetId };
+  }
+  return null;
+}
+
+/**
+ * The provider that holds a given practice's video. Rows remember their own provider, so
+ * switching `VIDEO_PROVIDER` later does not strand everything already published.
+ */
+export function providerFor(providerId: string | null | undefined): VideoProvider {
+  if (!providerId) return videoProvider;
+  return videoProviders[providerId as VideoProviderId] ?? videoProvider;
+}

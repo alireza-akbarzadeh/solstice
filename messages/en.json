@@ -170,7 +170,8 @@
       "mirror": "Mirror view",
       "fullscreen": "Full screen",
       "exitFullscreen": "Exit full screen",
-      "unavailable": "The video for this practice is being prepared."
+      "unavailable": "The video for this practice is being prepared.",
+      "embedMissing": "No video has been attached to this practice yet."
     },
     "preview": {
       "badge": "Free preview · {minutes, number} min",
@@ -1344,7 +1345,7 @@
           "ready": "Ready",
           "pending": "Pending",
           "urlLabel": "Video URL",
-          "urlHint": "The mock provider plays this file directly. Any https URL works.",
+          "urlHint": "Paste a link from your video provider — the studio is set to {provider}. The practice remembers which provider its video came from.",
           "attach": "Attach video",
           "detach": "Detach",
           "attached": "Video attached.",

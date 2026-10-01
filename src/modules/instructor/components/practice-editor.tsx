@@ -30,6 +30,7 @@ export type EditablePractice = {
   access: PracticeAccess;
   previewSeconds: number | null;
   videoAssetId: string | null;
+  videoProvider: string | null;
 };
 
 /** A localized pair of inputs: English and Persian side by side, each in its own direction. */
@@ -76,7 +77,7 @@ function LocalizedField({
  * Stitch: studio-admin-content-video-publisher — the editorial metadata column, plus the
  * ingest column rewritten for the mock VideoProvider, which holds a URL rather than an upload.
  */
-export function PracticeEditor({ practice }: { practice: EditablePractice }) {
+export function PracticeEditor({ practice, assetHint, providerId }: { practice: EditablePractice; assetHint: string; providerId: string }) {
   const t = useTranslations("Studio.practices.editor");
   const tPractice = useTranslations("Practice");
   const tLibrary = useTranslations("Practices");
@@ -138,7 +139,7 @@ export function PracticeEditor({ practice }: { practice: EditablePractice }) {
             </p>
           </div>
           <Badge variant={videoUrl ? "default" : "secondary"} className="shrink-0">
-            {videoUrl ? t("video.ready") : t("video.pending")}
+            {videoUrl ? (practice.videoProvider ?? t("video.ready")) : t("video.pending")}
           </Badge>
         </div>
 
@@ -148,11 +149,11 @@ export function PracticeEditor({ practice }: { practice: EditablePractice }) {
             id="video-url"
             dir="ltr"
             inputMode="url"
-            placeholder="https://…/practice.mp4"
+            placeholder={assetHint}
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
           />
-          <FieldDescription>{t("video.urlHint")}</FieldDescription>
+          <FieldDescription>{t("video.urlHint", { provider: providerId })}</FieldDescription>
         </Field>
 
         <div className="flex flex-wrap gap-space-xs">

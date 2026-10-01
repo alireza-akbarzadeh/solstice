@@ -30,7 +30,12 @@ export const env = createEnv({
     // Which EmailProvider sends mail. "outbox" stores messages for the test mailbox instead.
     EMAIL_PROVIDER: z.enum(["outbox"]).default("outbox"),
 
-    // Stand-in video for every practice until a VideoProvider exists.
+    // Which VideoProvider serves practice video. "mock" plays a media URL with our own
+    // player; "youtube"/"aparat" embed the platform's player. None of them can gate
+    // members-only video — that needs a paid provider with signed URLs.
+    VIDEO_PROVIDER: z.enum(["mock", "youtube", "aparat"]).default("mock"),
+
+    // Stand-in video used by the "mock" provider when a practice has none attached.
     MOCK_VIDEO_URL: z.string().url().optional(),
 
     DATABASE_URL: z.string().url(),
@@ -75,6 +80,8 @@ export const env = createEnv({
     PAYMENT_PROVIDER: process.env.PAYMENT_PROVIDER,
 
     EMAIL_PROVIDER: process.env.EMAIL_PROVIDER,
+
+    VIDEO_PROVIDER: process.env.VIDEO_PROVIDER,
 
     MOCK_VIDEO_URL: process.env.MOCK_VIDEO_URL,
 

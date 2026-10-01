@@ -2,7 +2,6 @@ import { eq } from "drizzle-orm";
 
 import type { Localized } from "@/lib/localized";
 import type { IntensityLevel, PracticeAccess, PracticeCategory, PropSetup } from "@/modules/practices/types";
-import { videoProvider } from "@/infrastructure/video";
 import { db } from "@/server/db";
 import { practices } from "@/server/db/schema";
 
@@ -30,11 +29,15 @@ export async function setPracticeFeatured(slug: string, featured: boolean) {
   return touched(rows);
 }
 
-/** `null` detaches the video and sends the practice back to needing one. */
-export async function setPracticeVideo(slug: string, url: string | null) {
+/**
+ * Points a practice at a video. The row records which provider holds it, so a library can mix
+ * sources and a later `VIDEO_PROVIDER` change doesn't strand what is already published.
+ * `null` detaches it and sends the practice back to needing one.
+ */
+export async function setPracticeVideo(slug: string, asset: { providerId: string; assetId: string } | null) {
   const rows = await db
     .update(practices)
-    .set({ videoAssetId: url, videoProvider: url ? videoProvider.id : null })
+    .set({ videoAssetId: asset?.assetId ?? null, videoProvider: asset?.providerId ?? null })
     .where(eq(practices.slug, slug))
     .returning({ slug: practices.slug });
   return touched(rows);
