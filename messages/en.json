@@ -1402,7 +1402,8 @@
         "leaving": "Leaving at period end",
         "renews": "Through {when}",
         "never": "Has not practised yet",
-        "inspect": "Inspect"
+        "inspect": "Inspect",
+        "through": "Through"
       },
       "dossier": {
         "pickTitle": "No one selected",

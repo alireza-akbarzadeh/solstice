@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { routing } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 import { MemberDirectory } from "@/modules/instructor/components/member-directory";
 import { MemberDossierPanel } from "@/modules/instructor/components/member-dossier";
 import { StatCard } from "@/modules/instructor/components/stat-card";
@@ -128,7 +129,8 @@ export default async function StudioMembersPage({ params, searchParams }: PagePr
           )}
         </div>
 
-        <div className="xl:col-span-4">
+        {/* Selecting someone on a phone should not mean scrolling past the whole directory. */}
+        <div className={cn("xl:col-span-4 xl:order-none", dossier && "order-first")}>
           {dossier ? (
             <MemberDossierPanel dossier={dossier} isSelf={dossier.account.id === viewer.user.id} />
           ) : (

@@ -1402,7 +1402,8 @@
         "leaving": "پایان در سرِ دوره",
         "renews": "تا {when}",
         "never": "هنوز تمرین نکرده",
-        "inspect": "بررسی"
+        "inspect": "بررسی",
+        "through": "تا"
       },
       "dossier": {
         "pickTitle": "کسی برگزیده نشده",

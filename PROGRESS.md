@@ -94,6 +94,10 @@ A shadcn `Sidebar` shell (`components/layout/studio-sidebar.tsx` + `studio-heade
 from the public chrome: collapses to icons on desktop, to a sheet on phones, and sits on the end
 side in Persian. Draft and awaiting-reply counts ride on the nav as badges.
 
+**Mobile:** the studio is usable on a phone — every data table (practices, members, ledger,
+essays) renders as a stacked card list below `lg` instead of scrolling sideways, selecting a
+member moves the dossier above the directory, and selects open as drawers.
+
 | Route | Status | Stitch | Notes |
 | --- | --- | --- | --- |
 | `/instructor` | ✅ | 🎨 | The welcome panel + metric bento shared by the `studio-admin-*` screens: accounts, projected MRR, minutes practised, reflections; newest arrivals and library pipeline |
@@ -164,3 +168,6 @@ side in Persian. Draft and awaiting-reply counts ride on the nav as badges.
   tightened its padding and moved to 44px touch targets. Postgres connection now sets
   `idle_timeout` / `max_lifetime` / `connect_timeout`, so a connection Neon closed while the
   compute was suspended is retired before it is reused.
+- **2026-10-01** — Studio on phones: the four data tables (practices, members, ledger, essays)
+  now render as card lists below `lg` rather than scrolling sideways, and selecting a member
+  lifts the dossier above the directory instead of burying it under the whole list.
