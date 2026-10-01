@@ -8,8 +8,8 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** Legal pages (`/privacy`, `/terms`, `/ethics`) and a localized 404, then journal
-> essays into Postgres so `/instructor/journal` becomes an editor rather than a shelf.
+> **Next up:** Journal essays into Postgres so `/instructor/journal` becomes an editor rather
+> than a shelf, then programs into Postgres (`/instructor/programs`).
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -46,13 +46,13 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Pricing source | 🟡 | `src/modules/memberships/plans.ts` ($24/mo, $220/yr). Stitch screens disagree ($24 vs $48) — confirm the real price |
 | Newsletter signup | 🟡 | Journal forms store to `solstice_newsletter_subscriber` (`modules/newsletter`). Footer form not wired yet; sending needs an `EmailProvider` |
 | Soundscape audio | ⬜ | Home atmosphere bar selects only; no audio assets/player yet |
-| Legal pages `/privacy`, `/terms`, `/ethics` | ⬜ | Linked from footer, no content yet |
+| Legal pages `/privacy`, `/terms`, `/ethics` | 🟡 | Built (`components/legal/`, content in the `Legal` message namespace, en + fa). Written from what the app actually stores — including that an instructor can read a private reflection, and that no card data is ever handled because payments are mocked. **Drafted by the people building it, not reviewed by a lawyer**; both pages say so. Have them reviewed before launch |
 | Mobile app shell | ✅ | Fixed bottom tab bar (`components/layout/bottom-tabs.tsx`) from the Stitch mobile screens — Today · Library · Programs · Community · My Space. Phones only (`lg:hidden`) and signed-in only; signed-out visitors keep the header sheet, since every tab needs an account. `MemberNav` is desktop-only now; My practices and Progress stay reachable from the header account menu. `viewport-fit=cover` + `pb-safe` / `pb-safe-nav` utilities keep it clear of the iPhone home indicator |
 | Responsive overlays | ✅ | `ResponsiveDialog` (centred modal on desktop, drag-to-dismiss bottom sheet on phones) and `ResponsiveSelect` (dropdown ↔ sheet of full-width rows), both on shadcn `Drawer`/vaul. Used by the library filters, the practice editor, and the member dossier |
 | PWA update flow | ✅ | `PwaUpdateProvider` + `PwaUpdatePrompt` (`components/pwa/`). `next.config.js` resolves one build id per deployment (Vercel SHA → git SHA → timestamp) and the worker registers as `/sw.js?v=<id>`, so a deploy is always a new worker. It installs, **waits**, and the member chooses when to switch; SKIP_WAITING then `controllerchange` then one reload. Installed PWAs never need reinstalling |
 | PWA (installable, offline fallback) | ✅ | `public/sw.js`, `src/app/manifest.ts`, `/offline` + `/fa/offline`, icons via `pnpm icons`. Offline tested in a production build (cached pages, localized offline page, Persian font offline) |
 | Push notifications (self-hosted Web Push) | 🟡 | Built: VAPID keys in `.env`, `web-push` sender, `solstice_push_subscription` table (now in Neon), server actions, SW push/click handlers, header bell. Verified: real FCM subscription + send (201) and SW handler. Left: try the bell end to end while signed in. Add the VAPID vars to Vercel before deploying |
-| Localized 404 page | ⬜ | Unknown routes show Next's default English 404 |
+| Localized 404 page | 🟡 | `[locale]/not-found.tsx` (en + fa). Covers every `notFound()` a real page throws — a dead practice slug, a removed essay, an unknown locale — which is what people actually hit. A completely unknown top-level path (`/no-such-page`) still shows Next's own 404 in production: `[locale]/[...rest]` fixes it in development, but a production build resolves unmatched paths to Next's built-in 404 before reaching any catch-all. Root `app/not-found.tsx` was tried and is not reached either |
 
 ## Public (SEO) — `src/app/[locale]/(public)`
 
@@ -179,3 +179,8 @@ member moves the dossier above the directory, and selects open as drawers.
   embed cannot withhold a members-only video, a provider that `canGate === false` shows the
   locked state instead of the embed — verified that a signed-out visitor gets no iframe on a
   members-only practice.
+- **2026-10-01** — Legal pages and a localized 404. `/privacy`, `/terms` and `/ethics` share one
+  renderer, with the prose as structured data in the `Legal` namespace so both locales stay in
+  step (8/8/7 sections each). The content describes what the app really does rather than boilerplate,
+  and says plainly that it has not been through a lawyer. The 404 covers `notFound()` in both
+  locales; truly unknown top-level paths remain Next's own 404 in production — see the row above.

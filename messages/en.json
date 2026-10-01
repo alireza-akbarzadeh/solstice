@@ -1630,5 +1630,221 @@
         "read_": "Read"
       }
     }
+  },
+  "Legal": {
+    "updated": "Last updated {date}",
+    "updatedDate": "1 October 2026",
+    "privacy": {
+      "metaTitle": "Privacy Policy",
+      "eyebrow": "Privacy",
+      "title": "What we keep, and why",
+      "lede": "Solstice is a small studio, not an advertising business. We collect what a practice library needs to work, and nothing we cannot explain to you in a sentence.",
+      "noticeTitle": "A working draft",
+      "noticeBody": "This policy describes what the application does today, written by the people building it. It has not been reviewed by a lawyer and is not legal advice. Have it reviewed before Solstice opens to the public.",
+      "sections": [
+        {
+          "heading": "What we collect",
+          "paragraphs": [
+            "Everything below is something you gave us or something the app recorded because you asked it to."
+          ],
+          "items": [
+            "Your account: name, email address, and a password that is stored only as a cryptographic hash — we never see it.",
+            "Your preferences: the practice rhythm you chose at sign-up, your language, and whether you asked for the newsletter.",
+            "Your practice: which practices you saved, which you marked complete, how many minutes they ran, and the programs you follow.",
+            "Your reflections: what you write under a practice or in the community circle, including notes you mark private.",
+            "Your sessions: a sign-in token, and the IP address and browser your session was opened from, so you can be kept signed in and we can spot a stolen session.",
+            "Notifications: if you turn them on, the address your browser gives us to deliver a push message."
+          ]
+        },
+        {
+          "heading": "What we do not collect",
+          "paragraphs": [
+            "There are no advertising or analytics trackers in Solstice. We do not buy data about you, sell data about you, or build a profile for anyone else.",
+            "We never see your payment details. Payments are not live yet; when they are, a payment provider will handle your card and we will only be told whether a membership is active."
+          ]
+        },
+        {
+          "heading": "Who can see your reflections",
+          "paragraphs": [
+            "A reflection posted to the circle is visible to every signed-in member, under your name.",
+            "A reflection marked private is hidden from other members — but your instructor can read it. That is deliberate: a private note is how you ask your instructor something without the circle watching. Please do not use it for anything you would not want your instructor to read."
+          ]
+        },
+        {
+          "heading": "Where it is stored",
+          "paragraphs": [
+            "Your data lives in a Postgres database hosted by Neon in the United States. Sign-in is handled in-house by Better Auth rather than an identity company.",
+            "If you sign in with Google or GitHub, that provider tells us your name, email address and avatar. They learn that you signed in to Solstice. We never receive your password for those accounts.",
+            "Push notifications travel through the push service your browser vendor runs — Google for Chrome, Mozilla for Firefox, Apple for Safari. They carry the message; they do not have your account."
+          ]
+        },
+        {
+          "heading": "How long we keep it",
+          "paragraphs": [
+            "Your account and practice history stay until you delete them. Expired sessions and dead notification addresses are cleared automatically.",
+            "You can delete your account from your profile at any time. That removes your account, membership record, saved practices, completions and reflections. It cannot be undone, and we cannot restore it for you afterwards."
+          ]
+        },
+        {
+          "heading": "Your choices",
+          "paragraphs": [
+            "You do not have to ask us for any of this — it is all in the app."
+          ],
+          "items": [
+            "Change your name, rhythm or newsletter preference in your profile.",
+            "Turn notifications off from the bell in the header, or in your browser's site settings.",
+            "Delete a reflection yourself, at any time.",
+            "Delete your whole account from your profile."
+          ]
+        },
+        {
+          "heading": "Children",
+          "paragraphs": [
+            "Solstice is meant for adults. We do not knowingly keep accounts for children under 16. If you believe a child has an account here, write to us and we will remove it."
+          ]
+        },
+        {
+          "heading": "Changes, and getting in touch",
+          "paragraphs": [
+            "If this policy changes in a way that affects you, we will say so in the app rather than quietly editing this page.",
+            "Questions about your data, or a request we have not built a button for yet, can go to the studio directly."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "metaTitle": "Terms of Practice",
+      "eyebrow": "Terms",
+      "title": "Terms of practice",
+      "lede": "The agreement between you and Solstice: what we offer, what we ask of you, and what we cannot promise.",
+      "noticeTitle": "Please read the safety section",
+      "noticeBody": "Solstice is a video practice library, not medical care. The health and safety section below is the part that matters most. These terms are also a working draft and have not been reviewed by a lawyer.",
+      "sections": [
+        {
+          "heading": "Health and safety",
+          "paragraphs": [
+            "Elena is a yoga teacher, not your doctor. Nothing in Solstice is medical advice, diagnosis or treatment, and no practice here is prescribed for a condition.",
+            "Talk to a qualified clinician before you begin, especially if you are pregnant, recovering from injury or surgery, or living with a heart, joint, blood-pressure or neurological condition.",
+            "You practise unsupervised, and nobody can see you. Work within the range your body offers today, use the props a practice asks for, and come out of any shape that produces pain, dizziness or breathlessness. Stop and seek help if something is wrong."
+          ]
+        },
+        {
+          "heading": "Your account",
+          "paragraphs": [
+            "Keep your password to yourself and your account to yourself. You are responsible for what happens under your sign-in, so tell us promptly if you think someone else has it.",
+            "One account is one person. Please do not share a membership."
+          ]
+        },
+        {
+          "heading": "Membership and payment",
+          "paragraphs": [
+            "Membership opens the full library, the programs and the community circle. Some practices stay open to everyone.",
+            "Payments are not live yet. Nothing in Solstice charges a card today, and any membership you hold has been granted rather than purchased. When real billing arrives, the price, the renewal date and how to cancel will be stated plainly before you are asked for anything.",
+            "When billing does begin: a membership renews until you stop it, cancelling keeps your access until the end of the period you have paid for, and we will not change a price without telling you first."
+          ]
+        },
+        {
+          "heading": "What you may do with the practices",
+          "paragraphs": [
+            "Your membership is a personal licence to stream the practices for yourself. It is not a licence to download, re-upload, screen publicly, or teach from the recordings.",
+            "The videos, writing, photography and the Solstice name belong to the studio."
+          ]
+        },
+        {
+          "heading": "What you write here",
+          "paragraphs": [
+            "Your reflections remain yours. By posting one you let us show it in the app to the people its visibility allows.",
+            "The circle is a place for practice, not for promotion, abuse, or anyone else's private business. We may remove a reflection or close an account that makes the circle unsafe."
+          ]
+        },
+        {
+          "heading": "What we cannot promise",
+          "paragraphs": [
+            "Solstice is offered as it is. We cannot promise that every video plays on every device, that the service is never interrupted, or that a practice will produce a particular result in your body.",
+            "To the extent the law allows, the studio is not liable for injury or loss arising from your use of the practices. The safety section above is not a formality."
+          ]
+        },
+        {
+          "heading": "Ending it",
+          "paragraphs": [
+            "You can delete your account whenever you like, from your profile.",
+            "We may close an account that breaks these terms. If we do, we will tell you why."
+          ]
+        },
+        {
+          "heading": "Changes",
+          "paragraphs": [
+            "These terms will change as Solstice grows — most obviously when real payments begin. Material changes will be announced in the app, not slipped quietly into this page."
+          ]
+        }
+      ]
+    },
+    "ethics": {
+      "metaTitle": "Ethics & Lineage",
+      "eyebrow": "Ethics",
+      "title": "Ethics and lineage",
+      "lede": "Not a legal document — the commitments the studio holds itself to, and how to tell us when we fall short of them.",
+      "noticeTitle": "Where this came from",
+      "noticeBody": "Yoga is a living tradition from South Asia, carried for thousands of years before any of us arrived. Teaching it online is a privilege borrowed from that lineage, not a product we invented.",
+      "sections": [
+        {
+          "heading": "Respect for the tradition",
+          "paragraphs": [
+            "We use Sanskrit names because they carry meaning, and we try to say what they mean rather than decorating a class with them.",
+            "Solstice teaches āsana, prāṇāyāma and stillness as practices of attention. We do not present them as a religion you must adopt, nor strip them of where they come from to make them easier to sell."
+          ]
+        },
+        {
+          "heading": "Scope of practice",
+          "paragraphs": [
+            "A yoga teacher's job is to teach movement and breath. It is not to diagnose, to treat, or to replace a therapist.",
+            "Where a practice touches something clinical — injury, pregnancy, grief, trauma — we will say plainly that it is not treatment and point you towards someone qualified."
+          ]
+        },
+        {
+          "heading": "Consent and autonomy",
+          "paragraphs": [
+            "You are the authority on your own body. Every cue in a practice is an invitation you may decline, and modifications are offered as equals rather than as the lesser version.",
+            "Nobody is watching you practise. There is no streak you must protect and no attendance anyone is marking."
+          ]
+        },
+        {
+          "heading": "Who this is for",
+          "paragraphs": [
+            "Every body, age, size, gender and ability is welcome here. Where a practice assumes something — wrists that bear weight, the floor being reachable — we try to say so and offer another way in.",
+            "Persian and English are treated as equals in this app, not as an original and a translation."
+          ]
+        },
+        {
+          "heading": "Honesty about money",
+          "paragraphs": [
+            "Prices are shown plainly, with no artificial scarcity, countdown timers or dark patterns pushing you towards a plan.",
+            "Some practices stay open to everyone, always. If the price is a genuine barrier for you, write to the studio — that conversation is welcome."
+          ]
+        },
+        {
+          "heading": "Honesty about the technology",
+          "paragraphs": [
+            "We collect what the practice library needs and nothing for advertising. Where the app does something you might not expect — an instructor being able to read a private reflection, for instance — we say so in the privacy policy rather than burying it.",
+            "When something here is not finished, the app says so rather than implying otherwise."
+          ]
+        },
+        {
+          "heading": "Raising a concern",
+          "paragraphs": [
+            "If a practice, a cue, or something in the circle felt wrong, tell the studio. A concern about conduct goes straight to Elena and will be answered personally.",
+            "Getting it wrong is survivable; not hearing about it is worse."
+          ]
+        }
+      ]
+    }
+  },
+  "NotFound": {
+    "eyebrow": "Lost the path",
+    "title": "This page is not here",
+    "body": "The link may be old, or the practice may have been renamed. The library is still where you left it.",
+    "home": "Home",
+    "practices": "Practices",
+    "journal": "Journal"
   }
 }
