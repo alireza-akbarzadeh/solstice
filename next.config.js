@@ -38,6 +38,10 @@ const buildId = resolveBuildId();
 
 /** @type {import("next").NextConfig} */
 const config = {
+  // A production build and a `next dev` server share .next and corrupt each other's output —
+  // the symptom is Turbopack failing to resolve next/font modules. Setting NEXT_DIST_DIR lets a
+  // one-off build go somewhere else while a dev server keeps running. Unset, nothing changes.
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
   env: { NEXT_PUBLIC_BUILD_ID: buildId },
   generateBuildId: () => buildId,
   async headers() {
