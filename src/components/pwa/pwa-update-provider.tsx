@@ -98,9 +98,11 @@ export function PwaUpdateProvider({ children }: { children: React.ReactNode }) {
           if (registration.installing) trackInstalling(registration.installing);
         });
 
+        // Re-checks the script at its *registered* URL. A new deployment is normally found at
+        // page load instead, because the new bundle registers a different `?v=` — which for an
+        // installed PWA is every cold open. This covers the narrower case of sw.js itself
+        // changing under the same URL, and costs nothing when there is nothing to find.
         const check = () => void registration.update().catch(() => undefined);
-        // An installed PWA is usually resumed rather than loaded, so the moment it comes back to
-        // the foreground is the realistic chance to notice a deployment.
         onVisibility = () => {
           if (document.visibilityState === "visible") check();
         };
