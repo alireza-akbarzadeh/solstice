@@ -8,15 +8,21 @@ import type { Reflection } from "../types";
 
 type Reader = { id: string; isInstructor: boolean } | null;
 
-// Private reflections are seen by their author, the instructor, and — for private
-// replies — the author of the reflection being answered.
+/**
+ * Private reflections are seen by their author, the instructor, and — for private replies —
+ * the author of the reflection being answered. A reflection the instructor has hidden leaves
+ * the circle for everyone but its own author, who still sees what they wrote.
+ */
 function visibleTo(reader: Reader): SQL | undefined {
   if (reader?.isInstructor) return undefined;
-  if (!reader) return eq(comments.visibility, "circle");
-  return or(
-    eq(comments.visibility, "circle"),
-    eq(comments.userId, reader.id),
-    sql`${comments.parentId} in (select ${comments.id} from ${comments} where ${comments.userId} = ${reader.id})`,
+  if (!reader) return and(eq(comments.visibility, "circle"), eq(comments.hidden, false));
+  return and(
+    or(eq(comments.hidden, false), eq(comments.userId, reader.id)),
+    or(
+      eq(comments.visibility, "circle"),
+      eq(comments.userId, reader.id),
+      sql`${comments.parentId} in (select ${comments.id} from ${comments} where ${comments.userId} = ${reader.id})`,
+    ),
   );
 }
 
@@ -29,6 +35,7 @@ const reflectionColumns = (reader: Reader) => ({
   atSeconds: comments.atSeconds,
   visibility: comments.visibility,
   pinned: comments.pinned,
+  hidden: comments.hidden,
   createdAt: comments.createdAt,
   authorId: user.id,
   authorName: user.name,
@@ -65,6 +72,7 @@ function toThreads(rows: Row[]): Reflection[] {
       atSeconds: row.atSeconds,
       visibility: row.visibility,
       pinned: row.pinned,
+      hidden: row.hidden,
       createdAt: row.createdAt,
       likes: row.likes,
       likedByViewer: row.liked,
@@ -175,6 +183,11 @@ export async function toggleReflectionLike(id: number, userId: string) {
       .insert(commentLikes)
       .values({ commentId: id, userId })
       .onConflictDoNothing();
+}
+
+/** Takes a reflection off the circle, or puts it back. Nothing is destroyed. */
+export async function setReflectionHidden(id: number, hidden: boolean) {
+  await db.update(comments).set({ hidden }).where(eq(comments.id, id));
 }
 
 export async function setReflectionPinned(id: number, pinned: boolean) {

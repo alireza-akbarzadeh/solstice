@@ -1,3 +1,5 @@
+import type { Localized } from "@/lib/localized";
+
 export const journalCategories = [
   "somatic",
   "breath",
@@ -40,6 +42,25 @@ export type JournalBlock =
       intro: string;
       items: { title: string; body: string }[];
     };
+
+/**
+ * A body block as it sits in the database: the same shapes the reader sees, but with text
+ * stored per locale. `JournalBlock` is the localized view the essay page renders.
+ */
+export type JournalStoredBlock =
+  | { type: "p"; text: Localized }
+  | { type: "h2"; text: Localized }
+  | { type: "quote"; text: Localized; source: Localized }
+  | { type: "figure"; image: string; alt: Localized; caption: Localized }
+  | {
+      type: "steps";
+      title: Localized;
+      intro: Localized;
+      items: { title: Localized; body: Localized }[];
+    };
+
+export const journalBlockTypes = ["p", "h2", "quote", "figure", "steps"] as const;
+export type JournalBlockType = (typeof journalBlockTypes)[number];
 
 export type JournalArticle = JournalArticleSummary & {
   body: JournalBlock[];

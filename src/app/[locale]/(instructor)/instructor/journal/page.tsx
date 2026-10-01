@@ -1,264 +1,186 @@
-import {
-  BookOpenIcon,
-  ClockIcon,
-  ExternalLinkIcon,
-  LayersIcon,
-  PenLineIcon,
-} from "lucide-react";
+import { BookOpenIcon, CircleCheckIcon, PencilOffIcon, PlusIcon, StarIcon } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { hasLocale } from "next-intl";
-import {
-  getFormatter,
-  getTranslations,
-  setRequestLocale,
-} from "next-intl/server";
+import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { JournalEditor, type EditableArticle } from "@/modules/instructor/components/journal-editor";
+import { JournalInventory } from "@/modules/instructor/components/journal-inventory";
 import { StatCard } from "@/modules/instructor/components/stat-card";
 import { StudioFilterPills } from "@/modules/instructor/components/studio-filter-pills";
 import { StudioPageHeader } from "@/modules/instructor/components/studio-page-header";
-import { getAllArticleSummaries } from "@/modules/journal/server/get-articles";
-import { journalCategories } from "@/modules/journal/types";
+import type { JournalInventoryItem } from "@/modules/instructor/server/journal";
+import { getArticleRow, getJournalRows } from "@/modules/journal/server/get-articles";
+import { localize } from "@/lib/localized";
 import { requireInstructor } from "@/modules/memberships/server/viewer";
+import { getAllPracticeSummaries } from "@/modules/practices/server/get-practice";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/instructor/journal">): Promise<Metadata> {
+const views = ["all", "published", "draft"] as const;
+type View = (typeof views)[number];
+
+export async function generateMetadata({ params }: PageProps<"/[locale]/instructor/journal">): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "Studio.journal" });
   return { title: t("metaTitle"), robots: { index: false } };
 }
 
-// No Stitch screen (Stitch's sidebar lists "Journal & Essays" but never draws it). Essays are
-// still sample data in modules/journal/sample-articles.ts, so this shelf is read-only.
-export default async function StudioJournalPage({
-  params,
-  searchParams,
-}: PageProps<"/[locale]/instructor/journal">) {
+// The journal lives in Postgres now, so this is a real editor: write, publish, feature, delete.
+export default async function StudioJournalPage({ params, searchParams }: PageProps<"/[locale]/instructor/journal">) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
   await requireInstructor(locale, "/instructor/journal");
   const query = await searchParams;
-  const rawCategory = Array.isArray(query.category)
-    ? query.category[0]
-    : query.category;
-  const category = journalCategories.includes(
-    rawCategory as (typeof journalCategories)[number],
-  )
-    ? rawCategory
-    : undefined;
+  const one = (key: string) => (Array.isArray(query[key]) ? query[key][0] : query[key]);
+  const rawView = one("view");
+  const view: View = views.includes(rawView as View) ? (rawView as View) : "all";
+  const editSlug = one("edit");
+  const creating = one("new") === "1";
 
-  const [t, tJournal, format, articles] = await Promise.all([
+  const [t, format, rows, practices] = await Promise.all([
     getTranslations("Studio.journal"),
-    getTranslations("Journal"),
     getFormatter(),
-    getAllArticleSummaries(locale),
+    getJournalRows(),
+    getAllPracticeSummaries(locale),
   ]);
 
-  const shown = category
-    ? articles.filter((a) => a.category === category)
-    : articles;
-  const minutes = articles.reduce((n, a) => n + a.readMinutes, 0);
-  const authors = new Set(articles.map((a) => a.author.name)).size;
-  const latest = articles[0];
+  const items: JournalInventoryItem[] = rows.map((row) => ({
+    slug: row.slug,
+    status: row.status,
+    featured: row.featured,
+    category: row.category,
+    issue: row.issue,
+    title: localize(row.title, locale),
+    excerpt: localize(row.excerpt, locale),
+    image: row.image,
+    authorName: localize(row.authorName, locale),
+    blocks: row.body.length,
+    publishedAt: row.publishedAt,
+    updatedAt: row.updatedAt,
+  }));
+
+  const shown = items.filter((i) => (view === "all" ? true : i.status === view));
+  const counts: Record<View, number> = {
+    all: items.length,
+    published: items.filter((i) => i.status === "published").length,
+    draft: items.filter((i) => i.status === "draft").length,
+  };
+
+  const editRow = editSlug ? await getArticleRow(editSlug) : null;
+  const practiceOptions = practices.map((p) => ({ slug: p.slug, title: p.title }));
+
+  // A brand-new essay starts from an empty shape; saving it mints the slug.
+  const blank: EditableArticle = {
+    slug: null,
+    category: "somatic",
+    issue: (items[0]?.issue ?? 0) + 1,
+    title: { en: "", fa: "" },
+    excerpt: { en: "", fa: "" },
+    tags: [],
+    authorName: { en: "", fa: "" },
+    authorRole: { en: "", fa: "" },
+    authorImage: null,
+    image: "",
+    imageAlt: { en: "", fa: "" },
+    body: [],
+    practices: [],
+  };
+
+  const editing: EditableArticle | null = editRow
+    ? {
+        slug: editRow.slug,
+        category: editRow.category,
+        issue: editRow.issue,
+        title: editRow.title,
+        excerpt: editRow.excerpt,
+        tags: editRow.tags,
+        authorName: editRow.authorName,
+        authorRole: editRow.authorRole,
+        authorImage: editRow.authorImage,
+        image: editRow.image,
+        imageAlt: editRow.imageAlt,
+        body: editRow.body,
+        practices: editRow.practices,
+      }
+    : creating
+      ? blank
+      : null;
 
   return (
-    <div className="gap-space-lg flex flex-col">
+    <div className="flex flex-col gap-space-lg">
       <StudioPageHeader
         eyebrow={t("eyebrow")}
         title={t("title")}
-        lede={t("lede", { total: articles.length, minutes })}
+        lede={t("lede", { total: items.length, published: counts.published })}
+        actions={
+          <Button asChild size="lg">
+            <Link href="/instructor/journal?new=1">
+              <PlusIcon data-icon="inline-start" />
+              {t("newEssay")}
+            </Link>
+          </Button>
+        }
       />
 
-      <Alert>
-        <AlertTitle>{t("sampleTitle")}</AlertTitle>
-        <AlertDescription>{t("sampleBody")}</AlertDescription>
-      </Alert>
-
-      <div className="gap-space-md grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard label={t("stats.essays")} value={format.number(items.length)} note={t("stats.essaysNote")} icon={BookOpenIcon} />
+        <StatCard label={t("stats.published")} value={format.number(counts.published)} note={t("stats.publishedNote")} icon={CircleCheckIcon} />
+        <StatCard label={t("stats.drafts")} value={format.number(counts.draft)} note={t("stats.draftsNote")} icon={PencilOffIcon} />
         <StatCard
-          label={t("stats.essays")}
-          value={format.number(articles.length)}
-          note={t("stats.essaysNote")}
-          icon={BookOpenIcon}
-        />
-        <StatCard
-          label={t("stats.reading")}
-          value={t("stats.minutes", { count: minutes })}
-          note={t("stats.readingNote")}
-          icon={ClockIcon}
-        />
-        <StatCard
-          label={t("stats.categories")}
-          value={format.number(new Set(articles.map((a) => a.category)).size)}
-          note={t("stats.categoriesNote")}
-          icon={LayersIcon}
-        />
-        <StatCard
-          label={t("stats.authors")}
-          value={format.number(authors)}
-          note={
-            latest
-              ? t("stats.latest", {
-                  when: format.dateTime(latest.publishedAt, {
-                    dateStyle: "medium",
-                  }),
-                })
-              : undefined
-          }
-          icon={PenLineIcon}
+          label={t("stats.featured")}
+          value={items.find((i) => i.featured)?.title ?? "—"}
+          note={t("stats.featuredNote")}
+          icon={StarIcon}
+          className="[&_span:first-of-type+*_span]:text-headline-sm"
         />
       </div>
 
-      <StudioFilterPills
-        basePath="/instructor/journal"
-        param="category"
-        active={category ?? "all"}
-        options={[
-          { value: "all", label: t("all"), count: articles.length },
-          ...journalCategories.map((c) => ({
-            value: c,
-            label: tJournal(`categories.${c}`),
-            count: articles.filter((a) => a.category === c).length,
-          })),
-        ]}
-      />
+      {editing ? (
+        <JournalEditor key={editing.slug ?? "new"} article={editing} practiceOptions={practiceOptions} />
+      ) : (
+        <Empty className="rounded-xl bg-surface-container-low">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <BookOpenIcon />
+            </EmptyMedia>
+            <EmptyTitle className="font-headline-sm text-headline-sm">{t("pick.title")}</EmptyTitle>
+            <EmptyDescription>{t("pick.body")}</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      )}
 
-      {/* Phones get cards instead of a sideways-scrolling table. */}
-      <ul className="gap-space-sm flex flex-col lg:hidden">
-        {shown.map((article) => (
-          <li
-            key={article.slug}
-            className="bg-surface-container-low p-space-md flex gap-3 rounded-xl shadow-sm"
-          >
-            <Image
-              src={article.image}
-              alt=""
-              width={64}
-              height={64}
-              sizes="64px"
-              className="size-16 shrink-0 rounded object-cover"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="font-label-lg text-label-lg text-on-surface truncate">
-                {article.title}
-              </p>
-              <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
-                {article.excerpt}
-              </p>
-              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                <Badge variant="outline">
-                  {tJournal(`categories.${article.category}`)}
-                </Badge>
-                <span className="font-label-sm text-label-sm text-outline">
-                  {t("table.read", { count: article.readMinutes })}
-                </span>
-                <Button asChild size="sm" variant="ghost" className="ms-auto">
-                  <Link href={`/journal/${article.slug}`}>
-                    <ExternalLinkIcon
-                      data-icon="inline-start"
-                      className="rtl:-scale-x-100"
-                    />
-                    {t("table.read_")}
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <div className="bg-surface-container-low hidden overflow-hidden rounded-xl shadow-sm lg:block">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-surface-container hover:bg-surface-container">
-                <TableHead className="font-label-sm text-label-sm tracking-wider uppercase">
-                  {t("table.essay")}
-                </TableHead>
-                <TableHead className="font-label-sm text-label-sm hidden tracking-wider uppercase md:table-cell">
-                  {t("table.category")}
-                </TableHead>
-                <TableHead className="font-label-sm text-label-sm hidden tracking-wider uppercase lg:table-cell">
-                  {t("table.published")}
-                </TableHead>
-                <TableHead className="font-label-sm text-label-sm text-end tracking-wider uppercase">
-                  {t("table.actions")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {shown.map((article) => (
-                <TableRow key={article.slug}>
-                  <TableCell>
-                    <div className="flex min-w-0 items-start gap-3">
-                      <Image
-                        src={article.image}
-                        alt=""
-                        width={64}
-                        height={48}
-                        sizes="64px"
-                        className="hidden h-12 w-16 shrink-0 rounded object-cover sm:block"
-                      />
-                      <div className="min-w-0">
-                        <p className="font-label-lg text-label-lg text-on-surface truncate">
-                          {article.title}
-                        </p>
-                        <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
-                          {article.excerpt}
-                        </p>
-                        <p className="font-label-sm text-label-sm text-outline">
-                          {t("table.issue", { issue: article.issue })} ·{" "}
-                          {article.author.name} ·{" "}
-                          {t("table.read", { count: article.readMinutes })}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <Badge variant="outline">
-                      {tJournal(`categories.${article.category}`)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-body-sm text-body-sm text-on-surface-variant hidden lg:table-cell">
-                    {format.dateTime(article.publishedAt, {
-                      dateStyle: "medium",
-                    })}
-                  </TableCell>
-                  <TableCell className="text-end">
-                    <Button asChild size="sm" variant="outline">
-                      <Link href={`/journal/${article.slug}`}>
-                        <ExternalLinkIcon
-                          data-icon="inline-start"
-                          className="rtl:-scale-x-100"
-                        />
-                        {t("table.read_")}
-                      </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+      <section className="flex flex-col gap-space-md">
+        <div className="flex flex-wrap items-center justify-between gap-space-sm">
+          <h2 className="font-headline-sm text-headline-sm text-on-surface">{t("shelf")}</h2>
+          <Badge variant="outline">{t("showing", { shown: shown.length, total: items.length })}</Badge>
         </div>
-      </div>
+
+        <StudioFilterPills
+          basePath="/instructor/journal"
+          param="view"
+          active={view}
+          keep={editSlug ? { edit: editSlug } : undefined}
+          options={views.map((v) => ({ value: v, label: t(`views.${v}`), count: counts[v] }))}
+        />
+
+        {shown.length === 0 ? (
+          <Empty className="rounded-xl bg-surface-container-low">
+            <EmptyHeader>
+              <EmptyTitle className="font-headline-sm text-headline-sm">{t("emptyTitle")}</EmptyTitle>
+              <EmptyDescription>{t("emptyBody")}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <JournalInventory items={shown} editing={editRow?.slug ?? null} />
+        )}
+      </section>
     </div>
   );
 }

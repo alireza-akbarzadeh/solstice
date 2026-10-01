@@ -26,6 +26,8 @@ export type Reflection = {
   atSeconds: number | null;
   visibility: ReflectionVisibility;
   pinned: boolean;
+  /** Taken off the circle by the instructor; the author still sees their own. */
+  hidden: boolean;
   createdAt: Date;
   likes: number;
   likedByViewer: boolean;

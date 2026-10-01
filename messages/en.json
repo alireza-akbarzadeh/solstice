@@ -672,7 +672,9 @@
       "title": "Recent reflections",
       "placeholder": "How did your practice feel today? Share a sensation, a release or a question with the circle…",
       "after": "After {title}"
-    }
+    },
+    "hide": "Hide from the circle",
+    "show": "Show in the circle"
   },
   "PracticeActions": {
     "save": "Save to Sanctuary",
@@ -1602,33 +1604,145 @@
       }
     },
     "journal": {
-      "metaTitle": "Journal & essays",
+      "metaTitle": "Journal",
       "eyebrow": "Journal & essays",
       "title": "The Solstice Chronicle",
-      "lede": "{total, number} essays, about {minutes, number} minutes of reading.",
-      "sampleTitle": "Essays are not in the database yet",
-      "sampleBody": "The chronicle still reads from modules/journal/sample-articles.ts, so it can be read here but not edited. Moving essays into Postgres — as the practice library already is — makes this page an editor.",
-      "all": "All",
+      "lede": "{total, number} essays, {published, number} of them published. Write here and they appear in the journal.",
+      "newEssay": "New essay",
+      "shelf": "The shelf",
+      "showing": "{shown, number} of {total, number}",
+      "actionFailed": "That did not save. Try again.",
+      "published": "“{title}” is now in the journal.",
+      "unpublished": "“{title}” is back to a draft.",
+      "featured": "“{title}” now leads the journal.",
+      "unfeatured": "“{title}” no longer leads the journal.",
+      "emptyTitle": "Nothing in this view",
+      "emptyBody": "Try another filter — the shelf is still whole.",
+      "views": {
+        "all": "All",
+        "published": "Published",
+        "draft": "Drafts"
+      },
+      "status": {
+        "draft": "Draft",
+        "published": "Published"
+      },
+      "pick": {
+        "title": "Choose an essay, or start a new one",
+        "body": "Pick one from the shelf below to edit it, or use “New essay” to write from scratch."
+      },
       "stats": {
         "essays": "Essays",
-        "essaysNote": "Published in the chronicle",
-        "reading": "Reading time",
-        "minutes": "{count, number} min",
-        "readingNote": "Across every essay",
-        "categories": "Categories",
-        "categoriesNote": "In use",
-        "authors": "Authors",
-        "latest": "Latest {when}"
+        "essaysNote": "Drafts included",
+        "published": "Published",
+        "publishedNote": "Readable in the journal",
+        "drafts": "Drafts",
+        "draftsNote": "Hidden from readers",
+        "featured": "Leading essay",
+        "featuredNote": "Sits above the grid"
       },
       "table": {
         "essay": "Essay",
-        "category": "Category",
+        "state": "State",
         "published": "Published",
         "actions": "Actions",
+        "edit": "Edit",
+        "more": "More actions for {title}",
+        "publish": "Publish",
+        "unpublish": "Return to draft",
+        "feature": "Make it lead the journal",
+        "unfeature": "Remove from the lead",
+        "view": "View in the journal",
+        "featured": "Leading",
         "issue": "Issue {issue, number}",
-        "read": "{count, number} min read",
-        "read_": "Read"
+        "blocks": "{count, number} blocks"
+      },
+      "editor": {
+        "eyebrow": "Essay",
+        "title": "Edit this essay",
+        "newTitle": "Write a new essay",
+        "view": "View",
+        "save": "Save essay",
+        "create": "Create essay",
+        "saved": "Saved.",
+        "created": "Essay created as a draft. Publish it from the shelf when it is ready.",
+        "error": "That did not save. Try again.",
+        "invalid": "Some fields still need filling — a title, an excerpt, an author and a cover image, in both languages.",
+        "deleted": "Essay deleted.",
+        "delete": "Delete essay",
+        "deleteBody": "This removes the essay and everything written in it. It cannot be undone.",
+        "keep": "Keep it",
+        "confirmDelete": "Delete",
+        "draftNotice": "Saved as a draft first",
+        "fields": {
+          "title": "Title",
+          "excerpt": "Excerpt",
+          "excerptHint": "The short paragraph shown on the journal card and in search results.",
+          "category": "Category",
+          "issue": "Issue number",
+          "issueHint": "Only used for ordering and the card label.",
+          "image": "Cover image",
+          "imageHint": "A path under /images, or a full https:// address. Uploading files is not built yet.",
+          "imageAlt": "Cover image description",
+          "author": "Author",
+          "authorName": "Author name",
+          "authorRole": "Author role",
+          "authorImage": "Author portrait",
+          "authorImagePlaceholder": "/images/brand/… (optional)",
+          "tags": "Tags",
+          "tag": "Tag {n, number}",
+          "addTag": "Add a tag",
+          "removeTag": "Remove this tag",
+          "practices": "Practices in this essay",
+          "practicesHint": "Chosen practices appear at the foot of the essay."
+        },
+        "blocks": {
+          "eyebrow": "The essay",
+          "title": "Body",
+          "hint": "The essay is built from blocks, in order. Add a paragraph, a heading, a quote, a picture or a set of steps.",
+          "count": "{count, number} blocks",
+          "addLabel": "Add a block",
+          "addPlaceholder": "Choose a block to add…",
+          "moveUp": "Move up",
+          "moveDown": "Move down",
+          "remove": "Remove this block",
+          "step": "Step {n, number}",
+          "addStep": "Add a step",
+          "removeStep": "Remove this step",
+          "types": {
+            "p": "Paragraph",
+            "h2": "Heading",
+            "quote": "Quote",
+            "figure": "Picture",
+            "steps": "Steps"
+          },
+          "descriptions": {
+            "p": "A paragraph of the essay",
+            "h2": "A section heading",
+            "quote": "A pulled quote with its source",
+            "figure": "An image with a caption",
+            "steps": "A numbered sequence to follow"
+          },
+          "fields": {
+            "text": "Text",
+            "heading": "Heading",
+            "quote": "Quote",
+            "source": "Who said it",
+            "image": "Image",
+            "imageHint": "A path under /images, or a full https:// address.",
+            "alt": "Image description",
+            "caption": "Caption",
+            "stepsTitle": "Title",
+            "stepsIntro": "Introduction",
+            "stepTitle": "Step title",
+            "stepBody": "Step text"
+          }
+        }
       }
+    },
+    "locale": {
+      "en": "English",
+      "fa": "Persian"
     }
   },
   "Legal": {

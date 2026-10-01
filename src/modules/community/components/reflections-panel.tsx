@@ -8,6 +8,8 @@ import {
   HeartIcon,
   LoaderCircleIcon,
   LockIcon,
+  EyeIcon,
+  EyeOffIcon,
   PinIcon,
   PinOffIcon,
   Trash2Icon,
@@ -29,6 +31,7 @@ import { usePracticeStage } from "@/modules/practices/components/practice-stage"
 
 import {
   likeReflection,
+  hideReflection,
   pinReflection,
   postReflection,
   removeReflection,
@@ -53,6 +56,8 @@ export type ReflectionView = {
   atChapter: string | null;
   private: boolean;
   pinned: boolean;
+  /** Taken off the circle by the instructor; shown struck-through to them. */
+  hidden: boolean;
   ago: string;
   likes: number;
   liked: boolean;
@@ -562,7 +567,7 @@ function ReflectionItem({
               {reflection.ago}
             </span>
           )}
-          {(canPin || reflection.canDelete) && (
+          {(canPin || isInstructor || reflection.canDelete) && (
             <DropdownMenu>
               <DropdownMenuTrigger
                 aria-label={t("more")}
@@ -581,6 +586,16 @@ function ReflectionItem({
                   >
                     {reflection.pinned ? <PinOffIcon /> : <PinIcon />}
                     {t(reflection.pinned ? "unpin" : "pin")}
+                  </DropdownMenuItem>
+                )}
+                {isInstructor && (
+                  <DropdownMenuItem
+                    onSelect={() =>
+                      run(() => hideReflection(reflection.id, !reflection.hidden))
+                    }
+                  >
+                    {reflection.hidden ? <EyeIcon /> : <EyeOffIcon />}
+                    {t(reflection.hidden ? "show" : "hide")}
                   </DropdownMenuItem>
                 )}
                 {reflection.canDelete && (

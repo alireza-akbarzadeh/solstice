@@ -10,6 +10,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:seed": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-practices.ts",
+    "db:seed:journal": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-journal.ts",
     "db:studio": "drizzle-kit studio",
     "dev": "next dev --turbo",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",

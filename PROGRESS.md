@@ -8,8 +8,9 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** Journal essays into Postgres so `/instructor/journal` becomes an editor rather
-> than a shelf, then programs into Postgres (`/instructor/programs`).
+> **Next up:** Programs into Postgres with a studio editor (`/instructor/programs` — create,
+> edit, delete), then the About page's content made editable, then creating and deleting
+> practices from `/instructor/videos`.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -36,7 +37,7 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 | Better Auth Dash (`@better-auth/infra`) | ✅ | `dash()` plugin; `BETTER_AUTH_API_KEY` is required — add it to Vercel before deploying |
 | Site header / footer / nav | ✅ | `src/components/layout/` — sticky header, mobile sheet menu, footer; `(public)/layout.tsx` |
 | Module structure (`src/modules/*`) | 🟡 | `practices`, `programs` started: `types.ts`, `sample-data.ts`, `server/`, `components/` |
-| Sample content → database | ⬜ | `src/modules/*/sample-*.ts` + `TODO(db)` in `server/` functions |
+| Sample content → database | 🟡 | Practices ✅ and journal ✅ are in Postgres (`pnpm db:seed`, `pnpm db:seed:journal`). Programs and the About page are still `sample-*.ts` / message files |
 | Video provider | 🟡 | Configurable registry in `infrastructure/video`, chosen with `VIDEO_PROVIDER`: `mock` (a media URL through the app's own player), `youtube`, `aparat`. Each practice stores the provider its video came from, so switching later doesn't strand published rows. **None of the three can gate members-only video** — an embed is public on the platform and a mock URL is readable in the page — so a members-only practice falls back to the locked state rather than leaking. Paid providers (Mux, Bunny, Cloudflare Stream, ArvanCloud) drop in as one file each |
 | Membership entitlement | ✅ | `solstice_membership` (one row per user, trial → period end); `getViewer()` resolves session + access once per request; `resolvePracticeAccess` → full / preview / locked |
 | Payment provider | 🟡 | `PaymentProvider` boundary in `infrastructure/payment`; only `mock`: redirects to the in-app test checkout `/checkout/test` (test cards), which starts the membership. Real provider + webhooks not built |
@@ -103,7 +104,7 @@ member moves the dossier above the directory, and selects open as drawers.
 | --- | --- | --- | --- |
 | `/instructor` | ✅ | 🎨 | The welcome panel + metric bento shared by the `studio-admin-*` screens: accounts, projected MRR, minutes practised, reflections; newest arrivals and library pipeline |
 | `/instructor/videos` | ✅ | 🎨 | `studio-admin-content-video-publisher`. Real rows: edit both locales' words, category/props/duration/intensity, access + preview length; publish, return to draft, feature; attach a video. Not built: creating a practice from nothing (needs image/video upload — seed with `pnpm db:seed`), and upload/transcode (mock `VideoProvider` stores a URL) |
-| `/instructor/journal` | ✅ | — | Read-only shelf: essays are still `modules/journal/sample-articles.ts`, so the page says so. Becomes an editor when essays move to Postgres |
+| `/instructor/journal` | ✅ | — | A real editor. Essays live in `solstice_journal_article`; write, publish, feature, delete. The body is a block editor (paragraph, heading, quote, picture, steps), each field in English and Persian side by side. The slug and issue number are derived, so nobody invents a URL. Drafts 404 publicly |
 | `/instructor/members` | ✅ | 🎨 | `studio-admin-members-access`: directory (search + views + tiers) and the dossier panel. Real actions — comped pass (1/3/6/12 months, `provider: "studio"`), stop/resume renewal, end access now, change role, send a reset link. Not built: the private instructor note (needs a column) |
 | `/instructor/revenue` | ✅ | 🎨 | `studio-admin-transactions-revenue`: MRR/ARR, subscribers, retention, a hand-drawn SVG trajectory + arrivals bars, tier cards, membership ledger. Everything is **projected** from membership rows — payments are still mocked, so nothing was charged |
 | `/instructor/community` | ✅ | — | Moderation through the member-facing `ReflectionsPanel`, so reply/pin/remove behave as under a practice. Views: awaiting reply (private notes + inquiries with no instructor answer), all, private, pinned, circle |
@@ -184,3 +185,11 @@ member moves the dossier above the directory, and selects open as drawers.
   step (8/8/7 sections each). The content describes what the app really does rather than boilerplate,
   and says plainly that it has not been through a lawyer. The 404 covers `notFound()` in both
   locales; truly unknown top-level paths remain Next's own 404 in production — see the row above.
+- **2026-10-01** — Journal moved into Postgres and `/instructor/journal` became a real editor:
+  write an essay in both languages, build its body from blocks, publish, feature and delete.
+  Reflections gained a hide/show control (`solstice_comment.hidden`) so the instructor can take
+  one off the circle without destroying it — the author still sees their own. Verified in a
+  browser end to end: create → draft stays 404 publicly → publish → live in `en` and `fa` →
+  delete → 404 again. Two bugs found and fixed on the way: saving a new essay left the form in
+  "new" state (a second save would have made a duplicate), and `revalidatePath` in the create
+  action remounted the editor and discarded the new slug.

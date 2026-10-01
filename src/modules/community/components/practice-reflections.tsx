@@ -45,6 +45,7 @@ export async function PracticeReflections({
     atChapter: r.atSeconds === null ? null : chapterAt(r.atSeconds),
     private: r.visibility === "private",
     pinned: r.pinned,
+    hidden: r.hidden,
     ago: format.relativeTime(r.createdAt, now),
     likes: r.likes,
     liked: r.likedByViewer,

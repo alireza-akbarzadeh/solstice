@@ -12,6 +12,7 @@ import {
 
 // Type-only imports: scripts/seed-practices.ts loads this file straight from Node.
 import type { Localized } from "@/lib/localized";
+import type { JournalCategory, JournalStoredBlock } from "@/modules/journal/types";
 import type { ImplementKind, IntensityLevel, PracticeAccess, PracticeCategory, PropSetup } from "@/modules/practices/types";
 
 export const createTable = pgTableCreator((name) => `solstice_${name}`);
@@ -213,7 +214,49 @@ export const practices = createTable(
   (t) => [index("practice_status_idx").on(t.status)],
 );
 
-// Programs and journal posts are still sample data, so rows point at practices by slug.
+// Programs are still sample data, so rows point at practices by slug.
+
+/**
+ * The journal. Text the reader sees is stored per locale ({ en, fa }), as the practice library
+ * does, so the studio can edit both languages side by side without touching code.
+ *
+ * `body` is the essay itself: an ordered list of blocks the reader's page knows how to render.
+ * The author travels on the row rather than in a separate table, so a guest essay can be
+ * published without an account existing for its writer.
+ */
+export const journalArticles = createTable(
+  "journal_article",
+  (d) => ({
+    slug: d.text().primaryKey(),
+    status: d.text().$type<"draft" | "published">().default("draft").notNull(),
+    /** The lead essay above the grid on /journal. Only the newest featured one is used. */
+    featured: d.boolean().default(false).notNull(),
+    category: d.text().$type<JournalCategory>().notNull(),
+    issue: d.integer().default(1).notNull(),
+    title: d.jsonb().$type<Localized>().notNull(),
+    excerpt: d.jsonb().$type<Localized>().notNull(),
+    tags: d.jsonb().$type<Localized[]>().default([]).notNull(),
+    authorName: d.jsonb().$type<Localized>().notNull(),
+    authorRole: d.jsonb().$type<Localized>().notNull(),
+    authorImage: d.text(),
+    image: d.text().notNull(),
+    imageAlt: d.jsonb().$type<Localized>().notNull(),
+    body: d.jsonb().$type<JournalStoredBlock[]>().default([]).notNull(),
+    /** Library practices the essay puts into the body, by slug. */
+    practices: d.jsonb().$type<string[]>().default([]).notNull(),
+    publishedAt: d.timestamp({ withTimezone: true }),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .$onUpdate(() => new Date())
+      .notNull(),
+  }),
+  (t) => [index("journal_status_idx").on(t.status)],
+);
 
 // A reflection under a practice, or (no practice) a post in the community circle.
 // Replies are one level deep (parentId → a top-level comment).
@@ -234,6 +277,8 @@ export const comments = createTable(
     /** "private": only the author and the instructor see it. */
     visibility: d.text().$type<"circle" | "private">().default("circle").notNull(),
     pinned: d.boolean().default(false).notNull(),
+    /** Taken off the public feed by the instructor. The author still sees their own. */
+    hidden: d.boolean().default(false).notNull(),
     createdAt: d
       .timestamp({ withTimezone: true })
       .$defaultFn(() => new Date())

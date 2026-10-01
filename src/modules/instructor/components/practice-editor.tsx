@@ -11,10 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ResponsiveSelect } from "@/components/ui/responsive-select";
-import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Localized } from "@/lib/localized";
 import { attachPracticeVideo, savePracticeMeta } from "@/modules/instructor/actions";
+import { LocalizedField } from "./localized-field";
 import { intensityLevels, practiceCategories, propSetups, type IntensityLevel, type PracticeAccess, type PracticeCategory, type PropSetup } from "@/modules/practices/types";
 
 export type EditablePractice = {
@@ -32,46 +32,6 @@ export type EditablePractice = {
   videoAssetId: string | null;
   videoProvider: string | null;
 };
-
-/** A localized pair of inputs: English and Persian side by side, each in its own direction. */
-function LocalizedField({
-  label,
-  description,
-  value,
-  onChange,
-  multiline,
-  maxLength,
-}: {
-  label: string;
-  description?: string;
-  value: Localized;
-  onChange: (next: Localized) => void;
-  multiline?: boolean;
-  maxLength?: number;
-}) {
-  const t = useTranslations("Studio.practices.editor");
-  const Control = multiline ? Textarea : Input;
-  return (
-    <Field>
-      <FieldLabel>{label}</FieldLabel>
-      <div className="grid grid-cols-1 gap-space-sm md:grid-cols-2">
-        {(["en", "fa"] as const).map((locale) => (
-          <div key={locale} className="flex flex-col gap-1">
-            <span className="font-label-sm text-label-sm tracking-widest text-clay uppercase">{t(`locale.${locale}`)}</span>
-            <Control
-              dir={locale === "fa" ? "rtl" : "ltr"}
-              value={value[locale]}
-              maxLength={maxLength}
-              rows={multiline ? 3 : undefined}
-              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => onChange({ ...value, [locale]: e.target.value })}
-            />
-          </div>
-        ))}
-      </div>
-      {description && <FieldDescription>{description}</FieldDescription>}
-    </Field>
-  );
-}
 
 /**
  * Stitch: studio-admin-content-video-publisher — the editorial metadata column, plus the

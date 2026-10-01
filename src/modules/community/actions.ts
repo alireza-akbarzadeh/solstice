@@ -16,6 +16,7 @@ import {
   createReflection,
   deleteReflection,
   getReflectionOwner,
+  setReflectionHidden,
   setReflectionPinned,
   toggleReflectionLike,
 } from "./server/reflections";
@@ -123,6 +124,21 @@ export async function likeReflection(id: unknown): Promise<ActionResult> {
 }
 
 // The instructor pins guide notes to the top of a practice's reflections.
+/**
+ * Takes a reflection off the circle, or puts it back. Unlike deleting, nothing is destroyed —
+ * the author still sees their own words, so a moderation call can be reversed.
+ */
+export async function hideReflection(id: unknown, hidden: boolean): Promise<ActionResult> {
+  const parsed = reflectionIdSchema.safeParse(id);
+  if (!parsed.success || typeof hidden !== "boolean") return { ok: false, error: "invalid" };
+  const viewer = await getViewer();
+  if (viewer.user?.role !== "instructor") return { ok: false, error: "forbidden" };
+
+  await setReflectionHidden(parsed.data, hidden);
+  refresh();
+  return { ok: true };
+}
+
 export async function pinReflection(
   id: unknown,
   pinned: boolean,
