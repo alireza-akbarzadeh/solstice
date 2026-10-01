@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuIcon } from "lucide-react";
+import { LayoutGridIcon, MenuIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -12,8 +12,9 @@ import { cn } from "@/lib/utils";
 
 import { isActivePath, memberNavItems, publicNavItems } from "./nav-items";
 
-export function MobileNav({ signedIn }: { signedIn: boolean }) {
+export function MobileNav({ signedIn, isInstructor }: { signedIn: boolean; isInstructor: boolean }) {
   const t = useTranslations("Nav");
+  const tAccount = useTranslations("Account");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   // Sheet sides are physical; open from the inline end in both directions.
@@ -69,6 +70,21 @@ export function MobileNav({ signedIn }: { signedIn: boolean }) {
                 </Link>
               );
             })}
+            {/* The studio is not advertised, but an instructor needs to reach it on a phone too. */}
+            {isInstructor && (
+              <Link
+                href="/instructor"
+                onClick={() => setOpen(false)}
+                aria-current={isActivePath(pathname, "/instructor") ? "page" : undefined}
+                className={cn(
+                  "mt-1 flex items-center gap-2 py-2 font-label-lg text-label-lg transition-colors",
+                  isActivePath(pathname, "/instructor") ? "text-primary" : "text-clay hover:text-primary",
+                )}
+              >
+                <LayoutGridIcon className="size-4" />
+                {tAccount("studio")}
+              </Link>
+            )}
           </nav>
         )}
         {!signedIn && (

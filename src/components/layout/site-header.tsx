@@ -53,7 +53,7 @@ export async function SiteHeader() {
             </Link>
           )}
           {user && <AccountMenu user={user} status={status} />}
-          <MobileNav signedIn={!!user} />
+          <MobileNav signedIn={!!user} isInstructor={user?.role === "instructor"} />
         </div>
       </Container>
     </header>

@@ -18,6 +18,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
+    "role": "node --env-file=.env --experimental-strip-types --no-warnings scripts/set-role.ts",
     "start": "next start",
     "stitch:images": "node --dns-result-order=ipv4first scripts/stitch-images.mjs",
     "stitch:pull": "node --dns-result-order=ipv4first scripts/stitch-pull.mjs",
