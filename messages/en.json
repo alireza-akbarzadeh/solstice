@@ -1,6 +1,6 @@
 {
   "Metadata": {
-    "title": "Solstice",
+    "title": "Arte Yoga Studio",
     "description": "A private digital yoga studio — practices, programs, and a calm community."
   },
   "LocaleSwitcher": {
@@ -9,10 +9,10 @@
     "fa": "فارسی"
   },
   "Brand": {
-    "name": "Solstice",
-    "studio": "Elena Vance Studio",
+    "name": "Arte",
+    "studio": "Yoga Studio",
     "instructor": "Elena Vance",
-    "logoAlt": "Solstice logo"
+    "logoAlt": "Arte Yoga Studio logo"
   },
   "Nav": {
     "primary": "Main navigation",
@@ -40,7 +40,7 @@
     "eyebrow": "A Sanctuary for Conscious Movement",
     "quote": "“Breath is the architecture of presence. Through mindful alignment and unhurried stillness, we return home to the body.”",
     "attribution": "— Elena Vance, Founder & Guide",
-    "newsletterTitle": "The Solstice Chronicle",
+    "newsletterTitle": "The Arte Chronicle",
     "newsletterBody": "Subtle reflections, seasonal breathwork rituals, and private retreat itineraries delivered on each new and full moon.",
     "emailLabel": "Email address",
     "emailPlaceholder": "Your email address",
@@ -50,8 +50,8 @@
     "pranayama": "Pranayama Series",
     "nidra": "Restorative Nidra",
     "apprenticeship": "Apprenticeship",
-    "essays": "Solstice Essays",
-    "copyright": "© {year, number, ::group-off} Solstice Sanctuary & Elena Vance. All rights reserved.",
+    "essays": "Arte Essays",
+    "copyright": "© {year, number, ::group-off} Arte Yoga Studio & Elena Vance. All rights reserved.",
     "privacy": "Privacy Policy",
     "terms": "Terms of Practice",
     "ethics": "Ethics & Lineage"
@@ -141,7 +141,7 @@
     "shareTitle": "Share this practice",
     "copied": "Link copied",
     "noteTitle": "Instructor Note from {name}",
-    "masterGuide": "Solstice Master Guide",
+    "masterGuide": "Arte Master Guide",
     "focusTitle": "Somatic Focus",
     "implementsTitle": "Recommended Implements",
     "chaptersEyebrow": "Flow Architecture",
@@ -188,22 +188,16 @@
   },
   "Home": {
     "hero": {
-      "eyebrow": "Autumn Solstice Season Online",
-      "titleLine1": "Move better.",
-      "titleLine2": "Breathe deeper.",
-      "titleLine3": "Live fully.",
-      "subtitle": "A calm digital sanctuary guided by Elena Vance. Mindful vinyasa, somatic restoration, and breathwork crafted for everyday presence.",
-      "primaryCta": "Begin 14-Day Free Sanctuary",
-      "secondaryCta": "Explore Practice Library",
-      "statPractices": "140+ Mindful Practices",
-      "statPrograms": "4 Immersion Programs",
-      "statLive": "Weekly Live Sangha",
-      "imageAlt": "Minimal yoga studio with limestone walls, oak floors and linen drapes in soft morning light",
-      "nowPlaying": "Now Resonance Ambient",
-      "nowPlayingTitle": "Warm Studio Rain & Singing Bowl",
-      "toggleSound": "Play ambient sound",
-      "nextLive": "Next Live Studio:",
-      "nextLiveTitle": "Sunday Dawn Nidra"
+      "eyebrow": "Your daily moment of calm",
+      "titleLine1": "Come back",
+      "titleLine2": "to yourself.",
+      "subtitle": "Thoughtful yoga for the way you feel today. Move, breathe, and find your own rhythm with Elena Vance.",
+      "primaryCta": "Start your free trial",
+      "memberCta": "Continue your practice",
+      "secondaryCta": "Explore practices",
+      "trialNote": "{days, number} days free. Cancel anytime.",
+      "practiceTypes": "Movement · Breathwork · Rest",
+      "imageAlt": "A woman practising yoga in a warm, sunlit studio with wooden floors and leafy plants"
     },
     "atmosphere": {
       "title": "Curate Atmosphere",
@@ -228,7 +222,7 @@
       "credentialsTitle": "Lineage & Training",
       "credentials": "E-RYT 500 • 18 Years Devotion • Somatic Experiencing Practitioner",
       "quote": "“Yoga is not about touching your toes; it is about what you discover on the way down.”",
-      "bio1": "Elena began her study along the banks of the Ganges in Rishikesh before deepening her craft through somatic physiology and therapeutic trauma work in Zurich. Solstice was conceived as an antidote to performance-driven, athletic yoga.",
+      "bio1": "Elena began her study along the banks of the Ganges in Rishikesh before deepening her craft through somatic physiology and therapeutic trauma work in Zurich. Arte was conceived as an antidote to performance-driven, athletic yoga.",
       "bio2": "Her methodology pairs classical alignment with soft neurological inquiry. Every cue invites you to cultivate intimacy with sensation, unravel habitual holding patterns, and return home to an unhurried mind.",
       "stat1Value": "18,000+",
       "stat1Label": "Practitioners Guided",
@@ -240,10 +234,10 @@
     "testimonials": {
       "eyebrow": "Member Voices",
       "title": "Sangha Reflections",
-      "description": "Quiet insights shared by practitioners weaving Solstice into their daily lives.",
+      "description": "Quiet insights shared by practitioners weaving Arte into their daily lives.",
       "rating": "Rated 5 out of 5",
       "clara": {
-        "quote": "“In a world of loud 45-minute HIIT workouts disguised as yoga, Solstice is a breath of cold pine air. Elena’s cues don’t command you—they hold space for you.”",
+        "quote": "“In a world of loud 45-minute HIIT workouts disguised as yoga, Arte is a breath of cold pine air. Elena’s cues don’t command you—they hold space for you.”",
         "name": "Clara Lindqvist",
         "meta": "Practicing 18 Months • Stockholm"
       },
@@ -253,7 +247,7 @@
         "meta": "Architect & Father • London"
       },
       "amina": {
-        "quote": "“Sunday Live Nidra has become non-negotiable family time. Solstice feels less like an app and more like visiting a quiet temple where time moves slower.”",
+        "quote": "“Sunday Live Nidra has become non-negotiable family time. Arte feels less like an app and more like visiting a quiet temple where time moves slower.”",
         "name": "Amina Patel",
         "meta": "Practicing 2 Years • Montreal"
       }
@@ -280,12 +274,12 @@
     "enabled": "Notifications are on for this device.",
     "disabledToast": "Notifications turned off.",
     "blocked": "Notifications are blocked in your browser settings.",
-    "unsupported": "This browser doesn’t support notifications. On iPhone, add Solstice to your Home Screen first.",
+    "unsupported": "This browser doesn’t support notifications. On iPhone, add Arte Yoga Studio to your Home Screen first.",
     "failed": "Couldn’t update notifications. Please try again.",
     "sendTest": "Send a test notification",
     "testSent": "Test notification sent.",
     "test": {
-      "title": "Solstice",
+      "title": "Arte Yoga Studio",
       "body": "Notifications are working. We’ll only reach out for new practices and live sessions."
     }
   },
@@ -299,7 +293,7 @@
     "description": "Practices, programs and a calm community with Elena Vance.",
     "update": {
       "title": "New version available",
-      "body": "Update to get the latest Solstice. Your place in the app is kept.",
+      "body": "Update to get the latest Arte. Your place in the app is kept.",
       "update": "Update",
       "updating": "Updating…",
       "later": "Later"
@@ -368,13 +362,13 @@
         }
       },
       "terms": "I agree to the <link>Terms of Practice</link> and the Studio Code of Care.",
-      "newsletter": "Receive Elena’s monthly Solstice Chronicle & seasonal reflections.",
+      "newsletter": "Receive Elena’s monthly Arte Chronicle & seasonal reflections.",
       "submit": "Create account & continue",
       "submitting": "Creating your account…",
       "hasAccount": "Already have an account?",
       "signIn": "Sign in here",
       "sideTitle": "A quiet digital refuge for conscious movement.",
-      "sideBody": "Leave competitive fitness behind. Solstice is a calm studio for practitioners seeking deliberate pacing, restorative breathwork and deep somatic grounding.",
+      "sideBody": "Leave competitive fitness behind. Arte is a calm studio for practitioners seeking deliberate pacing, restorative breathwork and deep somatic grounding.",
       "benefit1": "Unlimited access to 140+ cinematic practices",
       "benefit2": "Structured multi-week immersions with progress tracking",
       "benefit3": "Live Sunday Satsang & monthly workshops with Elena",
@@ -460,7 +454,7 @@
     },
     "promise": {
       "label": "Founder’s personal promise",
-      "quote": "“Your practice is a sacred commitment to your nervous system. If Solstice does not bring quiet clarity to your mornings, you may cancel effortlessly from your account anytime.”"
+      "quote": "“Your practice is a sacred commitment to your nervous system. If Arte does not bring quiet clarity to your mornings, you may cancel effortlessly from your account anytime.”"
     },
     "checkout": {
       "title": "Checkout & admission",
@@ -758,11 +752,11 @@
   },
   "About": {
     "metaTitle": "About Elena Vance",
-    "metaDescription": "Elena Vance, founder of Solstice Sanctuary: lineage, teaching philosophy and a personal letter to the practitioner.",
+    "metaDescription": "Elena Vance, founder of Arte Yoga Studio: lineage, teaching philosophy and a personal letter to the practitioner.",
     "hero": {
       "eyebrow": "Guide, Teacher & Lineage Holder",
       "title": "Guiding you back to your natural cadence of breath and stillness.",
-      "body": "I founded Solstice Sanctuary as an architectural refuge from the relentless pace of modern life — a physical and digital haven where movement is stripped of performance and restored to sacred self-inquiry.",
+      "body": "I founded Arte Yoga Studio as an architectural refuge from the relentless pace of modern life — a physical and digital haven where movement is stripped of performance and restored to sacred self-inquiry.",
       "letterCta": "Read Elena’s letter",
       "lineageCta": "Our lineage & ethics",
       "stats": [
@@ -779,7 +773,7 @@
           "label": "Somatic certified"
         }
       ],
-      "portraitAlt": "Elena Vance, founder of Solstice Sanctuary",
+      "portraitAlt": "Elena Vance, founder of Arte Yoga Studio",
       "role": "Sole instructor & curator"
     },
     "lineage": {
@@ -796,7 +790,7 @@
       "story": [
         "My journey began over fifteen years ago in high-intensity classical ashtanga shalas. While the fire of discipline shaped my inner architecture, I witnessed countless practitioners — including myself — trade nervous system regulation for structural contortion. True yoga was never meant to be an aesthetic conquest.",
         "A decade spent studying precision biomechanics alongside renowned Iyengar masters unraveled my approach to form: alignment is not about looking flawless from the outside, but feeling resonant and structurally sovereign from within.",
-        "Integrating somatic resolution practices and polyvagal theory transformed Solstice from an exercise studio into a true refuge for the nervous system. Here, we invite the subtle body to exhale its stored hypervigilance. We honor the threshold between exertion and stillness."
+        "Integrating somatic resolution practices and polyvagal theory transformed Arte from an exercise studio into a true refuge for the nervous system. Here, we invite the subtle body to exhale its stored hypervigilance. We honor the threshold between exertion and stillness."
       ],
       "quote": "“The pose does not demand that you reshape your humanity to fit its geometry. Rather, the geometry yields, cradling the exact truth of who you are today.”",
       "quoteSource": "— Elena Vance, On Conscious Biomechanics",
@@ -818,13 +812,13 @@
         },
         {
           "period": "Present day",
-          "title": "Solstice Sanctuary",
+          "title": "Arte Yoga Studio",
           "body": "Guiding an international digital community alongside seasonal in-person retreats centered on quiet longevity."
         }
       ]
     },
     "pillars": {
-      "eyebrow": "The Solstice philosophy",
+      "eyebrow": "The Arte philosophy",
       "title": "Four Pillars of Our Teaching",
       "body": "Every sequence, breath practice, and silent sit we curate is anchored firmly in four immovable principles.",
       "label": "Pillar {n}",
@@ -919,8 +913,8 @@
     }
   },
   "Journal": {
-    "metaTitle": "The Solstice Chronicle",
-    "eyebrow": "The Solstice Chronicle · Essays, Somatics & Reflections",
+    "metaTitle": "The Arte Chronicle",
+    "eyebrow": "The Arte Chronicle · Essays, Somatics & Reflections",
     "title": "Writings on the quiet architecture of breath, movement, and everyday stillness.",
     "lede": "Essays, breath guides and somatic inquiries by Elena Vance and guest writers. An open archive for the mindful nervous system.",
     "searchLabel": "Search the journal",
@@ -960,7 +954,7 @@
       "body": "Every lunar cycle, Elena shares unreleased writing, guided breath practices and recommended reading on slow living. No spam, only quiet.",
       "note": "Unsubscribe at any quiet moment."
     },
-    "chronicle": "The Solstice Chronicle",
+    "chronicle": "The Arte Chronicle",
     "reader": {
       "progress": "Reading progress",
       "breadcrumb": "Breadcrumb",
@@ -1182,12 +1176,12 @@
   },
   "Email": {
     "reset": {
-      "subject": "Reset your Solstice password",
-      "body": "Hello {name},\n\nSomeone asked to reset the password for your Solstice account. If it was you, choose a new one here (the link works for one hour):\n\n{url}\n\nIf it wasn’t you, you can ignore this email.\n\n— Solstice Sanctuary"
+      "subject": "Reset your Arte password",
+      "body": "Hello {name},\n\nSomeone asked to reset the password for your Arte account. If it was you, choose a new one here (the link works for one hour):\n\n{url}\n\nIf it wasn’t you, you can ignore this email.\n\n— Arte Yoga Studio"
     },
     "verify": {
-      "subject": "Confirm your email for Solstice",
-      "body": "Hello {name},\n\nWelcome to the sanctuary. Please confirm your email address:\n\n{url}\n\n— Elena & Solstice Sanctuary"
+      "subject": "Confirm your email for Arte",
+      "body": "Hello {name},\n\nWelcome to the sanctuary. Please confirm your email address:\n\n{url}\n\n— Elena & Arte Yoga Studio"
     }
   },
   "Studio": {
@@ -1207,7 +1201,8 @@
       "community": "Community",
       "announcements": "Announcements",
       "revenue": "Revenue",
-      "site": "Public sanctuary"
+      "site": "Public sanctuary",
+      "programs": "Programs"
     },
     "overview": {
       "metaTitle": "Studio overview",
@@ -1345,7 +1340,7 @@
           "preview": "Free preview (seconds)",
           "previewHint": "Non-members watch this much before the membership gate. Zero for none.",
           "image": "Cover image",
-          "imageHint": "A path under /images, or a full https:// address. Uploading files is not built yet.",
+          "imageHint": "Use a local /images/ path or HTTPS image URL. Leave blank to use the YouTube thumbnail.",
           "imageAlt": "Cover image description",
           "poster": "Video still",
           "posterHint": "Shown before playback starts. Falls back to the cover image.",
@@ -1356,21 +1351,29 @@
           "title": "The recording",
           "present": "Video attached",
           "absent": "No video yet",
-          "absentHint": "Members see the sample clip until one is attached.",
+          "absentHint": "Paste a link to add your recording.",
           "ready": "Ready",
           "pending": "Pending",
           "urlLabel": "Video URL",
-          "urlHint": "Paste a link from your video provider — the studio is set to {provider}. The practice remembers which provider its video came from.",
+          "urlHint": "Paste a YouTube watch, share, Shorts or live link. Aparat and direct .mp4/.webm links also work.",
           "attach": "Attach video",
           "detach": "Detach",
           "attached": "Video attached.",
           "detached": "Video detached.",
           "invalid": "That URL did not save.",
-          "mockTitle": "Uploads are not wired yet",
-          "mockBody": "The studio runs on the mock VideoProvider, which stores a URL rather than an upload. A real provider (Mux, Cloudflare Stream) would take a file here, transcode it, and enforce previews server-side."
+          "mockTitle": "Free video hosting",
+          "mockBody": "Use public or unlisted YouTube videos with embedding enabled. No paid video service is needed. Members-only access on this site does not make the source video private on YouTube.",
+          "savedWithPractice": "Your video URL will be saved when you create the practice.",
+          "selected": "Video link ready",
+          "missing": "Add a video URL before publishing.",
+          "providers": {
+            "youtube": "YouTube",
+            "aparat": "Aparat",
+            "mock": "Video file"
+          }
         },
         "create": "Create practice",
-        "created": "Practice created as a draft. Attach a video and publish it when ready.",
+        "created": "Practice saved as a draft.",
         "invalid": "Some fields still need filling — a title, summary, series line and cover image, in both languages.",
         "delete": "Delete practice",
         "deleted": "Practice deleted.",
@@ -1378,7 +1381,16 @@
         "deleteUsage": "This removes the practice, {saves, number} saves and {reflections, number} reflections. {sessions, number} completed sessions stay on members' records, because those minutes are theirs. It cannot be undone.",
         "keep": "Keep it",
         "confirmDelete": "Delete",
-        "draftNotice": "Saved as a draft first"
+        "draftNotice": "Saved as a draft first",
+        "newTitle": "Create a practice",
+        "close": "Back to practices",
+        "publish": "Publish",
+        "unpublish": "Return to draft",
+        "draftState": "Draft",
+        "publishedState": "Published",
+        "deleteTitle": "Delete “{title}”?",
+        "inUse": "Used in {count, number} programs. Remove it from their curriculum before deleting.",
+        "inUseError": "This practice is used in a program. Remove it from the program first."
       },
       "newPractice": "New practice"
     },
@@ -1623,7 +1635,7 @@
     "journal": {
       "metaTitle": "Journal",
       "eyebrow": "Journal & essays",
-      "title": "The Solstice Chronicle",
+      "title": "The Arte Chronicle",
       "lede": "{total, number} essays, {published, number} of them published. Write here and they appear in the journal.",
       "newEssay": "New essay",
       "shelf": "The shelf",
@@ -1760,6 +1772,102 @@
     "locale": {
       "en": "English",
       "fa": "Persian"
+    },
+    "programs": {
+      "title": "Programs",
+      "eyebrow": "Courses & curriculum",
+      "lede": "Create a program, arrange its weeks and practices, then publish it when ready.",
+      "newProgram": "New program",
+      "inventory": "Your programs",
+      "empty": "No programs yet. Create your first program above.",
+      "counts": "{weeks, number} weeks · {days, number} days · {members, number} enrolled",
+      "status": {
+        "draft": "Draft",
+        "published": "Published"
+      },
+      "featured": "Featured on home",
+      "edit": "Edit",
+      "publish": "Publish",
+      "unpublish": "Return to draft",
+      "feature": "Feature on home",
+      "unfeature": "Remove from home",
+      "delete": "Delete",
+      "view": "View program",
+      "saved": "Saved.",
+      "editor": {
+        "newTitle": "Create a program",
+        "title": "Edit program",
+        "close": "Back to programs",
+        "create": "Create draft",
+        "save": "Save program",
+        "created": "Program created as a draft.",
+        "saved": "Program saved.",
+        "published": "Program published.",
+        "unpublished": "Program returned to draft.",
+        "publish": "Publish",
+        "unpublish": "Return to draft",
+        "status": {
+          "draft": "Draft",
+          "published": "Published"
+        },
+        "delete": "Delete program",
+        "deleteTitle": "Delete “{title}”?",
+        "deleteBody": "This removes the program and {count, number} enrollments. Completed practices stay in members’ history. This cannot be undone.",
+        "keep": "Keep program",
+        "deleted": "Program deleted.",
+        "presentation": "Page appearance (optional)",
+        "curriculum": "Weeks & practices",
+        "curriculumHint": "Add a week, then a practice for each day. You can repeat practices and change their order. Publish every practice before publishing the program.",
+        "locked": "{count, number} members have enrolled. Day order and pacing are kept fixed so their progress stays correct. You can still edit the descriptions and page appearance.",
+        "emptyWeeks": "Add the first week to build your curriculum.",
+        "addWeek": "Add week",
+        "removeWeek": "Remove week",
+        "week": "Week {number, number}",
+        "day": "Day {number, number}",
+        "addDay": "Add practice day",
+        "removeDay": "Remove day",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "choosePractice": "Choose a practice",
+        "draftPractice": "{title} (draft)",
+        "weekDetails": "Week description & focus",
+        "draftNotice": "New programs start as drafts. Only published programs appear on your website.",
+        "fields": {
+          "title": "Program title",
+          "description": "Summary",
+          "image": "Cover image",
+          "imageHint": "A local /images/ path or a public HTTPS image URL.",
+          "imageAlt": "Cover image description",
+          "pacing": "Unlock schedule",
+          "self": "All days available immediately",
+          "daily": "One new day each day",
+          "heroTitle": "Page headline",
+          "heroHint": "Leave blank to use the program title.",
+          "lede": "Page introduction",
+          "badge": "Badge / series line",
+          "cta": "Explore button text",
+          "note": "Membership note",
+          "tone": "Color",
+          "green": "Forest green",
+          "clay": "Warm clay",
+          "icon": "Program symbol",
+          "sunrise": "Sunrise",
+          "brain": "Mind",
+          "weekTitle": "Week title",
+          "weekLabel": "Week label",
+          "weekDescription": "Week description",
+          "focus": "Focus"
+        },
+        "errors": {
+          "invalid": "Check the title, summary and cover description in both languages, the image URL, and the week titles.",
+          "failed": "Could not save. Please try again.",
+          "forbidden": "Only the instructor can change programs.",
+          "missing": "This program no longer exists.",
+          "practices": "One of the selected practices no longer exists. Choose another.",
+          "curriculum": "Add at least one week and one practice per week. Every selected practice must be published.",
+          "enrolled": "Members have already enrolled. Keep their day order and unlock schedule unchanged."
+        }
+      }
     }
   },
   "Legal": {
@@ -1769,9 +1877,9 @@
       "metaTitle": "Privacy Policy",
       "eyebrow": "Privacy",
       "title": "What we keep, and why",
-      "lede": "Solstice is a small studio, not an advertising business. We collect what a practice library needs to work, and nothing we cannot explain to you in a sentence.",
+      "lede": "Arte is a small studio, not an advertising business. We collect what a practice library needs to work, and nothing we cannot explain to you in a sentence.",
       "noticeTitle": "A working draft",
-      "noticeBody": "This policy describes what the application does today, written by the people building it. It has not been reviewed by a lawyer and is not legal advice. Have it reviewed before Solstice opens to the public.",
+      "noticeBody": "This policy describes what the application does today, written by the people building it. It has not been reviewed by a lawyer and is not legal advice. Have it reviewed before Arte opens to the public.",
       "sections": [
         {
           "heading": "What we collect",
@@ -1790,7 +1898,7 @@
         {
           "heading": "What we do not collect",
           "paragraphs": [
-            "There are no advertising or analytics trackers in Solstice. We do not buy data about you, sell data about you, or build a profile for anyone else.",
+            "There are no advertising or analytics trackers in Arte. We do not buy data about you, sell data about you, or build a profile for anyone else.",
             "We never see your payment details. Payments are not live yet; when they are, a payment provider will handle your card and we will only be told whether a membership is active."
           ]
         },
@@ -1805,7 +1913,7 @@
           "heading": "Where it is stored",
           "paragraphs": [
             "Your data lives in a Postgres database hosted by Neon in the United States. Sign-in is handled in-house by Better Auth rather than an identity company.",
-            "If you sign in with Google or GitHub, that provider tells us your name, email address and avatar. They learn that you signed in to Solstice. We never receive your password for those accounts.",
+            "If you sign in with Google or GitHub, that provider tells us your name, email address and avatar. They learn that you signed in to Arte. We never receive your password for those accounts.",
             "Push notifications travel through the push service your browser vendor runs — Google for Chrome, Mozilla for Firefox, Apple for Safari. They carry the message; they do not have your account."
           ]
         },
@@ -1831,7 +1939,7 @@
         {
           "heading": "Children",
           "paragraphs": [
-            "Solstice is meant for adults. We do not knowingly keep accounts for children under 16. If you believe a child has an account here, write to us and we will remove it."
+            "Arte is meant for adults. We do not knowingly keep accounts for children under 16. If you believe a child has an account here, write to us and we will remove it."
           ]
         },
         {
@@ -1847,14 +1955,14 @@
       "metaTitle": "Terms of Practice",
       "eyebrow": "Terms",
       "title": "Terms of practice",
-      "lede": "The agreement between you and Solstice: what we offer, what we ask of you, and what we cannot promise.",
+      "lede": "The agreement between you and Arte: what we offer, what we ask of you, and what we cannot promise.",
       "noticeTitle": "Please read the safety section",
-      "noticeBody": "Solstice is a video practice library, not medical care. The health and safety section below is the part that matters most. These terms are also a working draft and have not been reviewed by a lawyer.",
+      "noticeBody": "Arte is a video practice library, not medical care. The health and safety section below is the part that matters most. These terms are also a working draft and have not been reviewed by a lawyer.",
       "sections": [
         {
           "heading": "Health and safety",
           "paragraphs": [
-            "Elena is a yoga teacher, not your doctor. Nothing in Solstice is medical advice, diagnosis or treatment, and no practice here is prescribed for a condition.",
+            "Elena is a yoga teacher, not your doctor. Nothing in Arte is medical advice, diagnosis or treatment, and no practice here is prescribed for a condition.",
             "Talk to a qualified clinician before you begin, especially if you are pregnant, recovering from injury or surgery, or living with a heart, joint, blood-pressure or neurological condition.",
             "You practise unsupervised, and nobody can see you. Work within the range your body offers today, use the props a practice asks for, and come out of any shape that produces pain, dizziness or breathlessness. Stop and seek help if something is wrong."
           ]
@@ -1870,7 +1978,7 @@
           "heading": "Membership and payment",
           "paragraphs": [
             "Membership opens the full library, the programs and the community circle. Some practices stay open to everyone.",
-            "Payments are not live yet. Nothing in Solstice charges a card today, and any membership you hold has been granted rather than purchased. When real billing arrives, the price, the renewal date and how to cancel will be stated plainly before you are asked for anything.",
+            "Payments are not live yet. Nothing in Arte charges a card today, and any membership you hold has been granted rather than purchased. When real billing arrives, the price, the renewal date and how to cancel will be stated plainly before you are asked for anything.",
             "When billing does begin: a membership renews until you stop it, cancelling keeps your access until the end of the period you have paid for, and we will not change a price without telling you first."
           ]
         },
@@ -1878,7 +1986,7 @@
           "heading": "What you may do with the practices",
           "paragraphs": [
             "Your membership is a personal licence to stream the practices for yourself. It is not a licence to download, re-upload, screen publicly, or teach from the recordings.",
-            "The videos, writing, photography and the Solstice name belong to the studio."
+            "The videos, writing, photography and the Arte name belong to the studio."
           ]
         },
         {
@@ -1891,7 +1999,7 @@
         {
           "heading": "What we cannot promise",
           "paragraphs": [
-            "Solstice is offered as it is. We cannot promise that every video plays on every device, that the service is never interrupted, or that a practice will produce a particular result in your body.",
+            "Arte is offered as it is. We cannot promise that every video plays on every device, that the service is never interrupted, or that a practice will produce a particular result in your body.",
             "To the extent the law allows, the studio is not liable for injury or loss arising from your use of the practices. The safety section above is not a formality."
           ]
         },
@@ -1905,7 +2013,7 @@
         {
           "heading": "Changes",
           "paragraphs": [
-            "These terms will change as Solstice grows — most obviously when real payments begin. Material changes will be announced in the app, not slipped quietly into this page."
+            "These terms will change as Arte grows — most obviously when real payments begin. Material changes will be announced in the app, not slipped quietly into this page."
           ]
         }
       ]
@@ -1922,7 +2030,7 @@
           "heading": "Respect for the tradition",
           "paragraphs": [
             "We use Sanskrit names because they carry meaning, and we try to say what they mean rather than decorating a class with them.",
-            "Solstice teaches āsana, prāṇāyāma and stillness as practices of attention. We do not present them as a religion you must adopt, nor strip them of where they come from to make them easier to sell."
+            "Arte teaches āsana, prāṇāyāma and stillness as practices of attention. We do not present them as a religion you must adopt, nor strip them of where they come from to make them easier to sell."
           ]
         },
         {

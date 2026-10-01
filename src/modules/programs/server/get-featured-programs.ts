@@ -1,12 +1,14 @@
 import type { Locale } from "@/i18n/routing";
 import { localize } from "@/lib/localized";
 
-import { samplePrograms } from "../sample-data";
+import { getPublishedProgramRows } from "./library";
 import type { ProgramSpotlight } from "../types";
 
-// TODO(db): read featured programs from Drizzle once the programs schema exists.
-export async function getFeaturedPrograms(locale: Locale): Promise<ProgramSpotlight[]> {
-  return samplePrograms
+// The home page shows only published programs selected by the instructor.
+export async function getFeaturedPrograms(
+  locale: Locale,
+): Promise<ProgramSpotlight[]> {
+  return (await getPublishedProgramRows())
     .filter((p) => p.featured)
     .map((p) => ({
       slug: p.slug,

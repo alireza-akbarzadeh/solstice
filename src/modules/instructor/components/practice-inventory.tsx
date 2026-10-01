@@ -31,7 +31,12 @@ import {
 } from "@/components/ui/table";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { featurePractice, publishPractice } from "@/modules/instructor/actions";
+import {
+  featurePractice,
+  publishPractice,
+  removePractice,
+} from "@/modules/instructor/actions";
+import { DeleteContentButton } from "./delete-content-button";
 import type { InventoryItem } from "@/modules/instructor/server/content";
 
 /**
@@ -61,7 +66,10 @@ export function PracticeInventory({
             title: item.title,
           }),
         );
-      else toast.error(t("actionFailed"));
+      else
+        toast.error(
+          t(result.error === "video" ? "editor.video.missing" : "actionFailed"),
+        );
     });
 
   const toggleFeatured = (item: InventoryItem) =>
@@ -76,6 +84,34 @@ export function PracticeInventory({
         );
       else toast.error(t("actionFailed"));
     });
+
+  const deleteButton = (item: InventoryItem) => (
+    <DeleteContentButton
+      label={t("editor.delete")}
+      title={t("editor.deleteTitle", { title: item.title })}
+      description={t("editor.deleteUsage", {
+        saves: item.saves,
+        reflections: item.reflections,
+        sessions: item.sessions,
+      })}
+      cancelLabel={t("editor.keep")}
+      confirmLabel={t("editor.confirmDelete")}
+      disabled={pending || item.programs > 0}
+      onConfirm={async () => {
+        const result = await removePractice({ slug: item.slug });
+        if (result.ok) {
+          toast.success(t("editor.deleted"));
+          if (editing === item.slug) router.replace("/instructor/videos");
+          else router.refresh();
+          return true;
+        }
+        toast.error(
+          t(result.error === "inUse" ? "editor.inUseError" : "actionFailed"),
+        );
+        return false;
+      }}
+    />
+  );
 
   return (
     <>
@@ -140,7 +176,7 @@ export function PracticeInventory({
               </span>
             </div>
 
-            <div className="mt-space-sm border-hairline pt-space-sm flex items-center gap-1.5 border-t">
+            <div className="mt-space-sm border-hairline pt-space-sm flex flex-wrap items-center gap-1.5 border-t">
               <Button
                 size="sm"
                 variant={editing === item.slug ? "default" : "outline"}
@@ -176,6 +212,12 @@ export function PracticeInventory({
                   className={cn(item.featured && "text-clay fill-current")}
                 />
               </Button>
+              {deleteButton(item)}
+              {item.programs > 0 && (
+                <p className="text-on-surface-variant w-full text-xs">
+                  {t("editor.inUse", { count: item.programs })}
+                </p>
+              )}
             </div>
           </li>
         ))}
@@ -314,6 +356,7 @@ export function PracticeInventory({
                         <PencilIcon data-icon="inline-start" />
                         {t("table.edit")}
                       </Button>
+                      {deleteButton(item)}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button

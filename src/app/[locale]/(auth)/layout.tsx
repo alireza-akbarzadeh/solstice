@@ -1,9 +1,9 @@
-import Image from "next/image";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
+import { BrandLockup } from "@/components/layout/brand-lockup";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -20,9 +20,8 @@ export default async function AuthLayout({ children, params }: LayoutProps<"/[lo
     <>
       <header>
         <Container className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <Image src="/icons/mark.svg" alt={t("logoAlt")} width={32} height={32} className="size-8" unoptimized priority />
-            <span className="font-headline-sm text-headline-sm tracking-tight text-primary">{t("name")}</span>
+          <Link href="/" className="flex items-center" aria-label={`${t("name")} ${t("studio")}`}>
+            <BrandLockup name={t("name")} studio={t("studio")} logoAlt={t("logoAlt")} />
           </Link>
           <LocaleSwitcher />
         </Container>

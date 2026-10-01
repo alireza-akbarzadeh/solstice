@@ -2,12 +2,12 @@ import type { MetadataRoute } from "next";
 
 import en from "../../messages/en.json";
 
-// Served at /manifest.webmanifest. Makes Solstice installable (Add to Home Screen).
+// Served at /manifest.webmanifest. Makes Arte Yoga Studio installable (Add to Home Screen).
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
     name: en.Metadata.title,
-    short_name: en.Metadata.title,
+    short_name: en.Brand.name,
     description: en.Pwa.description,
     start_url: "/",
     scope: "/",

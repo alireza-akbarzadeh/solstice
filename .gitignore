@@ -17,6 +17,7 @@ db.sqlite
 /.next/
 .next-build/
 .next-claude/
+.next-arte-preview/
 /out/
 next-env.d.ts
 

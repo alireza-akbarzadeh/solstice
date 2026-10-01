@@ -1,4 +1,4 @@
-// Solstice service worker: offline support + Web Push. Hand-written, no build step.
+// Arte Yoga Studio service worker: offline support + Web Push. Hand-written, no build step.
 //
 // Registered as /sw.js?v=<buildId> (next.config.js resolves one id per deployment), so the
 // script URL changes whenever the app does and the browser installs a new worker. The version
@@ -44,7 +44,7 @@ async function precache() {
     for (const [font] of (await response.clone().text()).matchAll(FONT_URL)) fonts.add(font);
     await cache.put(url, response);
   }
-  await cache.addAll(["/icons/mark.svg", ...fonts]);
+  await cache.addAll(["/images/brand/logo.svg", ...fonts]);
 }
 
 self.addEventListener("install", (event) => {
@@ -149,7 +149,7 @@ self.addEventListener("push", (event) => {
   } catch {
     data = { body: event.data ? event.data.text() : "" };
   }
-  const title = data.title || "Solstice";
+  const title = data.title || (data.lang === "fa" ? "استودیو یوگای آرته" : "Arte Yoga Studio");
   event.waitUntil(
     self.registration.showNotification(title, {
       body: data.body || "",

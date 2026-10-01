@@ -60,7 +60,7 @@ design/stitch/
 `ms-/me-`, `start-/end-`, `text-start`, `border-s-4`, `rounded-s-…`. Never `left/right`,
 `pl/pr`, `ml/mr`, `text-left`. Flip directional icons with `rtl:rotate-180`.
 
-**Fonts.** English: Playfair Display (headings) + Plus Jakarta Sans (body). Persian:
+**Fonts.** English: Cormorant Garamond (headings) + Manrope (body). Persian:
 [Vazirmatn](https://rastikerdar.github.io/vazirmatn/fa) for everything. This is switched
 in `globals.css` via `--app-font-*` under `html:lang(fa)`. Never hard-code a font family
 in a component; use the `font-*` utilities so the swap keeps working.
@@ -78,19 +78,19 @@ shows old text: Turbopack can keep a stale render.
 
 **Icons.** Stitch uses Material Symbols; this app uses `lucide-react`. Common mappings:
 
-| Material | lucide | Material | lucide |
-| --- | --- | --- | --- |
-| `play_arrow` | `Play` | `arrow_forward` | `ArrowRight` (+ `rtl:rotate-180`) |
-| `check_circle` | `CircleCheck` | `verified` | `BadgeCheck` |
-| `spa` | `Flower2` | `auto_stories` | `BookOpen` |
-| `groups` | `Users` | `explore` | `Compass` |
-| `volume_up` | `Volume2` | `tune` | `SlidersHorizontal` |
-| `water_drop` | `Droplets` | `graphic_eq` | `AudioLines` |
-| `air` | `Wind` | `star` | `Star` (fill-current) |
-| `wb_twilight` | `Sunrise` | `psychology_alt` | `Brain` |
-| `lock` | `Lock` | `favorite` | `Heart` |
-| `search` | `Search` | `menu` | `Menu` |
-| `schedule` | `Clock` | `calendar_today` | `Calendar` |
+| Material       | lucide        | Material         | lucide                            |
+| -------------- | ------------- | ---------------- | --------------------------------- |
+| `play_arrow`   | `Play`        | `arrow_forward`  | `ArrowRight` (+ `rtl:rotate-180`) |
+| `check_circle` | `CircleCheck` | `verified`       | `BadgeCheck`                      |
+| `spa`          | `Flower2`     | `auto_stories`   | `BookOpen`                        |
+| `groups`       | `Users`       | `explore`        | `Compass`                         |
+| `volume_up`    | `Volume2`     | `tune`           | `SlidersHorizontal`               |
+| `water_drop`   | `Droplets`    | `graphic_eq`     | `AudioLines`                      |
+| `air`          | `Wind`        | `star`           | `Star` (fill-current)             |
+| `wb_twilight`  | `Sunrise`     | `psychology_alt` | `Brain`                           |
+| `lock`         | `Lock`        | `favorite`       | `Heart`                           |
+| `search`       | `Search`      | `menu`           | `Menu`                            |
+| `schedule`     | `Clock`       | `calendar_today` | `Calendar`                        |
 
 **Images.** `next/image` with local files from `public/images/…`; always set `sizes`.
 Alt text: short and descriptive (the manifest's prompts are too long — condense them).
@@ -116,7 +116,7 @@ Self-hosted; no paid push or PWA service.
   Unvisited pages fall back to `/offline` or `/fa/offline`.
 - **Bump `VERSION`** in `sw.js` whenever its caching rules change. In development it's
   registered as `/sw.js?mode=development` and caches nothing.
-- **Manifest:** `src/app/manifest.ts`. Icons are generated from `public/icons/mark.svg`
+- **Manifest:** `src/app/manifest.ts`. Icons are generated from `public/images/brand/logo.svg`
   with `pnpm icons`.
 - **Push:** the browser subscribes with our VAPID public key (the header bell,
   `modules/notifications/components/push-toggle.tsx`). The subscription is stored in
@@ -126,7 +126,7 @@ Self-hosted; no paid push or PWA service.
 - **Keys:** `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (see
   `.env.example`). Use the same keys in every environment: new keys invalidate all
   existing subscriptions.
-- **iPhone:** web push only works after the member adds Solstice to the Home Screen
+- **iPhone:** web push only works after the member adds Arte Yoga Studio to the Home Screen
   (iOS 16.4+).
 - **Testing:** headless Playwright Chromium can subscribe, but never receives real pushes.
   Test delivery in a real browser, or inject one via DevTools → Application → Service
@@ -157,3 +157,12 @@ Self-hosted; no paid push or PWA service.
 
 Pages without a Stitch screen (`/programs`, `/my-practices`, `/progress`, forgot/reset
 password, …) are built last, composed from existing sections in the same language.
+
+## 8. Instructor CMS
+
+- Practices: `/instructor/videos`; use **New practice**, paste a YouTube URL, fill both languages, save the draft, then publish. A blank cover uses the YouTube thumbnail. Existing covers also accept public HTTPS URLs or local `/images/…` paths.
+- Programs: `/instructor/programs`; create a draft, add weeks and practice days, then publish. Every week must contain published practices. The instructor can feature a published program on Home.
+- Videos may be public or unlisted on YouTube with embedding enabled. Members-only access controls the website; it does not make the YouTube source private. No paid video service is required.
+- Program deletion removes enrollments but keeps practice completion history. A practice used by a program cannot be deleted until removed from its curriculum. Day order and pacing are fixed once members enroll; copy remains editable.
+- On a new database, run `pnpm db:seed:programs` after the practice seed. This creates the program table and imports sample curricula without replacing edited rows. The additive SQL is also registered for `pnpm db:migrate`.
+- Node 22+: `pnpm test:cms` checks URL parsing and curriculum validation. `pnpm test:cms:db` creates isolated fixtures in the configured database, checks CMS mutations and progress guards, and cleans up those fixtures.

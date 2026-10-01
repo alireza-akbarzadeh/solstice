@@ -3,7 +3,7 @@ import "@/styles/globals.css";
 import { type Metadata, type Viewport } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Playfair_Display, Plus_Jakarta_Sans, Vazirmatn } from "next/font/google";
+import { Cormorant_Garamond, Manrope, Vazirmatn } from "next/font/google";
 import { notFound } from "next/navigation";
 
 import { PwaUpdatePrompt } from "@/components/pwa/pwa-update-prompt";
@@ -13,15 +13,18 @@ import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/env";
 import { getDirection, routing } from "@/i18n/routing";
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   style: ["normal", "italic"],
-  variable: "--font-playfair",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-cormorant",
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-jakarta",
+  display: "swap",
+  variable: "--font-manrope",
 });
 
 const vazirmatn = Vazirmatn({
@@ -74,7 +77,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html
       lang={locale}
       dir={dir}
-      className={`${playfair.variable} ${jakarta.variable} ${vazirmatn.variable}`}
+      className={`${cormorant.variable} ${manrope.variable} ${vazirmatn.variable}`}
       suppressHydrationWarning
     >
       <body className="flex min-h-svh flex-col">

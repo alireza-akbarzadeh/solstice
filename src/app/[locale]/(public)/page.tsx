@@ -2,7 +2,6 @@ import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import { AtmosphereBar } from "@/components/marketing/home/atmosphere-bar";
 import { FeaturedPractices } from "@/components/marketing/home/featured-practices";
 import { FeaturedPrograms } from "@/components/marketing/home/featured-programs";
 import { Hero } from "@/components/marketing/home/hero";
@@ -20,7 +19,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   return (
     <>
       <Hero />
-      <AtmosphereBar />
       <FeaturedPractices locale={locale} />
       <FeaturedPrograms locale={locale} />
       <InstructorFeature />

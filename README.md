@@ -1,4 +1,4 @@
-# Yoga Studio — AI Project Context
+# Arte Yoga Studio — AI Project Context
 
 ## Product
 
@@ -6,25 +6,25 @@ A private digital yoga studio and community built around **one yoga instructor**
 
 Members can:
 
-* Browse and watch yoga practices
-* Follow structured programs
-* Track progress
-* Save/favorite practices
-* Join a lightweight community
-* Manage their membership/profile
+- Browse and watch yoga practices
+- Follow structured programs
+- Track progress
+- Save/favorite practices
+- Join a lightweight community
+- Manage their membership/profile
 
 The instructor can:
 
-* Upload and manage videos
-* Create programs
-* Manage members
-* Publish announcements/posts
-* Moderate community content
+- Create, edit, publish and delete practices using YouTube, Aparat or direct media URLs
+- Create, edit, publish and delete programs with weeks and practice days
+- Manage members
+- Publish announcements/posts
+- Moderate community content
 
 Roles:
 
-* `instructor`
-* `member`
+- `instructor`
+- `member`
 
 This is **not** a multi-instructor marketplace or generic LMS.
 
@@ -32,22 +32,22 @@ This is **not** a multi-instructor marketplace or generic LMS.
 
 ## Stack
 
-* Next.js App Router
-* TypeScript
-* React
-* Tailwind CSS
-* shadcn/ui
-* Better Auth
-* Drizzle ORM
-* Neon PostgreSQL
-* Zod
+- Next.js App Router
+- TypeScript
+- React
+- Tailwind CSS
+- shadcn/ui
+- Better Auth
+- Drizzle ORM
+- Neon PostgreSQL
+- Zod
 
 External infrastructure should remain replaceable:
 
-* Video provider
-* Payment provider
-* Storage provider
-* Email provider
+- Video provider
+- Payment provider
+- Storage provider
+- Email provider
 
 Do **not** store video files in Neon/PostgreSQL.
 
@@ -73,10 +73,10 @@ Server Component / Server Action / Route Handler
 
 Use:
 
-* Server Components for server-side data fetching
-* Server Actions for application mutations/forms
-* Route Handlers for webhooks, external integrations, and endpoints that genuinely need HTTP
-* Domain/service functions for business logic
+- Server Components for server-side data fetching
+- Server Actions for application mutations/forms
+- Route Handlers for webhooks, external integrations, and endpoints that genuinely need HTTP
+- Domain/service functions for business logic
 
 ---
 
@@ -136,12 +136,12 @@ Use **Better Auth**.
 
 V1:
 
-* Email/password
-* Email verification
-* Login/logout
-* Password reset
-* Sessions
-* `member` / `instructor` roles
+- Email/password
+- Email verification
+- Login/logout
+- Password reset
+- Sessions
+- `member` / `instructor` roles
 
 Do not build complex authentication infrastructure unless required.
 
@@ -221,12 +221,12 @@ Video is the core content type.
 
 The video provider handles:
 
-* Upload
-* Processing
-* Playback
-* Thumbnails
-* Video status
-* Deletion
+- Upload
+- Processing
+- Playback
+- Thumbnails
+- Video status
+- Deletion
 
 Database stores metadata such as:
 
@@ -336,3 +336,9 @@ Before implementing a feature:
 12. Avoid speculative features and abstractions.
 
 The goal is a **small, elegant, production-ready Next.js application that can grow gradually with real users.**
+
+## Instructor CMS
+
+Practice management lives at `/instructor/videos` and program management at `/instructor/programs`, with English and Persian editors. Content is stored in PostgreSQL; only published rows appear publicly. Paste a YouTube URL when creating a practice to save its provider and video ID with the draft. A blank cover uses its YouTube thumbnail.
+
+For a new database, seed practices first, then run `pnpm db:seed:programs`. This creates the program table and imports the original sample programs without replacing existing rows. See [GUIDE.md](GUIDE.md#8-instructor-cms) for publishing, deletion and test commands.

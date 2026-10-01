@@ -22,10 +22,13 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 function resolveBuildId() {
   if (process.env.NEXT_PUBLIC_BUILD_ID) return process.env.NEXT_PUBLIC_BUILD_ID;
   // Vercel (and most CI) expose the commit; same commit → same build → no spurious update prompt.
-  if (process.env.VERCEL_GIT_COMMIT_SHA) return process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 12);
+  if (process.env.VERCEL_GIT_COMMIT_SHA)
+    return process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 12);
   try {
     // execFile, not exec: no shell, so nothing here can be interpreted as a command.
-    return execFileSync("git", ["rev-parse", "--short=12", "HEAD"], { stdio: ["ignore", "pipe", "ignore"] })
+    return execFileSync("git", ["rev-parse", "--short=12", "HEAD"], {
+      stdio: ["ignore", "pipe", "ignore"],
+    })
       .toString()
       .trim();
   } catch {
@@ -43,6 +46,8 @@ const config = {
   // one-off build go somewhere else while a dev server keeps running. Unset, nothing changes.
   distDir: process.env.NEXT_DIST_DIR ?? ".next",
   env: { NEXT_PUBLIC_BUILD_ID: buildId },
+  // CMS covers can use public HTTPS images, including the automatic YouTube thumbnail.
+  images: { remotePatterns: [{ protocol: "https", hostname: "**" }] },
   generateBuildId: () => buildId,
   async headers() {
     return [
@@ -50,8 +55,14 @@ const config = {
         // Browsers must always revalidate the service worker so updates roll out promptly.
         source: "/sw.js",
         headers: [
-          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
-          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate",
+          },
+          {
+            key: "Content-Type",
+            value: "application/javascript; charset=utf-8",
+          },
           { key: "Service-Worker-Allowed", value: "/" },
         ],
       },

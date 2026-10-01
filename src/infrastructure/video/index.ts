@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { parseVideoAsset } from "./assets";
 
 import { aparatProvider } from "./providers/aparat";
 import { mockVideoProvider } from "./providers/mock";
@@ -26,25 +27,19 @@ export type VideoProviderId = keyof typeof videoProviders;
 export const videoProvider: VideoProvider = videoProviders[env.VIDEO_PROVIDER];
 
 /** Lets the instructor paste a link from any configured provider, not just the active one. */
-export function parseAssetForAnyProvider(input: string): { providerId: VideoProviderId; assetId: string } | null {
-  // The configured provider gets first refusal, so an ambiguous value resolves the way the
-  // studio is set up; the rest let a library mix sources.
-  const ordered: [VideoProviderId, VideoProvider][] = [
-    [env.VIDEO_PROVIDER, videoProviders[env.VIDEO_PROVIDER]],
-    ...(Object.entries(videoProviders) as [VideoProviderId, VideoProvider][]).filter(([id]) => id !== env.VIDEO_PROVIDER),
-  ];
-  for (const [providerId, provider] of ordered) {
-    const assetId = provider.parseAsset(input);
-    if (assetId) return { providerId, assetId };
-  }
-  return null;
+export function parseAssetForAnyProvider(
+  input: string,
+): { providerId: VideoProviderId; assetId: string } | null {
+  return parseVideoAsset(input, env.VIDEO_PROVIDER);
 }
 
 /**
  * The provider that holds a given practice's video. Rows remember their own provider, so
  * switching `VIDEO_PROVIDER` later does not strand everything already published.
  */
-export function providerFor(providerId: string | null | undefined): VideoProvider {
+export function providerFor(
+  providerId: string | null | undefined,
+): VideoProvider {
   if (!providerId) return videoProvider;
   return videoProviders[providerId as VideoProviderId] ?? videoProvider;
 }

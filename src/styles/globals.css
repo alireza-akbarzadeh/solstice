@@ -181,8 +181,8 @@
 }
 
 :root {
-  --app-font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --app-font-heading: var(--font-playfair), ui-serif, Georgia, serif;
+  --app-font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --app-font-heading: var(--font-cormorant), ui-serif, Georgia, serif;
 
   --radius: 0.5rem;
 

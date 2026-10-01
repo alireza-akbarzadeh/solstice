@@ -11,9 +11,23 @@ import {
 } from "drizzle-orm/pg-core";
 
 // Type-only imports: scripts/seed-practices.ts loads this file straight from Node.
+import type {
+  ProgramPacing,
+  ProgramTone,
+  StoredProgramWeek,
+} from "@/modules/programs/types";
 import type { Localized } from "@/lib/localized";
-import type { JournalCategory, JournalStoredBlock } from "@/modules/journal/types";
-import type { ImplementKind, IntensityLevel, PracticeAccess, PracticeCategory, PropSetup } from "@/modules/practices/types";
+import type {
+  JournalCategory,
+  JournalStoredBlock,
+} from "@/modules/journal/types";
+import type {
+  ImplementKind,
+  IntensityLevel,
+  PracticeAccess,
+  PracticeCategory,
+  PropSetup,
+} from "@/modules/practices/types";
 
 export const createTable = pgTableCreator((name) => `solstice_${name}`);
 
@@ -53,8 +67,13 @@ export const user = pgTable("user", {
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
   // App fields, declared to Better Auth as `additionalFields` in better-auth/config.ts.
-  role: text("role").$type<"member" | "instructor">().default("member").notNull(),
-  practiceRhythm: text("practice_rhythm").$type<"morning" | "evening" | "breath">(),
+  role: text("role")
+    .$type<"member" | "instructor">()
+    .default("member")
+    .notNull(),
+  practiceRhythm: text("practice_rhythm").$type<
+    "morning" | "evening" | "breath"
+  >(),
   marketingOptIn: boolean("marketing_opt_in").default(false).notNull(),
 });
 
@@ -148,7 +167,10 @@ export const memberships = createTable(
       .unique()
       .references(() => user.id, { onDelete: "cascade" }),
     plan: d.text().$type<"monthly" | "annual">().notNull(),
-    status: d.text().$type<"trialing" | "active" | "past_due" | "canceled">().notNull(),
+    status: d
+      .text()
+      .$type<"trialing" | "active" | "past_due" | "canceled">()
+      .notNull(),
     /** Which PaymentProvider manages this membership, e.g. "mock". */
     provider: d.text().notNull(),
     providerSubscriptionId: d.text(),
@@ -195,8 +217,18 @@ export const practices = createTable(
     poster: d.text(),
     instructorNote: d.jsonb().$type<Localized>(),
     focus: d.jsonb().$type<Localized[]>().default([]).notNull(),
-    implements: d.jsonb().$type<{ kind: ImplementKind; name: Localized; detail: Localized }[]>().default([]).notNull(),
-    chapters: d.jsonb().$type<{ title: Localized; description: Localized; startSeconds: number }[]>().default([]).notNull(),
+    implements: d
+      .jsonb()
+      .$type<{ kind: ImplementKind; name: Localized; detail: Localized }[]>()
+      .default([])
+      .notNull(),
+    chapters: d
+      .jsonb()
+      .$type<
+        { title: Localized; description: Localized; startSeconds: number }[]
+      >()
+      .default([])
+      .notNull(),
     /** Which VideoProvider holds the video, and its id there (the mock: a video URL). */
     videoProvider: d.text(),
     videoAssetId: d.text(),
@@ -214,7 +246,36 @@ export const practices = createTable(
   (t) => [index("practice_status_idx").on(t.status)],
 );
 
-// Programs are still sample data, so rows point at practices by slug.
+// Curriculum is small and edited as a whole; weeks and ordered practice slugs live in JSON.
+export const programs = createTable(
+  "program",
+  (d) => ({
+    slug: d.text().primaryKey(),
+    status: d.text().$type<"draft" | "published">().default("draft").notNull(),
+    featured: d.boolean().default(false).notNull(),
+    title: d.jsonb().$type<Localized>().notNull(),
+    description: d.jsonb().$type<Localized>().notNull(),
+    heroTitle: d.jsonb().$type<Localized>().notNull(),
+    lede: d.jsonb().$type<Localized>().notNull(),
+    badge: d.jsonb().$type<Localized>().notNull(),
+    cta: d.jsonb().$type<Localized>().notNull(),
+    note: d.jsonb().$type<Localized>().notNull(),
+    image: d.text().notNull(),
+    imageAlt: d.jsonb().$type<Localized>().notNull(),
+    tone: d.text().$type<ProgramTone>().default("primary").notNull(),
+    icon: d.text().$type<"sunrise" | "brain">().default("sunrise").notNull(),
+    pacing: d.text().$type<ProgramPacing>().default("self").notNull(),
+    weeks: d.jsonb().$type<StoredProgramWeek[]>().default([]).notNull(),
+    publishedAt: d.timestamp({ withTimezone: true }),
+    createdAt: d.timestamp({ withTimezone: true }).defaultNow().notNull(),
+    updatedAt: d
+      .timestamp({ withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  }),
+  (t) => [index("program_status_idx").on(t.status)],
+);
 
 /**
  * The journal. Text the reader sees is stored per locale ({ en, fa }), as the practice library
@@ -269,13 +330,19 @@ export const comments = createTable(
       .text()
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    parentId: d.integer().references((): AnyPgColumn => comments.id, { onDelete: "cascade" }),
+    parentId: d
+      .integer()
+      .references((): AnyPgColumn => comments.id, { onDelete: "cascade" }),
     body: d.text().notNull(),
     tag: d.text().$type<"epiphany" | "breath" | "release" | "inquiry">(),
     /** Moment in the video the reflection is about. */
     atSeconds: d.integer(),
     /** "private": only the author and the instructor see it. */
-    visibility: d.text().$type<"circle" | "private">().default("circle").notNull(),
+    visibility: d
+      .text()
+      .$type<"circle" | "private">()
+      .default("circle")
+      .notNull(),
     pinned: d.boolean().default(false).notNull(),
     /** Taken off the public feed by the instructor. The author still sees their own. */
     hidden: d.boolean().default(false).notNull(),
@@ -284,7 +351,10 @@ export const comments = createTable(
       .$defaultFn(() => new Date())
       .notNull(),
   }),
-  (t) => [index("comment_practice_idx").on(t.practiceSlug, t.createdAt), index("comment_parent_idx").on(t.parentId)],
+  (t) => [
+    index("comment_practice_idx").on(t.practiceSlug, t.createdAt),
+    index("comment_parent_idx").on(t.parentId),
+  ],
 );
 
 export const commentLikes = createTable(
@@ -346,16 +416,19 @@ export const practiceCompletions = createTable(
 );
 
 // "The New Moon Epistle" sign-ups (footer + journal). Sending waits for an EmailProvider.
-export const newsletterSubscribers = createTable("newsletter_subscriber", (d) => ({
-  id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-  email: d.text().notNull().unique(),
-  locale: d.varchar({ length: 8 }).notNull(),
-  source: d.text().$type<"footer" | "journal">().notNull(),
-  createdAt: d
-    .timestamp({ withTimezone: true })
-    .$defaultFn(() => new Date())
-    .notNull(),
-}));
+export const newsletterSubscribers = createTable(
+  "newsletter_subscriber",
+  (d) => ({
+    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+    email: d.text().notNull().unique(),
+    locale: d.varchar({ length: 8 }).notNull(),
+    source: d.text().$type<"footer" | "journal">().notNull(),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  }),
+);
 
 // Messages sent by the "outbox" EmailProvider (no real delivery): read them in /test/mailbox.
 export const emailOutbox = createTable(

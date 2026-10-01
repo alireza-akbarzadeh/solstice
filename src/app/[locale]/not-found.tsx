@@ -33,7 +33,7 @@ export default async function NotFound() {
       dir={getDirection(locale)}
       className="flex flex-1 flex-col items-center justify-center gap-space-md bg-surface-container-low px-margin-mobile py-space-2xl text-center"
     >
-      <Image src="/icons/mark.svg" alt="" width={64} height={64} unoptimized />
+      <Image src="/images/brand/logo.svg" alt="" width={64} height={64} unoptimized />
       <CompassIcon aria-hidden className="size-6 text-clay" />
       <p className="font-label-md text-label-md tracking-widest text-clay uppercase">{t("eyebrow")}</p>
       <h1 className="font-headline-lg-mobile text-headline-lg-mobile tracking-tight text-primary md:font-headline-lg md:text-headline-lg">

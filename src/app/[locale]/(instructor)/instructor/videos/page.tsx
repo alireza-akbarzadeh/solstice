@@ -34,7 +34,6 @@ import { PracticeInventory } from "@/modules/instructor/components/practice-inve
 import { StatCard } from "@/modules/instructor/components/stat-card";
 import { StudioFilterPills } from "@/modules/instructor/components/studio-filter-pills";
 import { StudioPageHeader } from "@/modules/instructor/components/studio-page-header";
-import { videoProvider } from "@/infrastructure/video";
 import {
   getContentInventory,
   getLibrarySummary,
@@ -65,7 +64,7 @@ export async function generateMetadata({
 }
 
 // Stitch: studio-admin-content-video-publisher. The library lives in Postgres, so this edits
-// real rows; only creating a practice from nothing is still the seed script's job.
+// real rows: create, edit, publish and delete from the studio.
 export default async function StudioPracticesPage({
   params,
   searchParams,
@@ -98,12 +97,13 @@ export default async function StudioPracticesPage({
   // A new practice starts from sensible defaults; saving mints its slug from the title.
   const blank: EditablePractice = {
     slug: null,
+    status: "draft",
     title: { en: "", fa: "" },
     summary: { en: "", fa: "" },
-    series: { en: "", fa: "" },
+    series: { en: "Daily practice", fa: "تمرین روزانه" },
     category: "morning",
     intensityLevel: "gentle",
-    intensityLabel: { en: "", fa: "" },
+    intensityLabel: { en: "Gentle", fa: "ملایم" },
     props: "none",
     durationMinutes: 30,
     access: "open",
@@ -175,6 +175,7 @@ export default async function StudioPracticesPage({
             editRow
               ? {
                   slug: editRow.slug,
+                  status: editRow.status,
                   title: editRow.title,
                   summary: editRow.summary,
                   series: editRow.series,
@@ -193,8 +194,6 @@ export default async function StudioPracticesPage({
                 }
               : blank
           }
-          assetHint={videoProvider.assetHint}
-          providerId={videoProvider.id}
         />
       ) : (
         <Empty className="bg-surface-container-low rounded-xl">

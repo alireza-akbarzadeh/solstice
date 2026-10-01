@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
@@ -7,6 +6,7 @@ import { getViewer } from "@/modules/memberships/server/viewer";
 import { PushToggle } from "@/modules/notifications/components/push-toggle";
 
 import { AccountMenu, type AccountStatus } from "./account-menu";
+import { BrandLockup } from "./brand-lockup";
 import { Container } from "./container";
 import { LocaleSwitcher } from "./locale-switcher";
 import { MainNav } from "./main-nav";
@@ -22,13 +22,9 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-surface/85 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-md">
-      <Container className="flex h-16 items-center justify-between gap-space-md lg:h-20">
-        <Link href="/" className="flex shrink-0 items-center gap-3">
-          <Image src="/icons/mark.svg" alt={tBrand("logoAlt")} width={32} height={32} className="size-8" priority unoptimized />
-          <span className="flex flex-col">
-            <span className="font-headline-sm text-headline-sm tracking-tight text-primary">{tBrand("name")}</span>
-            <span className="font-label-sm text-label-sm tracking-widest text-clay uppercase">{tBrand("studio")}</span>
-          </span>
+      <Container className="flex h-16 items-center justify-between gap-space-md lg:h-22">
+        <Link href="/" className="flex shrink-0 items-center" aria-label={`${tBrand("name")} ${tBrand("studio")}`}>
+          <BrandLockup name={tBrand("name")} studio={tBrand("studio")} logoAlt={tBrand("logoAlt")} />
         </Link>
 
         <MainNav />

@@ -3,11 +3,19 @@ import { localize } from "@/lib/localized";
 import { getAllPracticeSummaries } from "@/modules/practices/server/get-practice";
 import type { PracticeSummary } from "@/modules/practices/types";
 
-import { type SampleProgram, samplePrograms } from "../sample-data";
+import {
+  getProgramRow,
+  getPublishedProgramRows,
+  type ProgramRow,
+} from "./library";
 import type { ProgramDay, ProgramDetail } from "../types";
 
 // Day numbers stay fixed even if one of a program's practices is unpublished.
-function toDetail(p: SampleProgram, locale: Locale, library: Map<string, PracticeSummary>): ProgramDetail {
+function toDetail(
+  p: ProgramRow,
+  locale: Locale,
+  library: Map<string, PracticeSummary>,
+): ProgramDetail {
   let day = 0;
   const weeks = p.weeks.map((week, index) => ({
     index,
@@ -21,7 +29,9 @@ function toDetail(p: SampleProgram, locale: Locale, library: Map<string, Practic
       return practice ? [{ day, practice }] : [];
     }),
   }));
-  const minutes = weeks.flatMap((w) => w.days.map((d) => d.practice.durationMinutes));
+  const minutes = weeks.flatMap((w) =>
+    w.days.map((d) => d.practice.durationMinutes),
+  );
 
   return {
     slug: p.slug,
@@ -30,35 +40,53 @@ function toDetail(p: SampleProgram, locale: Locale, library: Map<string, Practic
     pacing: p.pacing,
     badge: localize(p.badge, locale),
     title: localize(p.title, locale),
-    heroTitle: localize(p.heroTitle, locale),
+    heroTitle: localize(p.heroTitle, locale) || localize(p.title, locale),
     description: localize(p.description, locale),
-    lede: localize(p.lede, locale),
+    lede: localize(p.lede, locale) || localize(p.description, locale),
     cta: localize(p.cta, locale),
     note: localize(p.note, locale),
     image: p.image,
     imageAlt: localize(p.imageAlt, locale),
     totalDays: day,
-    minutes: { min: Math.min(...minutes), max: Math.max(...minutes) },
+    minutes: {
+      min: minutes.length ? Math.min(...minutes) : 0,
+      max: minutes.length ? Math.max(...minutes) : 0,
+    },
     weeks,
   };
 }
 
-// TODO(db): read programs, weeks and days from Drizzle once the programs schema exists.
-const libraryOf = async (locale: Locale) => new Map((await getAllPracticeSummaries(locale)).map((p) => [p.slug, p]));
+// Published CMS rows are the public source of truth; drafts remain private.
+const libraryOf = async (locale: Locale) =>
+  new Map((await getAllPracticeSummaries(locale)).map((p) => [p.slug, p]));
 
 export async function getPrograms(locale: Locale): Promise<ProgramDetail[]> {
   const library = await libraryOf(locale);
-  return samplePrograms.map((p) => toDetail(p, locale, library));
+  return (await getPublishedProgramRows()).map((p) =>
+    toDetail(p, locale, library),
+  );
 }
 
-export async function getProgram(locale: Locale, slug: string): Promise<ProgramDetail | null> {
-  const program = samplePrograms.find((p) => p.slug === slug);
-  return program ? toDetail(program, locale, await libraryOf(locale)) : null;
+export async function getProgram(
+  locale: Locale,
+  slug: string,
+  { includeDrafts = false } = {},
+): Promise<ProgramDetail | null> {
+  const program = await getProgramRow(slug);
+  return program && (includeDrafts || program.status === "published")
+    ? toDetail(program, locale, await libraryOf(locale))
+    : null;
 }
 
 /** Validates ?program=…&day=… on a practice page: the day must be this practice. */
-export async function resolveProgramDay(locale: Locale, practiceSlug: string, programParam: unknown, dayParam: unknown) {
-  if (typeof programParam !== "string" || typeof dayParam !== "string") return null;
+export async function resolveProgramDay(
+  locale: Locale,
+  practiceSlug: string,
+  programParam: unknown,
+  dayParam: unknown,
+) {
+  if (typeof programParam !== "string" || typeof dayParam !== "string")
+    return null;
   const day = Number(dayParam);
   if (!Number.isInteger(day) || day < 1) return null;
   const program = await getProgram(locale, programParam);

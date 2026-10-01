@@ -35,12 +35,25 @@ export type StudioBadges = { drafts: number; awaiting: number };
 const groups = [
   {
     label: "studio",
-    items: [{ href: "/instructor", label: "overview", icon: LayoutGridIcon, exact: true }],
+    items: [
+      {
+        href: "/instructor",
+        label: "overview",
+        icon: LayoutGridIcon,
+        exact: true,
+      },
+    ],
   },
   {
     label: "content",
     items: [
-      { href: "/instructor/videos", label: "practices", icon: Flower2Icon, badge: "drafts" },
+      {
+        href: "/instructor/videos",
+        label: "practices",
+        icon: Flower2Icon,
+        badge: "drafts",
+      },
+      { href: "/instructor/programs", label: "programs", icon: BookOpenIcon },
       { href: "/instructor/journal", label: "journal", icon: BookOpenIcon },
     ],
   },
@@ -48,17 +61,34 @@ const groups = [
     label: "people",
     items: [
       { href: "/instructor/members", label: "members", icon: UsersIcon },
-      { href: "/instructor/community", label: "community", icon: MessagesSquareIcon, badge: "awaiting" },
-      { href: "/instructor/posts", label: "announcements", icon: MegaphoneIcon },
+      {
+        href: "/instructor/community",
+        label: "community",
+        icon: MessagesSquareIcon,
+        badge: "awaiting",
+      },
+      {
+        href: "/instructor/posts",
+        label: "announcements",
+        icon: MegaphoneIcon,
+      },
     ],
   },
   {
     label: "business",
-    items: [{ href: "/instructor/revenue", label: "revenue", icon: CreditCardIcon }],
+    items: [
+      { href: "/instructor/revenue", label: "revenue", icon: CreditCardIcon },
+    ],
   },
 ] as const satisfies readonly {
   label: string;
-  items: readonly { href: string; label: string; icon: typeof LayoutGridIcon; exact?: true; badge?: keyof StudioBadges }[];
+  items: readonly {
+    href: string;
+    label: string;
+    icon: typeof LayoutGridIcon;
+    exact?: true;
+    badge?: keyof StudioBadges;
+  }[];
 }[];
 
 /**
@@ -73,15 +103,31 @@ export function StudioSidebar({ badges }: { badges: StudioBadges }) {
 
   return (
     <Sidebar side={locale === "fa" ? "right" : "left"} collapsible="icon">
-      <SidebarHeader className="border-b border-hairline">
+      <SidebarHeader className="border-hairline border-b">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="lg" className="hover:bg-surface-container-high">
+            <SidebarMenuButton
+              asChild
+              size="lg"
+              className="hover:bg-surface-container-high"
+            >
               <Link href="/instructor">
-                <Image src="/icons/mark.svg" alt="" width={32} height={32} className="size-8 shrink-0" unoptimized />
+                <Image
+                  src="/images/brand/logo.svg"
+                  alt=""
+                  width={32}
+                  height={36}
+                  className="h-9 w-8 shrink-0 object-contain"
+                  sizes="32px"
+                  unoptimized
+                />
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate font-headline-sm text-headline-sm leading-tight tracking-tight text-primary">{tBrand("name")}</span>
-                  <span className="truncate font-label-sm text-label-sm tracking-widest text-clay uppercase">{t("title")}</span>
+                  <span className="font-heading text-primary truncate text-[1.625rem] leading-none font-semibold tracking-tight rtl:text-[1.375rem] rtl:leading-tight rtl:font-medium">
+                    {tBrand("name")}
+                  </span>
+                  <span className="text-primary/65 mt-1 truncate font-sans text-[0.625rem] leading-tight font-medium rtl:text-[0.6875rem]">
+                    {t("title")}
+                  </span>
                 </span>
               </Link>
             </SidebarMenuButton>
@@ -92,12 +138,19 @@ export function StudioSidebar({ badges }: { badges: StudioBadges }) {
       <SidebarContent>
         {groups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="font-label-sm text-label-sm tracking-widest text-clay uppercase">{t(group.label)}</SidebarGroupLabel>
+            <SidebarGroupLabel className="font-label-sm text-label-sm text-clay tracking-widest uppercase">
+              {t(group.label)}
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => {
-                  const active = "exact" in item ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
-                  const count = "badge" in item && item.badge ? badges[item.badge] : 0;
+                  const active =
+                    "exact" in item
+                      ? pathname === item.href
+                      : pathname === item.href ||
+                        pathname.startsWith(`${item.href}/`);
+                  const count =
+                    "badge" in item && item.badge ? badges[item.badge] : 0;
                   return (
                     <SidebarMenuItem key={item.href}>
                       <SidebarMenuButton
@@ -112,7 +165,9 @@ export function StudioSidebar({ badges }: { badges: StudioBadges }) {
                         </Link>
                       </SidebarMenuButton>
                       {count > 0 && (
-                        <SidebarMenuBadge className="bg-clay/15 text-clay peer-data-active/menu-button:text-on-primary-container">{count}</SidebarMenuBadge>
+                        <SidebarMenuBadge className="bg-clay/15 text-clay peer-data-active/menu-button:text-on-primary-container">
+                          {count}
+                        </SidebarMenuBadge>
                       )}
                     </SidebarMenuItem>
                   );
@@ -123,10 +178,14 @@ export function StudioSidebar({ badges }: { badges: StudioBadges }) {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-hairline">
+      <SidebarFooter className="border-hairline border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip={t("site")} className="font-label-md text-label-md text-on-surface-variant">
+            <SidebarMenuButton
+              asChild
+              tooltip={t("site")}
+              className="font-label-md text-label-md text-on-surface-variant"
+            >
               <Link href="/">
                 <ArrowUpRightIcon className="rtl:-scale-x-100" />
                 <span>{t("site")}</span>

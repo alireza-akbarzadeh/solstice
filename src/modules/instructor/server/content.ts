@@ -4,7 +4,13 @@ import type { Locale } from "@/i18n/routing";
 import { localize } from "@/lib/localized";
 import type { PracticeRow } from "@/modules/practices/server/to-summary";
 import { db } from "@/server/db";
-import { comments, favorites, practiceCompletions, practices } from "@/server/db/schema";
+import {
+  comments,
+  favorites,
+  practiceCompletions,
+  practices,
+  programs,
+} from "@/server/db/schema";
 
 export type InventoryItem = {
   slug: string;
@@ -24,13 +30,16 @@ export type InventoryItem = {
   sessions: number;
   saves: number;
   reflections: number;
+  programs: number;
 };
 
 /**
  * Every practice with the engagement it has earned, newest change first. The library is
  * small (tens of rows), so the three counts ride along as subqueries.
  */
-export async function getContentInventory(locale: Locale): Promise<InventoryItem[]> {
+export async function getContentInventory(
+  locale: Locale,
+): Promise<InventoryItem[]> {
   const rows = await db
     .select({
       slug: practices.slug,
@@ -53,12 +62,26 @@ export async function getContentInventory(locale: Locale): Promise<InventoryItem
     .from(practices)
     .orderBy(desc(practices.updatedAt));
 
-  return rows.map((r) => ({ ...r, title: localize(r.title, locale), series: localize(r.series, locale) }));
+  const programRows = await db.select({ weeks: programs.weeks }).from(programs);
+  return rows.map((r) => ({
+    ...r,
+    programs: programRows.filter((program) =>
+      program.weeks.some((week) => week.practices.includes(r.slug)),
+    ).length,
+    title: localize(r.title, locale),
+    series: localize(r.series, locale),
+  }));
 }
 
 /** One practice, raw, for the editor form. */
-export async function getPracticeRow(slug: string): Promise<PracticeRow | null> {
-  const [row] = await db.select().from(practices).where(eq(practices.slug, slug)).limit(1);
+export async function getPracticeRow(
+  slug: string,
+): Promise<PracticeRow | null> {
+  const [row] = await db
+    .select()
+    .from(practices)
+    .where(eq(practices.slug, slug))
+    .limit(1);
   return row ?? null;
 }
 

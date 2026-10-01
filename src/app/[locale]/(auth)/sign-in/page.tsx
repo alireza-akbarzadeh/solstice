@@ -43,7 +43,7 @@ export default async function SignInPage({ params, searchParams }: PageProps<"/[
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="flex size-10 items-center justify-center rounded-full bg-surface/10 backdrop-blur-md">
-                <Image src="/icons/mark.svg" alt="" width={24} height={24} unoptimized />
+                <Image src="/images/brand/logo.svg" alt="" width={24} height={24} unoptimized />
               </span>
               <span className="flex flex-col">
                 <span className="font-heading text-sm font-semibold tracking-[0.24em] text-surface uppercase">{tBrand("name")}</span>

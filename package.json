@@ -1,5 +1,5 @@
 {
-  "name": "solstice",
+  "name": "arteyogastudio",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -23,7 +23,10 @@
     "start": "next start",
     "stitch:images": "node --dns-result-order=ipv4first scripts/stitch-images.mjs",
     "stitch:pull": "node --dns-result-order=ipv4first scripts/stitch-pull.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:seed:programs": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-programs.ts",
+    "test:cms": "node --experimental-strip-types --test tests/cms.test.mjs",
+    "test:cms:db": "node --env-file=.env --experimental-strip-types --no-warnings scripts/check-cms.mjs"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.2",

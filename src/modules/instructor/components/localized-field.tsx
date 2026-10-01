@@ -37,19 +37,22 @@ export function LocalizedField({
   return (
     <Field>
       <FieldLabel>{label}</FieldLabel>
-      <div className="grid grid-cols-1 gap-space-sm md:grid-cols-2">
+      <div className="gap-space-sm grid grid-cols-1 md:grid-cols-2">
         {(["en", "fa"] as const).map((locale) => (
           <div key={locale} className="flex flex-col gap-1">
-            <span className="font-label-sm text-label-sm tracking-widest text-clay uppercase">{t(locale)}</span>
+            <span className="font-label-sm text-label-sm text-clay tracking-widest uppercase">
+              {t(locale)}
+            </span>
             <Control
+              aria-label={`${label} (${t(locale)})`}
               dir={locale === "fa" ? "rtl" : "ltr"}
               value={value[locale]}
               maxLength={maxLength}
               disabled={disabled}
               rows={multiline ? rows : undefined}
-              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-                onChange({ ...value, [locale]: e.target.value })
-              }
+              onChange={(
+                e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+              ) => onChange({ ...value, [locale]: e.target.value })}
             />
           </div>
         ))}

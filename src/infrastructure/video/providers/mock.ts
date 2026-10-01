@@ -1,9 +1,11 @@
 import { env } from "@/env";
+import { parseMediaUrl } from "../assets";
 
 import type { PlaybackGrant, Playback, VideoProvider } from "../types";
 
 // Open-licence stand-in (Big Buck Bunny, ~10 min) so previews and gating can be exercised.
-const DEFAULT_MOCK_VIDEO = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
+const DEFAULT_MOCK_VIDEO =
+  "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
 
 /**
  * Plays whatever media URL the instructor attached, else one sample file. This is the `file`
@@ -16,12 +18,16 @@ export const mockVideoProvider: VideoProvider = {
   id: "mock",
   canGate: false,
   assetHint: "https://…/practice.mp4",
-  parseAsset: (input) => {
-    const value = input.trim();
-    return value.startsWith("https://") ? value : null;
-  },
-  async getPlayback(assetId: string | null, grant: PlaybackGrant): Promise<Playback> {
-    const src = assetId?.startsWith("https://") ? assetId : (env.MOCK_VIDEO_URL ?? DEFAULT_MOCK_VIDEO);
-    return grant.kind === "preview" ? { kind: "file", src, limitSeconds: grant.limitSeconds } : { kind: "file", src };
+  parseAsset: parseMediaUrl,
+  async getPlayback(
+    assetId: string | null,
+    grant: PlaybackGrant,
+  ): Promise<Playback> {
+    const src = assetId?.startsWith("https://")
+      ? assetId
+      : (env.MOCK_VIDEO_URL ?? DEFAULT_MOCK_VIDEO);
+    return grant.kind === "preview"
+      ? { kind: "file", src, limitSeconds: grant.limitSeconds }
+      : { kind: "file", src };
   },
 };
