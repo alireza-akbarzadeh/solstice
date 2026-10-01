@@ -1,12 +1,17 @@
 // Solstice service worker: offline support + Web Push. Hand-written, no build step.
-// Bump VERSION when caching rules change so old caches are cleared on activate.
-const VERSION = "v6";
+//
+// Registered as /sw.js?v=<buildId> (next.config.js resolves one id per deployment), so the
+// script URL changes whenever the app does and the browser installs a new worker. The version
+// therefore needs no hand-bumping: caches are namespaced by the build that filled them, and
+// `activate` drops every cache belonging to an older one.
+const SELF_URL = new URL(self.location.href);
+const VERSION = SELF_URL.searchParams.get("v") ?? "dev";
 const STATIC_CACHE = `solstice-static-${VERSION}`;
 const PAGE_CACHE = `solstice-pages-${VERSION}`;
 const MAX_PAGES = 40;
 
 // Registered as /sw.js?mode=development in dev: skip caching so it never fights hot reload.
-const DEV = new URL(self.location.href).searchParams.get("mode") === "development";
+const DEV = SELF_URL.searchParams.get("mode") === "development";
 
 const OFFLINE_PAGES = { en: "/offline", fa: "/fa/offline" };
 const PRECACHE = [...Object.values(OFFLINE_PAGES), "/icons/icon-192.png", "/icons/badge-96.png"];
@@ -43,12 +48,24 @@ async function precache() {
 }
 
 self.addEventListener("install", (event) => {
+  // Deliberately no skipWaiting() here. A new worker installs in the background and then
+  // *waits*, so the running page keeps being served by the worker its JavaScript was built
+  // against. The member chooses when to switch, via the SKIP_WAITING message below.
+  // In development there is no prompt and nothing is cached, so taking over at once is fine.
   event.waitUntil(
     (async () => {
-      if (!DEV) await precache();
-      await self.skipWaiting();
+      if (DEV) {
+        await self.skipWaiting();
+        return;
+      }
+      await precache();
     })(),
   );
+});
+
+// Sent by the client when the member accepts the update (see pwa-update-provider.tsx).
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") void self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {

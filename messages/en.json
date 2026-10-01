@@ -296,7 +296,14 @@
     "retry": "Try again"
   },
   "Pwa": {
-    "description": "Practices, programs and a calm community with Elena Vance."
+    "description": "Practices, programs and a calm community with Elena Vance.",
+    "update": {
+      "title": "New version available",
+      "body": "Update to get the latest Solstice. Your place in the app is kept.",
+      "update": "Update",
+      "updating": "Updating…",
+      "later": "Later"
+    }
   },
   "Auth": {
     "tagline": "Studio & Sanctuary",

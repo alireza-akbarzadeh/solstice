@@ -55,6 +55,10 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().optional(),
+
+    // One id per deployment, injected by next.config.js. The service worker is registered as
+    // /sw.js?v=<id>, which is what makes a new deployment visible to an installed PWA.
+    NEXT_PUBLIC_BUILD_ID: z.string().default("development"),
   },
 
   /**
@@ -94,6 +98,8 @@ export const env = createEnv({
     VAPID_SUBJECT: process.env.VAPID_SUBJECT,
 
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+
+    NEXT_PUBLIC_BUILD_ID: process.env.NEXT_PUBLIC_BUILD_ID,
   },
 
   /**

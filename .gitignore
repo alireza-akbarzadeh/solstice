@@ -15,7 +15,6 @@ db.sqlite
 
 # next.js
 /.next/
-.next-claude/
 /out/
 next-env.d.ts
 

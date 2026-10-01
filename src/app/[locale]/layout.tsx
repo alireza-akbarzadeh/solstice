@@ -6,7 +6,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Playfair_Display, Plus_Jakarta_Sans, Vazirmatn } from "next/font/google";
 import { notFound } from "next/navigation";
 
-import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
+import { PwaUpdatePrompt } from "@/components/pwa/pwa-update-prompt";
+import { PwaUpdateProvider } from "@/components/pwa/pwa-update-provider";
 import { DirectionProvider } from "@/components/ui/direction";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/env";
@@ -79,9 +80,11 @@ export default async function LocaleLayout({ children, params }: Props) {
       <body className="flex min-h-svh flex-col">
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
-            {children}
-            <Toaster />
-            <ServiceWorkerRegister />
+            <PwaUpdateProvider>
+              {children}
+              <Toaster />
+              <PwaUpdatePrompt />
+            </PwaUpdateProvider>
           </DirectionProvider>
         </NextIntlClientProvider>
       </body>
