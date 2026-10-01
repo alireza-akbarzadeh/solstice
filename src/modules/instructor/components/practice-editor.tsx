@@ -1,24 +1,64 @@
 "use client";
 
-import { FilmIcon, LinkIcon, LoaderCircleIcon, SaveIcon, UnlinkIcon } from "lucide-react";
+import {
+  FilmIcon,
+  LinkIcon,
+  LoaderCircleIcon,
+  SaveIcon,
+  Trash2Icon,
+  UnlinkIcon,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+
+import { useRouter } from "@/i18n/navigation";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
 import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Localized } from "@/lib/localized";
-import { attachPracticeVideo, savePracticeMeta } from "@/modules/instructor/actions";
+import {
+  attachPracticeVideo,
+  newPractice,
+  removePractice,
+  savePracticeMeta,
+} from "@/modules/instructor/actions";
 import { LocalizedField } from "./localized-field";
-import { intensityLevels, practiceCategories, propSetups, type IntensityLevel, type PracticeAccess, type PracticeCategory, type PropSetup } from "@/modules/practices/types";
+import {
+  intensityLevels,
+  practiceCategories,
+  propSetups,
+  type IntensityLevel,
+  type PracticeAccess,
+  type PracticeCategory,
+  type PropSetup,
+} from "@/modules/practices/types";
 
 export type EditablePractice = {
-  slug: string;
+  /** Null while writing a new practice; saving mints one from the English title. */
+  slug: string | null;
   title: Localized;
   summary: Localized;
   series: Localized;
@@ -29,6 +69,9 @@ export type EditablePractice = {
   durationMinutes: number;
   access: PracticeAccess;
   previewSeconds: number | null;
+  image: string;
+  imageAlt: Localized;
+  poster: string | null;
   videoAssetId: string | null;
   videoProvider: string | null;
 };
@@ -37,35 +80,82 @@ export type EditablePractice = {
  * Stitch: studio-admin-content-video-publisher — the editorial metadata column, plus the
  * ingest column rewritten for the mock VideoProvider, which holds a URL rather than an upload.
  */
-export function PracticeEditor({ practice, assetHint, providerId }: { practice: EditablePractice; assetHint: string; providerId: string }) {
+export function PracticeEditor({
+  practice,
+  assetHint,
+  providerId,
+  usage,
+}: {
+  practice: EditablePractice;
+  assetHint: string;
+  providerId: string;
+  /** What deleting would take with it, shown in the confirmation. */
+  usage?: { saves: number; reflections: number; sessions: number };
+}) {
   const t = useTranslations("Studio.practices.editor");
   const tPractice = useTranslations("Practice");
   const tLibrary = useTranslations("Practices");
+  const router = useRouter();
   const [form, setForm] = useState(practice);
   const [videoUrl, setVideoUrl] = useState(practice.videoAssetId ?? "");
   const [savingMeta, saveMeta] = useTransition();
   const [savingVideo, saveVideo] = useTransition();
+  const [deleting, startDelete] = useTransition();
+  const isNew = form.slug === null;
 
-  const set = <K extends keyof EditablePractice>(key: K, value: EditablePractice[K]) => setForm((f) => ({ ...f, [key]: value }));
+  // Once a new practice is saved it has a slug; the address bar catches up without a
+  // re-render that would throw away the form.
+  useEffect(() => {
+    if (practice.slug === null && form.slug)
+      window.history.replaceState(null, "", `?edit=${form.slug}`);
+  }, [practice.slug, form.slug]);
+
+  const onDelete = () =>
+    startDelete(async () => {
+      if (!form.slug) return;
+      const result = await removePractice({ slug: form.slug });
+      if (result.ok) {
+        toast.success(t("deleted"));
+        router.replace("/instructor/videos");
+      } else toast.error(t("error"));
+    });
+
+  const set = <K extends keyof EditablePractice>(
+    key: K,
+    value: EditablePractice[K],
+  ) => setForm((f) => ({ ...f, [key]: value }));
+
+  const fields = () => ({
+    title: form.title,
+    summary: form.summary,
+    series: form.series,
+    category: form.category,
+    intensityLevel: form.intensityLevel,
+    intensityLabel: form.intensityLabel,
+    props: form.props,
+    durationMinutes: form.durationMinutes,
+    access: form.access,
+    previewSeconds: form.access === "members" ? form.previewSeconds : null,
+    image: form.image.trim(),
+    imageAlt: form.imageAlt,
+    poster: form.poster?.trim() ? form.poster.trim() : null,
+  });
 
   const onSave = (e: React.FormEvent) => {
     e.preventDefault();
     saveMeta(async () => {
-      const result = await savePracticeMeta({
-        slug: form.slug,
-        title: form.title,
-        summary: form.summary,
-        series: form.series,
-        category: form.category,
-        intensityLevel: form.intensityLevel,
-        intensityLabel: form.intensityLabel,
-        props: form.props,
-        durationMinutes: form.durationMinutes,
-        access: form.access,
-        previewSeconds: form.access === "members" ? form.previewSeconds : null,
-      });
-      if (result.ok) toast.success(t("saved"));
-      else toast.error(t("error"));
+      const result = isNew
+        ? await newPractice(fields())
+        : await savePracticeMeta({ slug: form.slug, ...fields() });
+      if (!result.ok) {
+        toast.error(result.error === "invalid" ? t("invalid") : t("error"));
+        return;
+      }
+      toast.success(isNew ? t("created") : t("saved"));
+      // newPractice returns the minted slug; adopt it so a second save edits rather than
+      // creating a second practice.
+      if (isNew && result.message)
+        setForm((f) => ({ ...f, slug: result.message ?? null }));
     });
   };
 
@@ -80,26 +170,40 @@ export function PracticeEditor({ practice, assetHint, providerId }: { practice: 
   };
 
   return (
-    <div className="grid grid-cols-1 items-start gap-gutter xl:grid-cols-12">
+    <div className="gap-gutter grid grid-cols-1 items-start xl:grid-cols-12">
       {/* Ingest column (Stitch: 5 of 12) */}
-      <section className="flex flex-col gap-space-md rounded-xl bg-surface-container-low p-space-md shadow-sm xl:col-span-5 md:p-space-lg">
+      <section className="gap-space-md bg-surface-container-low p-space-md md:p-space-lg flex flex-col rounded-xl shadow-sm xl:col-span-5">
         <div>
-          <span className="font-label-sm text-label-sm tracking-widest text-clay uppercase">{t("video.eyebrow")}</span>
-          <h2 className="mt-1 font-headline-sm text-headline-sm text-on-surface">{t("video.title")}</h2>
+          <span className="font-label-sm text-label-sm text-clay tracking-widest uppercase">
+            {t("video.eyebrow")}
+          </span>
+          <h2 className="font-headline-sm text-headline-sm text-on-surface mt-1">
+            {t("video.title")}
+          </h2>
         </div>
 
-        <div className="flex items-center gap-3 rounded-lg bg-surface p-space-sm shadow-sm">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-container/40 text-primary">
+        <div className="bg-surface p-space-sm flex items-center gap-3 rounded-lg shadow-sm">
+          <div className="bg-primary-container/40 text-primary flex size-10 shrink-0 items-center justify-center rounded-lg">
             <FilmIcon className="size-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-label-md text-label-md text-on-surface">{videoUrl ? t("video.present") : t("video.absent")}</p>
-            <p className="truncate font-body-sm text-body-sm text-on-surface-variant" dir="ltr">
+            <p className="font-label-md text-label-md text-on-surface">
+              {videoUrl ? t("video.present") : t("video.absent")}
+            </p>
+            <p
+              className="font-body-sm text-body-sm text-on-surface-variant truncate"
+              dir="ltr"
+            >
               {videoUrl || t("video.absentHint")}
             </p>
           </div>
-          <Badge variant={videoUrl ? "default" : "secondary"} className="shrink-0">
-            {videoUrl ? (practice.videoProvider ?? t("video.ready")) : t("video.pending")}
+          <Badge
+            variant={videoUrl ? "default" : "secondary"}
+            className="shrink-0"
+          >
+            {videoUrl
+              ? (practice.videoProvider ?? t("video.ready"))
+              : t("video.pending")}
           </Badge>
         </div>
 
@@ -113,16 +217,34 @@ export function PracticeEditor({ practice, assetHint, providerId }: { practice: 
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
           />
-          <FieldDescription>{t("video.urlHint", { provider: providerId })}</FieldDescription>
+          <FieldDescription>
+            {t("video.urlHint", { provider: providerId })}
+          </FieldDescription>
         </Field>
 
-        <div className="flex flex-wrap gap-space-xs">
-          <Button type="button" onClick={() => onVideo(videoUrl.trim())} disabled={savingVideo || !videoUrl.trim()}>
-            {savingVideo ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <LinkIcon data-icon="inline-start" />}
+        <div className="gap-space-xs flex flex-wrap">
+          <Button
+            type="button"
+            onClick={() => onVideo(videoUrl.trim())}
+            disabled={savingVideo || !videoUrl.trim()}
+          >
+            {savingVideo ? (
+              <LoaderCircleIcon
+                data-icon="inline-start"
+                className="animate-spin"
+              />
+            ) : (
+              <LinkIcon data-icon="inline-start" />
+            )}
             {t("video.attach")}
           </Button>
           {practice.videoAssetId && (
-            <Button type="button" variant="outline" onClick={() => onVideo("")} disabled={savingVideo}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onVideo("")}
+              disabled={savingVideo}
+            >
               <UnlinkIcon data-icon="inline-start" />
               {t("video.detach")}
             </Button>
@@ -136,23 +258,50 @@ export function PracticeEditor({ practice, assetHint, providerId }: { practice: 
       </section>
 
       {/* Metadata column (Stitch: 7 of 12) */}
-      <form onSubmit={onSave} className="flex flex-col gap-space-md rounded-xl bg-surface-container-low p-space-md shadow-sm xl:col-span-7 md:p-space-lg">
-        <div className="flex flex-wrap items-end justify-between gap-space-sm">
+      <form
+        onSubmit={onSave}
+        className="gap-space-md bg-surface-container-low p-space-md md:p-space-lg flex flex-col rounded-xl shadow-sm xl:col-span-7"
+      >
+        <div className="gap-space-sm flex flex-wrap items-end justify-between">
           <div>
-            <span className="font-label-sm text-label-sm tracking-widest text-clay uppercase">{t("eyebrow")}</span>
-            <h2 className="mt-1 font-headline-sm text-headline-sm text-on-surface">{t("title")}</h2>
+            <span className="font-label-sm text-label-sm text-clay tracking-widest uppercase">
+              {t("eyebrow")}
+            </span>
+            <h2 className="font-headline-sm text-headline-sm text-on-surface mt-1">
+              {t("title")}
+            </h2>
           </div>
-          <code className="rounded bg-surface px-2 py-1 font-label-sm text-label-sm text-on-surface-variant" dir="ltr">
+          <code
+            className="bg-surface font-label-sm text-label-sm text-on-surface-variant rounded px-2 py-1"
+            dir="ltr"
+          >
             {form.slug}
           </code>
         </div>
 
         <FieldGroup>
-          <LocalizedField label={t("fields.title")} value={form.title} onChange={(v) => set("title", v)} maxLength={200} />
-          <LocalizedField label={t("fields.series")} description={t("fields.seriesHint")} value={form.series} onChange={(v) => set("series", v)} maxLength={200} />
-          <LocalizedField label={t("fields.summary")} value={form.summary} onChange={(v) => set("summary", v)} multiline maxLength={600} />
+          <LocalizedField
+            label={t("fields.title")}
+            value={form.title}
+            onChange={(v) => set("title", v)}
+            maxLength={200}
+          />
+          <LocalizedField
+            label={t("fields.series")}
+            description={t("fields.seriesHint")}
+            value={form.series}
+            onChange={(v) => set("series", v)}
+            maxLength={200}
+          />
+          <LocalizedField
+            label={t("fields.summary")}
+            value={form.summary}
+            onChange={(v) => set("summary", v)}
+            multiline
+            maxLength={600}
+          />
 
-          <div className="grid grid-cols-1 gap-space-md sm:grid-cols-3">
+          <div className="gap-space-md grid grid-cols-1 sm:grid-cols-3">
             <Field>
               <FieldLabel htmlFor="category">{t("fields.category")}</FieldLabel>
               <ResponsiveSelect
@@ -160,7 +309,10 @@ export function PracticeEditor({ practice, assetHint, providerId }: { practice: 
                 label={t("fields.category")}
                 value={form.category}
                 onValueChange={(v) => set("category", v as PracticeCategory)}
-                options={practiceCategories.map((c) => ({ value: c, label: tPractice(`categories.${c}`) }))}
+                options={practiceCategories.map((c) => ({
+                  value: c,
+                  label: tPractice(`categories.${c}`),
+                }))}
               />
             </Field>
 
@@ -171,7 +323,10 @@ export function PracticeEditor({ practice, assetHint, providerId }: { practice: 
                 label={t("fields.props")}
                 value={form.props}
                 onValueChange={(v) => set("props", v as PropSetup)}
-                options={propSetups.map((p) => ({ value: p, label: tPractice(`props.${p}`) }))}
+                options={propSetups.map((p) => ({
+                  value: p,
+                  label: tPractice(`props.${p}`),
+                }))}
               />
             </Field>
 
@@ -193,7 +348,9 @@ export function PracticeEditor({ practice, assetHint, providerId }: { practice: 
             <ToggleGroup
               type="single"
               value={form.intensityLevel}
-              onValueChange={(v) => v && set("intensityLevel", v as IntensityLevel)}
+              onValueChange={(v) =>
+                v && set("intensityLevel", v as IntensityLevel)
+              }
               variant="outline"
               className="w-full"
             >
@@ -203,8 +360,46 @@ export function PracticeEditor({ practice, assetHint, providerId }: { practice: 
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
-            <LocalizedField label={t("fields.intensityLabel")} value={form.intensityLabel} onChange={(v) => set("intensityLabel", v)} maxLength={120} />
+            <LocalizedField
+              label={t("fields.intensityLabel")}
+              value={form.intensityLabel}
+              onChange={(v) => set("intensityLabel", v)}
+              maxLength={120}
+            />
           </FieldSet>
+
+          <Field>
+            <FieldLabel htmlFor="practice-image">
+              {t("fields.image")}
+            </FieldLabel>
+            <Input
+              id="practice-image"
+              dir="ltr"
+              placeholder="/images/practices/… or https://…"
+              value={form.image}
+              onChange={(e) => set("image", e.target.value)}
+            />
+            <FieldDescription>{t("fields.imageHint")}</FieldDescription>
+          </Field>
+          <LocalizedField
+            label={t("fields.imageAlt")}
+            value={form.imageAlt}
+            onChange={(v) => set("imageAlt", v)}
+            maxLength={300}
+          />
+          <Field>
+            <FieldLabel htmlFor="practice-poster">
+              {t("fields.poster")}
+            </FieldLabel>
+            <Input
+              id="practice-poster"
+              dir="ltr"
+              placeholder={t("fields.posterPlaceholder")}
+              value={form.poster ?? ""}
+              onChange={(e) => set("poster", e.target.value)}
+            />
+            <FieldDescription>{t("fields.posterHint")}</FieldDescription>
+          </Field>
 
           <FieldSet>
             <FieldLegend variant="label">{t("fields.access")}</FieldLegend>
@@ -231,7 +426,9 @@ export function PracticeEditor({ practice, assetHint, providerId }: { practice: 
                   min={0}
                   max={3600}
                   value={form.previewSeconds ?? 0}
-                  onChange={(e) => set("previewSeconds", Number(e.target.value) || null)}
+                  onChange={(e) =>
+                    set("previewSeconds", Number(e.target.value) || null)
+                  }
                 />
                 <FieldDescription>{t("fields.previewHint")}</FieldDescription>
               </Field>
@@ -239,10 +436,62 @@ export function PracticeEditor({ practice, assetHint, providerId }: { practice: 
           </FieldSet>
         </FieldGroup>
 
-        <div className="flex justify-end">
+        <div className="gap-space-sm border-hairline pt-space-md flex flex-wrap items-center justify-between border-t">
+          {form.slug ? (
+            <ResponsiveDialog>
+              <ResponsiveDialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="text-destructive"
+                  disabled={savingMeta || deleting}
+                >
+                  <Trash2Icon data-icon="inline-start" />
+                  {t("delete")}
+                </Button>
+              </ResponsiveDialogTrigger>
+              <ResponsiveDialogContent>
+                <ResponsiveDialogHeader>
+                  <ResponsiveDialogTitle>{t("delete")}</ResponsiveDialogTitle>
+                  <ResponsiveDialogDescription>
+                    {usage &&
+                    (usage.saves > 0 ||
+                      usage.reflections > 0 ||
+                      usage.sessions > 0)
+                      ? t("deleteUsage", {
+                          saves: usage.saves,
+                          reflections: usage.reflections,
+                          sessions: usage.sessions,
+                        })
+                      : t("deleteBody")}
+                  </ResponsiveDialogDescription>
+                </ResponsiveDialogHeader>
+                <ResponsiveDialogFooter>
+                  <ResponsiveDialogClose asChild>
+                    <Button variant="outline">{t("keep")}</Button>
+                  </ResponsiveDialogClose>
+                  <ResponsiveDialogClose asChild>
+                    <Button variant="destructive" onClick={onDelete}>
+                      {t("confirmDelete")}
+                    </Button>
+                  </ResponsiveDialogClose>
+                </ResponsiveDialogFooter>
+              </ResponsiveDialogContent>
+            </ResponsiveDialog>
+          ) : (
+            <Badge variant="secondary">{t("draftNotice")}</Badge>
+          )}
+
           <Button type="submit" size="lg" disabled={savingMeta}>
-            {savingMeta ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <SaveIcon data-icon="inline-start" />}
-            {t("save")}
+            {savingMeta ? (
+              <LoaderCircleIcon
+                data-icon="inline-start"
+                className="animate-spin"
+              />
+            ) : (
+              <SaveIcon data-icon="inline-start" />
+            )}
+            {isNew ? t("create") : t("save")}
           </Button>
         </div>
       </form>

@@ -17,7 +17,15 @@ import { auth } from "@/server/better-auth";
 
 import { endAccess, grantAccess, setMemberRole } from "./server/members";
 import { unpinAnnouncements } from "./server/posts";
-import { setPracticeFeatured, setPracticeStatus, setPracticeVideo, updatePracticeMeta } from "./server/publish";
+import {
+  createPractice,
+  deletePractice,
+  setPracticeFeatured,
+  setPracticeStatus,
+  setPracticeVideo,
+  uniquePracticeSlug,
+  updatePracticeMeta,
+} from "./server/publish";
 
 export type StudioResult = { ok: true; message?: string } | { ok: false; error: "forbidden" | "invalid" | "failed" };
 
@@ -171,6 +179,46 @@ export async function attachPracticeVideo(input: unknown): Promise<StudioResult>
 
   const changed = await setPracticeVideo(parsed.data.slug, asset);
   if (!changed) return { ok: false, error: "invalid" };
+  refresh();
+  return { ok: true };
+}
+
+const practiceFieldsSchema = z.object({
+  title: z.object({ en: z.string().min(1).max(200), fa: z.string().min(1).max(200) }),
+  summary: z.object({ en: z.string().min(1).max(600), fa: z.string().min(1).max(600) }),
+  series: z.object({ en: z.string().min(1).max(200), fa: z.string().min(1).max(200) }),
+  category: z.enum(practiceCategories),
+  intensityLevel: z.enum(["gentle", "moderate", "fire"]),
+  intensityLabel: z.object({ en: z.string().min(1).max(120), fa: z.string().min(1).max(120) }),
+  props: z.enum(["none", "bolster-blocks", "strap"]),
+  durationMinutes: z.number().int().min(1).max(600),
+  access: z.enum(["open", "members"]),
+  previewSeconds: z.number().int().min(0).max(3600).nullable(),
+  image: z.string().min(1).max(2000),
+  imageAlt: z.object({ en: z.string().min(1).max(300), fa: z.string().min(1).max(300) }),
+  poster: z.string().max(2000).nullable(),
+});
+
+/** Creates a practice as a draft and hands back its slug, derived from the English title. */
+export async function newPractice(input: unknown): Promise<StudioResult> {
+  if (!(await instructorOnly())) return { ok: false, error: "forbidden" };
+  const parsed = practiceFieldsSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "invalid" };
+
+  const slug = await uniquePracticeSlug(parsed.data.title.en);
+  const created = await createPractice(slug, parsed.data);
+  if (!created) return { ok: false, error: "failed" };
+  // No revalidate here: it would remount the editor and discard the slug the client needs.
+  return { ok: true, message: slug };
+}
+
+export async function removePractice(input: unknown): Promise<StudioResult> {
+  if (!(await instructorOnly())) return { ok: false, error: "forbidden" };
+  const parsed = z.object({ slug }).safeParse(input);
+  if (!parsed.success) return { ok: false, error: "invalid" };
+
+  const removed = await deletePractice(parsed.data.slug);
+  if (!removed) return { ok: false, error: "invalid" };
   refresh();
   return { ok: true };
 }

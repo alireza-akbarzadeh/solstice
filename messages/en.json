@@ -1343,7 +1343,13 @@
           "accessOpen": "Open to everyone",
           "accessMembers": "Members only",
           "preview": "Free preview (seconds)",
-          "previewHint": "Non-members watch this much before the membership gate. Zero for none."
+          "previewHint": "Non-members watch this much before the membership gate. Zero for none.",
+          "image": "Cover image",
+          "imageHint": "A path under /images, or a full https:// address. Uploading files is not built yet.",
+          "imageAlt": "Cover image description",
+          "poster": "Video still",
+          "posterHint": "Shown before playback starts. Falls back to the cover image.",
+          "posterPlaceholder": "/images/practices/… (optional)"
         },
         "video": {
           "eyebrow": "Video",
@@ -1362,8 +1368,19 @@
           "invalid": "That URL did not save.",
           "mockTitle": "Uploads are not wired yet",
           "mockBody": "The studio runs on the mock VideoProvider, which stores a URL rather than an upload. A real provider (Mux, Cloudflare Stream) would take a file here, transcode it, and enforce previews server-side."
-        }
-      }
+        },
+        "create": "Create practice",
+        "created": "Practice created as a draft. Attach a video and publish it when ready.",
+        "invalid": "Some fields still need filling — a title, summary, series line and cover image, in both languages.",
+        "delete": "Delete practice",
+        "deleted": "Practice deleted.",
+        "deleteBody": "This removes the practice from the library. It cannot be undone.",
+        "deleteUsage": "This removes the practice, {saves, number} saves and {reflections, number} reflections. {sessions, number} completed sessions stay on members' records, because those minutes are theirs. It cannot be undone.",
+        "keep": "Keep it",
+        "confirmDelete": "Delete",
+        "draftNotice": "Saved as a draft first"
+      },
+      "newPractice": "New practice"
     },
     "members": {
       "metaTitle": "Members & access",

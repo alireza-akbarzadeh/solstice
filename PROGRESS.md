@@ -9,8 +9,7 @@ Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
 > **Next up:** Programs into Postgres with a studio editor (`/instructor/programs` — create,
-> edit, delete), then the About page's content made editable, then creating and deleting
-> practices from `/instructor/videos`.
+> edit, delete), then the About page's content made editable.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -193,3 +192,9 @@ member moves the dossier above the directory, and selects open as drawers.
   delete → 404 again. Two bugs found and fixed on the way: saving a new essay left the form in
   "new" state (a second save would have made a duplicate), and `revalidatePath` in the create
   action remounted the editor and discarded the new slug.
+- **2026-10-01** — `/instructor/videos` completed: create a practice from scratch and delete one,
+  alongside the editing that already worked. Cover image, alt text and video still are editable
+  now, because creating a row requires them. Deleting names its consequences first — practice,
+  saves and reflections go; members' completed sessions stay, since deleting those would quietly
+  rewrite their progress and streaks. Verified in a browser: create → slug derived → draft 404s
+  publicly → delete → gone from the library.
