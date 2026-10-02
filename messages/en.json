@@ -38,23 +38,17 @@
   },
   "Footer": {
     "eyebrow": "A Sanctuary for Conscious Movement",
-    "quote": "“Breath is the architecture of presence. Through mindful alignment and unhurried stillness, we return home to the body.”",
-    "attribution": "— Elena Vance, Founder & Guide",
     "newsletterTitle": "The Arte Chronicle",
-    "newsletterBody": "Subtle reflections, seasonal breathwork rituals, and private retreat itineraries delivered on each new and full moon.",
-    "emailLabel": "Email address",
-    "emailPlaceholder": "Your email address",
-    "subscribe": "Subscribe",
-    "curriculum": "Curriculum",
-    "dailyAsana": "Daily Asana",
-    "pranayama": "Pranayama Series",
-    "nidra": "Restorative Nidra",
-    "apprenticeship": "Apprenticeship",
-    "essays": "Arte Essays",
-    "copyright": "© {year, number, ::group-off} Arte Yoga Studio & Elena Vance. All rights reserved.",
     "privacy": "Privacy Policy",
     "terms": "Terms of Practice",
-    "ethics": "Ethics & Lineage"
+    "ethics": "Ethics & Lineage",
+    "statement": "A little space. A deeper breath.",
+    "newsletterDescription": "Sign up for practice notes, new classes and studio updates.",
+    "explore": "Explore",
+    "studio": "The studio",
+    "connect": "Find us elsewhere",
+    "legal": "Policies",
+    "copyrightLine": "© {year, number, ::group-off} {studio}. All rights reserved."
   },
   "Practice": {
     "minutes": "{count, number} min",
@@ -972,8 +966,8 @@
     "label": "Email address",
     "placeholder": "Enter your email address…",
     "submit": "Subscribe",
-    "done": "Welcome to the circle. The next epistle arrives with the new moon.",
-    "invalid": "Please enter a valid email address."
+    "invalid": "Please enter a valid email address.",
+    "saved": "You’re on the list. Thank you for joining us."
   },
   "Dashboard": {
     "metaTitle": "Today",
@@ -2025,7 +2019,7 @@
         "cta": "Invitation",
         "trial": "Trial button",
         "member": "Member button",
-        "explore": "Explore button",
+        "explore": "Explore links heading",
         "note": "Note",
         "portraitAlt": "Portrait description",
         "imageAlt": "Image description",
@@ -2180,7 +2174,12 @@
         "stat2Label": "Statistic 2: label",
         "stat3": "Statistic 3",
         "stat3Value": "Statistic 3: value",
-        "stat3Label": "Statistic 3: label"
+        "stat3Label": "Statistic 3: label",
+        "statement": "Brand statement",
+        "newsletterDescription": "Newsletter description",
+        "connect": "Social links heading",
+        "legal": "Policy links heading",
+        "copyrightLine": "Copyright line"
       },
       "blocks": {
         "eyebrow": "Page content",

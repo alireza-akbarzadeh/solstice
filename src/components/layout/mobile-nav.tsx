@@ -39,7 +39,7 @@ export function MobileNav({
         <Button
           variant="ghost"
           size="icon-lg"
-          className="rounded-full lg:hidden"
+          className="size-11 rounded-full lg:hidden"
           aria-label={t("openMenu")}
         >
           <MenuIcon className="size-5" />
@@ -47,7 +47,7 @@ export function MobileNav({
       </SheetTrigger>
       <SheetContent
         side={side}
-        className="border-hairline bg-surface p-space-lg w-80 overflow-y-auto"
+        className="w-80 max-w-[calc(100vw-1rem)] overflow-y-auto border-hairline bg-surface p-space-lg [overflow-wrap:anywhere]"
       >
         <SheetTitle className="font-label-md text-label-md text-clay tracking-widest uppercase">
           {t("menuTitle")}

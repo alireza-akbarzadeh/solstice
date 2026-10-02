@@ -67,7 +67,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
       {/* Hero */}
       <Container className="relative pt-space-xl pb-space-2xl">
         <div className="grid grid-cols-1 items-center gap-gutter lg:grid-cols-12">
-          <div className="z-10 flex flex-col justify-center space-y-space-md lg:col-span-7 lg:pe-space-lg">
+          <div className="z-10 flex min-w-0 flex-col justify-center space-y-space-md lg:col-span-7 lg:pe-space-lg">
             <div className="flex items-center gap-3">
               <span className="h-px w-8 bg-clay" />
               <span className="font-label-md text-label-md tracking-widest text-clay uppercase">{t("hero.eyebrow")}</span>
@@ -100,7 +100,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
             </dl>
           </div>
 
-          <div className="relative mt-space-md lg:col-span-5 lg:mt-0">
+          <div className="relative mt-space-md min-w-0 lg:col-span-5 lg:mt-0">
             <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-surface-container-low shadow-xl">
               <Image
                 src={assets.portrait!}
@@ -119,7 +119,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
                 <Flower2Icon className="size-6 text-primary" />
               </div>
             </div>
-            <div aria-hidden className="absolute -end-6 -top-6 -z-10 size-32 rounded-full bg-secondary-fixed/30 blur-2xl" />
+            <div aria-hidden className="pointer-events-none absolute end-0 -top-6 -z-10 size-32 rounded-full bg-secondary-fixed/30 blur-2xl lg:-end-6" />
           </div>
         </div>
       </Container>

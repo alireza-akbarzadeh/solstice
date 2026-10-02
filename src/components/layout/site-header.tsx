@@ -30,10 +30,10 @@ export async function SiteHeader() {
 
   return (
     <header className="bg-surface/85 sticky top-0 z-50 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-md">
-      <Container className="gap-space-md flex h-16 items-center justify-between lg:h-22">
+      <Container className="flex h-16 min-w-0 items-center justify-between gap-2 sm:gap-space-md lg:h-22">
         <Link
           href="/"
-          className="flex shrink-0 items-center"
+          className="flex min-w-0 items-center lg:shrink-0"
           aria-label={`${tBrand("name")} ${tBrand("studio")}`}
         >
           <BrandLockup
@@ -45,7 +45,7 @@ export async function SiteHeader() {
 
         <MainNav extraItems={extraPages} />
 
-        <div className="gap-space-xs md:gap-space-md flex items-center">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-space-xs md:gap-space-md">
           <LocaleSwitcher />
           {user && isPushConfigured() && <PushToggle />}
           {!user && (

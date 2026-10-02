@@ -39,7 +39,7 @@ const { db } = await import(
 const { sitePages } = await import(
   new URL("../src/server/db/schema.ts", import.meta.url).href
 );
-const { defaultContentFor } = await import(
+const { defaultContentFor, editableContentFor } = await import(
   new URL("../src/modules/pages/defaults.ts", import.meta.url).href
 );
 const definitions = await import(
@@ -91,6 +91,28 @@ for (const link of [
   assert.equal(validation.safePageLink(link), false);
 assert.equal(validation.safePageLink("/membership"), true);
 assert.equal(validation.safePageLink("https://example.com/book"), true);
+
+const previousSettings = defaultContentFor("site-settings");
+delete previousSettings.copy.en.Footer.statement;
+delete previousSettings.copy.fa.Footer.statement;
+previousSettings.copy.en.Footer.retiredField = "Old copy";
+previousSettings.copy.fa.Footer.retiredField = "متن قبلی";
+const inherited = editableContentFor("site-settings", previousSettings);
+assert.ok(inherited.copy.en.Footer.statement);
+assert.equal(inherited.copy.en.Footer.retiredField, undefined);
+assert.ok(
+  validation.validBuiltinContent(inherited, defaultContentFor("site-settings")),
+  "older content inherits new editable fields",
+);
+
+const reorderedPolicy = defaultContentFor("privacy");
+reorderedPolicy.copy.en["Legal.privacy"].sections.reverse();
+reorderedPolicy.copy.fa["Legal.privacy"].sections.reverse();
+assert.deepEqual(
+  editableContentFor("privacy", reorderedPolicy).copy,
+  reorderedPolicy.copy,
+  "normalizing reordered sections preserves optional list items",
+);
 
 const template = defaultContentFor("about");
 const changed = structuredClone(template);

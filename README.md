@@ -17,6 +17,8 @@ The instructor can:
 
 - Create, edit, publish and delete practices using YouTube, Aparat or direct media URLs
 - Create, edit, publish and delete programs with weeks and practice days
+- Edit website copy and photos in English and Persian from the Pages editor
+- Create and publish landing pages for workshops, retreats and offers
 - Manage members
 - Publish announcements/posts
 - Moderate community content
@@ -95,6 +97,7 @@ src/
 │   ├── users/
 │   ├── videos/
 │   ├── programs/
+│   ├── pages/
 │   ├── memberships/
 │   ├── progress/
 │   └── community/
@@ -342,3 +345,8 @@ The goal is a **small, elegant, production-ready Next.js application that can gr
 Practice management lives at `/instructor/videos` and program management at `/instructor/programs`, with English and Persian editors. Content is stored in PostgreSQL; only published rows appear publicly. Paste a YouTube URL when creating a practice to save its provider and video ID with the draft. A blank cover uses its YouTube thumbnail.
 
 For a new database, seed practices first, then run `pnpm db:seed:programs`. This creates the program table and imports the original sample programs without replacing existing rows. See [GUIDE.md](GUIDE.md#8-instructor-cms) for publishing, deletion and test commands.
+
+
+Website content lives in `solstice_site_page` and is managed at `/instructor/pages`. The 16 existing templates retain their page layouts; published database copy overrides only their registered translation namespaces. Draft snapshots stay private. Custom bilingual pages use structured content, optional YouTube embeds and call-to-action links, with optional menu/footer visibility. Core website routes are reserved and cannot be deleted or unpublished. Payment configuration and member records remain separate from content editing.
+
+Run `pnpm db:seed:pages` to import existing website content without overwriting edited rows. `pnpm test:pages` verifies page validation and database publishing behavior with isolated fixtures. Footer and journal newsletter forms capture subscriber addresses; outbound newsletter delivery is not yet configured.

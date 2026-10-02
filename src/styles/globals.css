@@ -335,6 +335,22 @@ html:lang(fa) {
   --app-font-heading: var(--font-vazirmatn), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* All editable controls use Vazirmatn, including Persian content inside English forms.
+ * Unlayered so typography utilities on shadcn/native controls cannot override this rule. */
+:where(
+  input,
+  textarea,
+  select,
+  [role="combobox"],
+  [role="option"],
+  [contenteditable="true"]
+) {
+  font-family: var(--font-vazirmatn), ui-sans-serif, system-ui, sans-serif;
+}
+:where(input, textarea)::placeholder {
+  font-family: inherit;
+}
+
 /* Letter-spacing pulls apart Persian's joined letterforms, so tracking utilities are neutralised. */
 :lang(fa) * {
   letter-spacing: normal !important;

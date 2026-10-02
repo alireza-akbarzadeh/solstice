@@ -16,7 +16,10 @@ import {
   pageDefinition,
   pageDefinitions,
 } from "@/modules/pages/definitions";
-import { defaultContentFor } from "@/modules/pages/defaults";
+import {
+  defaultContentFor,
+  editableContentFor,
+} from "@/modules/pages/defaults";
 import { getPageInventory, getSitePage } from "@/modules/pages/server/library";
 
 type Props = {
@@ -84,7 +87,13 @@ export default async function StudioPages({ params, searchParams }: Props) {
       {(row !== null || creating) && (
         <PageEditor
           key={row?.slug ?? "new"}
-          initial={row?.draftContent ?? blankPageContent()}
+          initial={
+            row
+              ? row.builtin
+                ? editableContentFor(row.slug, row.draftContent)
+                : row.draftContent
+              : blankPageContent()
+          }
           initialSlug={row?.slug ?? null}
           definition={row?.builtin ? (pageDefinition(row.slug) ?? null) : null}
           template={row?.builtin ? defaultContentFor(row.slug) : null}

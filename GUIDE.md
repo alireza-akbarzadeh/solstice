@@ -63,7 +63,9 @@ design/stitch/
 **Fonts.** English: Cormorant Garamond (headings) + Manrope (body). Persian:
 [Vazirmatn](https://rastikerdar.github.io/vazirmatn/fa) for everything. This is switched
 in `globals.css` via `--app-font-*` under `html:lang(fa)`. Never hard-code a font family
-in a component; use the `font-*` utilities so the swap keeps working.
+in a component; use the `font-*` utilities so the swap keeps working. Editable controls
+(inputs, textareas, selects, combobox/options and contenteditable text) use Vazirmatn
+in both locales via the global rule in `src/styles/globals.css`. Placeholders inherit it.
 
 **Type.** Always pair family and size as Stitch does: `font-label-md text-label-md`.
 Keep Stitch's `uppercase` + `tracking-*` on labels: Persian has no case, and
@@ -97,6 +99,13 @@ Alt text: short and descriptive (the manifest's prompts are too long — condens
 
 **Links.** `Link` from `@/i18n/navigation` (locale-aware), never `next/link`.
 Routes that don't exist yet still link to their final path.
+
+**Mobile navigation.** Public pages show the bottom bar to everyone below `lg`:
+guests get Home, Library, Programs, Journal and Sign In; signed-in members get
+Today, Library, Programs, Community and My Space. Keep the five columns shrinkable
+with `min-w-0` and allow labels to wrap. Public and member footers both use
+`pb-safe-nav lg:pb-0` so the last links clear the bar and iPhone home indicator.
+Keep decorative elements inside the phone width rather than hiding page overflow.
 
 **Components.** Server Components by default; `"use client"` only for real
 interactivity (menus, players, forms). Use shadcn primitives (`Button`, `Input`, …)
@@ -166,3 +175,16 @@ password, …) are built last, composed from existing sections in the same langu
 - Program deletion removes enrollments but keeps practice completion history. A practice used by a program cannot be deleted until removed from its curriculum. Day order and pacing are fixed once members enroll; copy remains editable.
 - On a new database, run `pnpm db:seed:programs` after the practice seed. This creates the program table and imports sample curricula without replacing edited rows. The additive SQL is also registered for `pnpm db:migrate`.
 - Node 22+: `pnpm test:cms` checks URL parsing and curriculum validation. `pnpm test:cms:db` creates isolated fixtures in the configured database, checks CMS mutations and progress guards, and cleans up those fixtures.
+
+
+### Website pages and offers
+
+Open `/instructor/pages` (or `/fa/instructor/pages`). The **Website and app pages** section edits 16 existing content templates, including About, Home, Membership, legal text, brand/navigation/footer and member-facing copy. Expand a section to edit the English and Persian fields together. About also exposes its photos, story, credentials, milestones and FAQs; repeatable items can be added, moved and removed. Collection items still use their practice, program or journal editor.
+
+Use **New page** to create a workshop, retreat or offer landing page. Choose an unused address, add bilingual copy, an optional cover/YouTube video and structured content, then save the draft. A button can link to `/membership` or an HTTPS booking page. The address stays fixed after creation. **Preview saved draft** requires instructor access. New pages can appear in the main menu or footer when published.
+
+**Save draft** does not change the live website. **Publish changes** replaces the live snapshot. Custom pages can return to draft or be deleted with confirmation; existing app routes can only be edited, protecting sign-in and navigation. Content editing does not change payment amounts, membership rules or member records. A button to an external booking page does not implement booking or payment processing itself.
+
+On a new database, run `pnpm db:seed:pages`. It creates the additive page table and imports the current website content without replacing existing edits. The SQL is also registered for `pnpm db:migrate`. Node 22+: `pnpm test:pages` checks all templates, validation, private drafts, publishing, menu/footer links and deletion using disposable fixtures. With a running local preview, `CMS_CHECK_URL=http://127.0.0.1:3131 pnpm test:pages` also checks public English/Persian rendering and draft 404s.
+
+The footer and journal signup forms now both store subscriber addresses in `solstice_newsletter_subscriber`. Sending a newsletter still requires an email provider.

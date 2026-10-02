@@ -21,7 +21,7 @@ export async function ContentPage({
   return (
     <article className="max-w-content px-margin-mobile py-space-xl md:px-margin md:py-space-2xl mx-auto w-full">
       <header className="mb-space-xl mx-auto max-w-3xl">
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-display md:text-display">
+        <h1 className="break-words font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-display md:text-display">
           {text(content.title)}
         </h1>
         <p className="text-body-lg font-body-lg text-on-surface-variant mt-5 leading-relaxed whitespace-pre-line">

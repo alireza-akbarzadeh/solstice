@@ -21,7 +21,7 @@ export default async function MemberLayout({ children, params }: LayoutProps<"/[
       <MemberNav />
       <main className="flex-1 bg-surface">{children}</main>
       <SiteFooter className="pb-safe-nav lg:pb-0" />
-      <BottomTabs />
+      <BottomTabs signedIn />
       <TestPanel />
     </>
   );

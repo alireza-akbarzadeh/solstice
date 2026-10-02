@@ -23,7 +23,7 @@ export function PageInventory({ items }: { items: PageInventoryItem[] }) {
           className="border-hairline bg-surface flex flex-wrap items-center justify-between gap-4 rounded-xl border p-5"
         >
           <div className="min-w-0">
-            <h3 className="font-semibold">{page.title}</h3>
+            <h3 className="break-words font-semibold">{page.title}</h3>
             <p
               dir="ltr"
               className="text-on-surface-variant mt-1 text-start text-sm"

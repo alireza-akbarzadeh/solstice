@@ -41,7 +41,7 @@ export function NewsletterForm({
         )}
       >
         <CircleCheckIcon className="size-5 shrink-0" />
-        {t("done")}
+        {t("saved")}
       </p>
     );
   }
