@@ -13,6 +13,7 @@ import { SignInForm } from "@/modules/auth/components/sign-in-form";
 import { SocialButtons } from "@/modules/auth/components/social-buttons";
 import { enabledSocialProviders } from "@/server/better-auth/config";
 import { getSession } from "@/server/better-auth/server";
+import { getBuiltinPagePreview } from "@/modules/pages/server/request";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/sign-in">): Promise<Metadata> {
   const { locale } = await params;
@@ -28,7 +29,7 @@ export default async function SignInPage({ params, searchParams }: PageProps<"/[
   setRequestLocale(locale);
 
   const next = safeNextPath((await searchParams).next);
-  if (await getSession()) redirect({ href: next, locale });
+  if ((await getSession()) && (await getBuiltinPagePreview())?.slug !== "account-access") redirect({ href: next, locale });
 
   const [t, tBrand] = await Promise.all([getTranslations("Auth"), getTranslations("Brand")]);
 

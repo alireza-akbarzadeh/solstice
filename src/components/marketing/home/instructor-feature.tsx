@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 import { Container } from "@/components/layout/container";
-import { getPageAssets } from "@/modules/pages/server/library";
+import { getPageAssets } from "@/modules/pages/server/request";
 
 export async function InstructorFeature() {
   const [t, tBrand, assets] = await Promise.all([getTranslations("Home.instructor"), getTranslations("Brand"), getPageAssets("home")]);

@@ -12,6 +12,8 @@ import { DirectionProvider } from "@/components/ui/direction";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/env";
 import { getDirection, routing } from "@/i18n/routing";
+import { PagePreviewBanner } from "@/modules/pages/components/page-preview-banner";
+import { getBuiltinPagePreview } from "@/modules/pages/server/request";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -58,6 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: t("description"),
     metadataBase: new URL(env.BETTER_AUTH_URL),
     applicationName: t("title"),
+    ...((await getBuiltinPagePreview()) ? { robots: { index: false, follow: false } } : {}),
     icons: {
       icon: [{ url: "/icons/mark.svg", type: "image/svg+xml" }, { url: "/favicon.ico", sizes: "any" }],
       apple: "/icons/apple-touch-icon.png",
@@ -84,6 +87,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
             <PwaUpdateProvider>
+              <PagePreviewBanner />
               {children}
               <Toaster />
               <PwaUpdatePrompt />

@@ -28,7 +28,8 @@
     "test:cms": "node --experimental-strip-types --test tests/cms.test.mjs",
     "test:cms:db": "node --env-file=.env --experimental-strip-types --no-warnings scripts/check-cms.mjs",
     "db:seed:pages": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-pages.ts",
-    "test:pages": "node --env-file=.env --experimental-strip-types --no-warnings scripts/check-pages.mjs"
+    "test:pages": "node --env-file=.env --experimental-strip-types --no-warnings scripts/check-pages.mjs",
+    "test:pages:preview": "node --experimental-strip-types --test tests/page-preview.test.mjs"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.2",

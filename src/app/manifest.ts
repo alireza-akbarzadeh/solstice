@@ -1,14 +1,19 @@
 import type { MetadataRoute } from "next";
 
-import en from "../../messages/en.json";
+import { readCopyPath } from "@/modules/pages/definitions";
+import { getPublishedMessages } from "@/modules/pages/server/messages";
+
+export const dynamic = "force-dynamic";
 
 // Served at /manifest.webmanifest. Makes Arte Yoga Studio installable (Add to Home Screen).
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const messages = await getPublishedMessages("en");
+  const text = (path: string) => readCopyPath(messages, path) as string;
   return {
     id: "/",
-    name: en.Metadata.title,
-    short_name: en.Brand.name,
-    description: en.Pwa.description,
+    name: text("Metadata.title"),
+    short_name: text("Brand.name"),
+    description: text("Pwa.description"),
     start_url: "/",
     scope: "/",
     display: "standalone",

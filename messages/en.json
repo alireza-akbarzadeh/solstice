@@ -1979,6 +1979,11 @@
         "LocaleSwitcher": "Language switcher"
       },
       "copyLabels": {
+        "0": "Level 0",
+        "1": "Level 1",
+        "2": "Level 2",
+        "3": "Level 3",
+        "4": "Level 4",
         "hero": "Hero section",
         "title": "Title",
         "titleLine1": "Headline, first line",
@@ -2157,11 +2162,6 @@
         "notification": "Notification copy",
         "menu": "Menu",
         "tabs": "Tabs",
-        "0": "Level 0",
-        "1": "Level 1",
-        "2": "Level 2",
-        "3": "Level 3",
-        "4": "Level 4",
         "f1": "Feature 1",
         "f2": "Feature 2",
         "f3": "Feature 3",
@@ -2222,7 +2222,10 @@
           "stepTitle": "Step title",
           "stepBody": "Step text"
         }
-      }
+      },
+      "previewTitle": "Draft preview: {title}",
+      "menuPlacement": "In the main menu",
+      "footerPlacement": "In the footer"
     }
   },
   "Legal": {

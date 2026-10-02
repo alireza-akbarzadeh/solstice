@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { EmbedPlayer } from "@/modules/practices/components/embed-player";
 import { parseYouTubeId } from "@/infrastructure/video/assets";
 import type { PageContent, PageDefinition } from "@/modules/pages/types";
+import { pagePreviewPath } from "@/modules/pages/preview";
 import type { PageResult } from "@/modules/pages/server/mutations";
 import {
   newWebsitePage,
@@ -120,10 +121,10 @@ export function PageEditor({
               </Link>
             </Button>
           )}
-          {!isNew && !builtin && (
+          {!isNew && (
             <Button asChild variant="outline" size="sm">
               <Link
-                href={`/instructor/pages/preview/${savedSlug}`}
+                href={pagePreviewPath(savedSlug!)}
                 target="_blank"
               >
                 {t("preview")}

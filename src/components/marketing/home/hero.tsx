@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
-import { getPageAssets } from "@/modules/pages/server/library";
+import { getPageAssets } from "@/modules/pages/server/request";
 
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";

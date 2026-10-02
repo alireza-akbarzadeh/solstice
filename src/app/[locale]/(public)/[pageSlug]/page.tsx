@@ -4,6 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { localize } from "@/lib/localized";
+import { getPathname } from "@/i18n/navigation";
 import { isCustomPageSlug } from "@/modules/pages/definitions";
 import { getPublishedCustomPage } from "@/modules/pages/server/library";
 import { ContentPage } from "@/modules/pages/components/content-page";
@@ -20,6 +21,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title:
       localize(content.seoTitle, locale) || localize(content.title, locale),
     description: localize(content.description, locale),
+    alternates: {
+      canonical: getPathname({ locale, href: `/${pageSlug}` }),
+      languages: Object.fromEntries(routing.locales.map((language) => [language, getPathname({ locale: language, href: `/${pageSlug}` })])),
+    },
     openGraph: content.image ? { images: [content.image] } : undefined,
   };
 }

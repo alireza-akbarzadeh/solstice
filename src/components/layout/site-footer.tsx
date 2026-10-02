@@ -3,7 +3,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { NewsletterForm } from "@/modules/newsletter/components/newsletter-form";
-import { getFooterPages, getPageAssets } from "@/modules/pages/server/library";
+import { getFooterPages } from "@/modules/pages/server/library";
+import { getPageAssets } from "@/modules/pages/server/request";
 
 import { BrandLockup } from "./brand-lockup";
 import { Container } from "./container";

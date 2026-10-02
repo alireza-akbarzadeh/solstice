@@ -1,8 +1,8 @@
 import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
 import { mergePublishedCopy } from "@/modules/pages/definitions";
-import { getPublishedBuiltinPages } from "@/modules/pages/server/library";
-import type { CopyRecord } from "@/modules/pages/types";
+import { getPublishedMessages } from "@/modules/pages/server/messages";
+import { getBuiltinPagePreview } from "@/modules/pages/server/request";
 
 import { routing } from "./routing";
 
@@ -12,22 +12,14 @@ export default getRequestConfig(async ({ requestLocale }) => {
     ? requested
     : routing.defaultLocale;
 
-  const original = (
-    (await import(`../../messages/${locale}.json`)) as { default: Messages }
-  ).default;
-  // Database copy is published explicitly; drafts never reach public/client translations.
-  // Keep the original website available during a transient CMS database outage.
-  let messages = original;
-  try {
-    messages = mergePublishedCopy(
-      original as unknown as CopyRecord,
-      locale,
-      await getPublishedBuiltinPages(),
-    ) as unknown as Messages;
-  } catch {
-    console.warn(
-      "Published page content is temporarily unavailable; using the original website copy.",
-    );
-  }
-  return { locale, messages };
+  const [published, preview] = await Promise.all([
+    getPublishedMessages(locale),
+    getBuiltinPagePreview(),
+  ]);
+  // Ordinary requests see published snapshots. Only an authenticated instructor's
+  // explicit preview can replace one registered page's copy with its saved draft.
+  const messages = preview
+    ? mergePublishedCopy(published, locale, [{ slug: preview.slug, publishedContent: preview.draftContent }])
+    : published;
+  return { locale, messages: messages as unknown as Messages };
 });

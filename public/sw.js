@@ -89,16 +89,19 @@ async function trimCache(name, max) {
 
 async function handleNavigation(event) {
   const url = new URL(event.request.url);
+  // Saved drafts can appear on the real /about or / URL for instructor previews.
+  // Neither store them nor replay an old preview after the instructor signs out.
+  const privatePage = PRIVATE_PATH.test(url.pathname) || url.searchParams.has("cmsPreview");
   try {
     const response = (await event.preloadResponse) || (await fetch(event.request));
-    if (response.ok && !PRIVATE_PATH.test(url.pathname)) {
+    if (response.ok && !privatePage) {
       const cache = await caches.open(PAGE_CACHE);
       await cache.put(event.request, response.clone());
       event.waitUntil(trimCache(PAGE_CACHE, MAX_PAGES));
     }
     return response;
   } catch {
-    const cached = await caches.match(event.request);
+    const cached = privatePage ? undefined : await caches.match(event.request);
     if (cached) return cached;
     return (await caches.match(OFFLINE_PAGES[localeOf(url.pathname)])) || Response.error();
   }

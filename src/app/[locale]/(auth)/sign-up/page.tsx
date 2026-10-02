@@ -14,6 +14,7 @@ import { SocialButtons } from "@/modules/auth/components/social-buttons";
 import { sanctuaryPlan } from "@/modules/memberships/plans";
 import { enabledSocialProviders } from "@/server/better-auth/config";
 import { getSession } from "@/server/better-auth/server";
+import { getBuiltinPagePreview } from "@/modules/pages/server/request";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/sign-up">): Promise<Metadata> {
   const { locale } = await params;
@@ -30,7 +31,7 @@ export default async function SignUpPage({ params, searchParams }: PageProps<"/[
 
   // After creating an account, people go on to choose a membership unless told otherwise.
   const next = safeNextPath((await searchParams).next, "/membership");
-  if (await getSession()) redirect({ href: next, locale });
+  if ((await getSession()) && (await getBuiltinPagePreview())?.slug !== "account-access") redirect({ href: next, locale });
 
   const [t, tBrand, format] = await Promise.all([getTranslations("Auth"), getTranslations("Brand"), getFormatter()]);
   const benefits = [

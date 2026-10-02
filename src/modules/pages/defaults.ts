@@ -4,6 +4,10 @@ import { defaultPageContent, pageDefinition } from "./definitions";
 import type { CopyRecord, CopyTree, PageContent } from "./types";
 import { compatibleCopy } from "./schemas";
 
+export function defaultMessages(locale: "en" | "fa"): CopyRecord {
+  return (locale === "fa" ? fa : en) as CopyRecord;
+}
+
 export function defaultContentFor(slug: string) {
   const definition = pageDefinition(slug);
   return definition

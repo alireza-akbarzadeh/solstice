@@ -25,7 +25,7 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { sanctuaryPlan } from "@/modules/memberships/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
-import { getPageAssets } from "@/modules/pages/server/library";
+import { getPageAssets } from "@/modules/pages/server/request";
 
 type Stat = { value: string; label: string };
 type Milestone = { period: string; title: string; body: string };
