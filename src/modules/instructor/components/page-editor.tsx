@@ -123,10 +123,7 @@ export function PageEditor({
           )}
           {!isNew && (
             <Button asChild variant="outline" size="sm">
-              <Link
-                href={pagePreviewPath(savedSlug!)}
-                target="_blank"
-              >
+              <Link href={pagePreviewPath(savedSlug)} target="_blank">
                 {t("preview")}
               </Link>
             </Button>

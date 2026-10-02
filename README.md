@@ -349,4 +349,6 @@ For a new database, seed practices first, then run `pnpm db:seed:programs`. This
 
 Website content lives in `solstice_site_page` and is managed at `/instructor/pages`. The 16 existing templates retain their page layouts; published database copy overrides only their registered translation namespaces. Draft snapshots stay private. Custom bilingual pages use structured content, optional YouTube embeds and call-to-action links, with optional menu/footer visibility. Core website routes are reserved and cannot be deleted or unpublished. Payment configuration and member records remain separate from content editing.
 
+The page inventory links directly to the editor, saved draft preview and live localized address. Existing drafts can be previewed in their real page layouts by instructors; guests and members continue to receive published content. Preview requests are private, noindex and excluded from the offline cache. The PWA manifest reads published website settings.
+
 Run `pnpm db:seed:pages` to import existing website content without overwriting edited rows. `pnpm test:pages` verifies page validation and database publishing behavior with isolated fixtures. Footer and journal newsletter forms capture subscriber addresses; outbound newsletter delivery is not yet configured.

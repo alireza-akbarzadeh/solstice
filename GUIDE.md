@@ -183,8 +183,12 @@ Open `/instructor/pages` (or `/fa/instructor/pages`). The **Website and app page
 
 Use **New page** to create a workshop, retreat or offer landing page. Choose an unused address, add bilingual copy, an optional cover/YouTube video and structured content, then save the draft. A button can link to `/membership` or an HTTPS booking page. The address stays fixed after creation. **Preview saved draft** requires instructor access. New pages can appear in the main menu or footer when published.
 
+Each inventory card offers **Edit**, **Preview saved draft** and, when available, **View live page**, with its localized public address. Menu/footer badges describe the published placement. Existing-page previews open the real route (for example `/about?cmsPreview=about`) with saved draft copy and images and a preview banner; new pages use the private instructor preview route. Returning to the live page reloads published content. Preview URLs cannot reveal drafts to guests or members, are marked private/noindex and are excluded from offline caching. Unsaved editor changes must be saved before previewing.
+
 **Save draft** does not change the live website. **Publish changes** replaces the live snapshot. Custom pages can return to draft or be deleted with confirmation; existing app routes can only be edited, protecting sign-in and navigation. Content editing does not change payment amounts, membership rules or member records. A button to an external booking page does not implement booking or payment processing itself.
 
 On a new database, run `pnpm db:seed:pages`. It creates the additive page table and imports the current website content without replacing existing edits. The SQL is also registered for `pnpm db:migrate`. Node 22+: `pnpm test:pages` checks all templates, validation, private drafts, publishing, menu/footer links and deletion using disposable fixtures. With a running local preview, `CMS_CHECK_URL=http://127.0.0.1:3131 pnpm test:pages` also checks public English/Persian rendering and draft 404s.
+
+`pnpm test:pages:preview` checks preview URLs, request header/body handling, translation isolation and offline cache protection without a database. Published brand, metadata and PWA description also feed `/manifest.webmanifest`; draft previews do not change the installed app identity.
 
 The footer and journal signup forms now both store subscriber addresses in `solstice_newsletter_subscriber`. Sending a newsletter still requires an email provider.

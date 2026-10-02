@@ -238,6 +238,46 @@ async function checkURL(locale, status, expected, absent) {
       html.includes(`href="${locale === "fa" ? "/fa" : ""}/membership"`),
     );
     if (locale === "fa") assert.ok(html.includes('dir="rtl"'));
+    const pathname = `${locale === "fa" ? "/fa" : ""}/${slug}`;
+    assert.ok(
+      html.includes(
+        `rel="canonical" href="${new URL(pathname, baseURL).href}"`,
+      ),
+      "custom pages must use their localized public address as the canonical URL",
+    );
+    for (const [language, prefix] of [
+      ["en", ""],
+      ["fa", "/fa"],
+    ])
+      assert.ok(
+        html.includes(
+          `hrefLang="${language}" href="${new URL(`${prefix}/${slug}`, baseURL).href}"`,
+        ),
+        "custom pages must expose both translated addresses",
+      );
+  }
+}
+
+async function checkPublishedLinks(locale, published) {
+  if (!baseURL) return;
+  const prefix = locale === "fa" ? "/fa" : "";
+  const response = await fetch(`${baseURL}${prefix}/about`, {
+    signal: AbortSignal.timeout(55000),
+  });
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const tag of ["header", "footer"]) {
+    const attributes =
+      tag === "footer" ? '[^>]*id="site-footer"[^>]*' : "[^>]*";
+    const section = html.match(
+      new RegExp(`<${tag}\\b${attributes}>[\\s\\S]*?</${tag}>`),
+    )?.[0];
+    assert.ok(section, `${tag} must be rendered`);
+    assert.equal(
+      section.includes(`href="${prefix}/${slug}"`),
+      published,
+      `the ${locale} ${tag} must only link to published pages`,
+    );
   }
 }
 
@@ -262,6 +302,7 @@ try {
     ),
   );
   await checkURL("en", 404);
+  await checkPublishedLinks("en", false);
   assert.equal(
     (
       await service.saveSitePage(
@@ -287,6 +328,8 @@ try {
   );
   await checkURL("en", 200, content.body[0].text.en);
   await checkURL("fa", 200, content.body[0].text.fa);
+  await checkPublishedLinks("en", true);
+  await checkPublishedLinks("fa", true);
   const draft = {
     ...content,
     body: [
@@ -316,6 +359,8 @@ try {
     !(await library.getFooterPages("en")).some((page) => page.slug === slug),
   );
   await checkURL("en", 404);
+  await checkPublishedLinks("en", false);
+  await checkPublishedLinks("fa", false);
   assert.equal((await service.deleteSitePage(slug)).ok, true);
   assert.equal(await library.getSitePage(slug), null);
   assert.equal((await service.saveSitePage(slug, content)).error, "missing");
