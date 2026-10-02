@@ -3,9 +3,10 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 import { Container } from "@/components/layout/container";
+import { getPageAssets } from "@/modules/pages/server/library";
 
 export async function InstructorFeature() {
-  const [t, tBrand] = await Promise.all([getTranslations("Home.instructor"), getTranslations("Brand")]);
+  const [t, tBrand, assets] = await Promise.all([getTranslations("Home.instructor"), getTranslations("Brand"), getPageAssets("home")]);
   const stats = [
     { value: t("stat1Value"), label: t("stat1Label") },
     { value: t("stat2Value"), label: t("stat2Label") },
@@ -19,7 +20,7 @@ export async function InstructorFeature() {
           <div className="relative lg:col-span-5">
             <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-surface-container shadow-xl">
               <Image
-                src="/images/brand/elena-portrait.jpg"
+                src={assets.portrait!}
                 alt={t("portraitAlt")}
                 fill
                 sizes="(min-width: 1024px) 520px, 100vw"

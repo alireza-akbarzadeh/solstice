@@ -37,12 +37,14 @@ export function JournalBlockEditor({
   body,
   onChange,
   disabled = false,
+  context = "journal",
 }: {
   body: JournalStoredBlock[];
   onChange: (next: JournalStoredBlock[]) => void;
   disabled?: boolean;
+  context?: "journal" | "pages";
 }) {
-  const t = useTranslations("Studio.journal.editor.blocks");
+  const t = useTranslations(context === "pages" ? "Studio.pages.blocks" : "Studio.journal.editor.blocks");
 
   const update = (index: number, block: JournalStoredBlock) => onChange(body.map((b, i) => (i === index ? block : b)));
   const remove = (index: number) => onChange(body.filter((_, i) => i !== index));

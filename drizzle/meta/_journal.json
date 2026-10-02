@@ -15,6 +15,13 @@
       "when": 1790875518070,
       "tag": "0001_program_cms",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790887230041,
+      "tag": "0002_page_cms",
+      "breakpoints": true
     }
   ]
 }

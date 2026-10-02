@@ -1,15 +1,18 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
+import { getPageAssets } from "@/modules/pages/server/library";
+
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
 import { sanctuaryPlan } from "@/modules/memberships/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
 export async function Hero() {
-  const [t, viewer] = await Promise.all([
+  const [t, viewer, assets] = await Promise.all([
     getTranslations("Home.hero"),
     getViewer(),
+    getPageAssets("home"),
   ]);
 
   return (
@@ -21,7 +24,7 @@ export async function Hero() {
         <div className="bg-primary relative isolate overflow-hidden rounded-3xl">
           <div className="relative h-[220px] sm:h-[340px] lg:absolute lg:inset-0 lg:h-full">
             <Image
-              src="/images/home/04.jpg"
+              src={assets.hero!}
               alt={t("imageAlt")}
               fill
               priority

@@ -1,4 +1,5 @@
 import { relations } from "drizzle-orm";
+import type { PageContent } from "@/modules/pages/types";
 import {
   type AnyPgColumn,
   boolean,
@@ -463,4 +464,23 @@ export const programEnrollments = createTable(
       .notNull(),
   }),
   (t) => [primaryKey({ columns: [t.userId, t.programSlug] })],
+);
+
+// Page drafts are separate from published snapshots, so editing never changes live copy.
+export const sitePages = createTable(
+  "site_page",
+  (d) => ({
+    slug: d.text().primaryKey(),
+    builtin: d.boolean().notNull().default(false),
+    draftContent: d.jsonb().$type<PageContent>().notNull(),
+    publishedContent: d.jsonb().$type<PageContent>(),
+    publishedAt: d.timestamp({ withTimezone: true }),
+    createdAt: d.timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: d
+      .timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  }),
+  (t) => [index("site_page_builtin_idx").on(t.builtin)],
 );

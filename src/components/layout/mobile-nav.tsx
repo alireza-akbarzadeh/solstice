@@ -5,14 +5,27 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Link, usePathname } from "@/i18n/navigation";
 import { getDirection } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
 import { isActivePath, memberNavItems, publicNavItems } from "./nav-items";
 
-export function MobileNav({ signedIn, isInstructor }: { signedIn: boolean; isInstructor: boolean }) {
+export function MobileNav({
+  signedIn,
+  isInstructor,
+  extraItems = [],
+}: {
+  signedIn: boolean;
+  isInstructor: boolean;
+  extraItems?: { href: string; label: string }[];
+}) {
   const t = useTranslations("Nav");
   const tAccount = useTranslations("Account");
   const pathname = usePathname();
@@ -23,16 +36,30 @@ export function MobileNav({ signedIn, isInstructor }: { signedIn: boolean; isIns
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon-lg" className="rounded-full lg:hidden" aria-label={t("openMenu")}>
+        <Button
+          variant="ghost"
+          size="icon-lg"
+          className="rounded-full lg:hidden"
+          aria-label={t("openMenu")}
+        >
           <MenuIcon className="size-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side={side} className="w-80 border-hairline bg-surface p-space-lg">
-        <SheetTitle className="font-label-md text-label-md tracking-widest text-clay uppercase">
+      <SheetContent
+        side={side}
+        className="border-hairline bg-surface p-space-lg w-80 overflow-y-auto"
+      >
+        <SheetTitle className="font-label-md text-label-md text-clay tracking-widest uppercase">
           {t("menuTitle")}
         </SheetTitle>
         <nav aria-label={t("primary")} className="mt-space-md flex flex-col">
-          {publicNavItems.map((item) => {
+          {[
+            ...publicNavItems.map((item) => ({
+              href: item.href,
+              label: t(item.label),
+            })),
+            ...extraItems,
+          ].map((item) => {
             const active = isActivePath(pathname, item.href);
             return (
               <Link
@@ -41,18 +68,22 @@ export function MobileNav({ signedIn, isInstructor }: { signedIn: boolean; isIns
                 onClick={() => setOpen(false)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "border-b border-hairline py-space-sm font-headline-sm text-headline-sm transition-colors",
-                  active ? "text-primary" : "text-on-surface-variant hover:text-primary",
+                  "border-hairline py-space-sm font-headline-sm text-headline-sm border-b transition-colors",
+                  active
+                    ? "text-primary"
+                    : "text-on-surface-variant hover:text-primary",
                 )}
               >
-                {t(item.label)}
+                {item.label}
               </Link>
             );
           })}
         </nav>
         {signedIn && (
           <nav aria-label={t("member")} className="mt-space-md flex flex-col">
-            <span className="mb-1 font-label-sm text-label-sm tracking-widest text-clay uppercase">{t("account")}</span>
+            <span className="font-label-sm text-label-sm text-clay mb-1 tracking-widest uppercase">
+              {t("account")}
+            </span>
             {memberNavItems.map((item) => {
               const active = isActivePath(pathname, item.href);
               return (
@@ -62,8 +93,10 @@ export function MobileNav({ signedIn, isInstructor }: { signedIn: boolean; isIns
                   onClick={() => setOpen(false)}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "py-2 font-label-lg text-label-lg transition-colors",
-                    active ? "text-primary" : "text-on-surface-variant hover:text-primary",
+                    "font-label-lg text-label-lg py-2 transition-colors",
+                    active
+                      ? "text-primary"
+                      : "text-on-surface-variant hover:text-primary",
                   )}
                 >
                   {t(item.label)}
@@ -75,10 +108,14 @@ export function MobileNav({ signedIn, isInstructor }: { signedIn: boolean; isIns
               <Link
                 href="/instructor"
                 onClick={() => setOpen(false)}
-                aria-current={isActivePath(pathname, "/instructor") ? "page" : undefined}
+                aria-current={
+                  isActivePath(pathname, "/instructor") ? "page" : undefined
+                }
                 className={cn(
-                  "mt-1 flex items-center gap-2 py-2 font-label-lg text-label-lg transition-colors",
-                  isActivePath(pathname, "/instructor") ? "text-primary" : "text-clay hover:text-primary",
+                  "font-label-lg text-label-lg mt-1 flex items-center gap-2 py-2 transition-colors",
+                  isActivePath(pathname, "/instructor")
+                    ? "text-primary"
+                    : "text-clay hover:text-primary",
                 )}
               >
                 <LayoutGridIcon className="size-4" />
@@ -88,18 +125,18 @@ export function MobileNav({ signedIn, isInstructor }: { signedIn: boolean; isIns
           </nav>
         )}
         {!signedIn && (
-          <div className="mt-auto flex flex-col gap-space-sm">
+          <div className="gap-space-sm mt-auto flex flex-col">
             <Link
               href="/membership"
               onClick={() => setOpen(false)}
-              className="rounded-full bg-primary px-6 py-3 text-center font-label-lg text-label-lg text-on-primary transition-colors hover:bg-primary-container"
+              className="bg-primary font-label-lg text-label-lg text-on-primary hover:bg-primary-container rounded-full px-6 py-3 text-center transition-colors"
             >
               {t("join")}
             </Link>
             <Link
               href="/sign-in"
               onClick={() => setOpen(false)}
-              className="py-2 text-center font-label-lg text-label-lg text-on-surface-variant hover:text-primary"
+              className="font-label-lg text-label-lg text-on-surface-variant hover:text-primary py-2 text-center"
             >
               {t("signIn")}
             </Link>

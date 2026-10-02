@@ -25,6 +25,7 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { sanctuaryPlan } from "@/modules/memberships/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
+import { getPageAssets } from "@/modules/pages/server/library";
 
 type Stat = { value: string; label: string };
 type Milestone = { period: string; title: string; body: string };
@@ -37,11 +38,11 @@ const materialIcons = [SunIcon, LeafIcon, SproutIcon, VolumeXIcon];
 export async function generateMetadata({ params }: PageProps<"/[locale]/about">): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
-  const t = await getTranslations({ locale, namespace: "About" });
+  const [t, assets] = await Promise.all([getTranslations({ locale, namespace: "About" }), getPageAssets("about")]);
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
-    openGraph: { images: ["/images/brand/elena-portrait.jpg"] },
+    openGraph: { images: [assets.portrait!] },
   };
 }
 
@@ -51,7 +52,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  const [t, tBrand, format, viewer] = await Promise.all([getTranslations("About"), getTranslations("Brand"), getFormatter(), getViewer()]);
+  const [t, tBrand, format, viewer, assets] = await Promise.all([getTranslations("About"), getTranslations("Brand"), getFormatter(), getViewer(), getPageAssets("about")]);
   const stats = t.raw("hero.stats") as Stat[];
   const credentials = t.raw("lineage.credentials") as string[];
   const story = t.raw("lineage.story") as string[];
@@ -102,7 +103,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
           <div className="relative mt-space-md lg:col-span-5 lg:mt-0">
             <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-surface-container-low shadow-xl">
               <Image
-                src="/images/brand/elena-portrait.jpg"
+                src={assets.portrait!}
                 alt={t("hero.portraitAlt")}
                 fill
                 priority
@@ -226,7 +227,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
           </div>
           <div className="grid grid-cols-1 gap-gutter md:grid-cols-12">
             <div className="relative flex min-h-[440px] flex-col justify-end overflow-hidden rounded-2xl bg-surface shadow-sm md:col-span-8">
-              <Image src="/images/about/hall.jpg" alt={t("studio.hall.alt")} fill sizes="(min-width: 768px) 66vw, 100vw" className="object-cover" />
+              <Image src={assets.hall!} alt={t("studio.hall.alt")} fill sizes="(min-width: 768px) 66vw, 100vw" className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent" />
               <div className="relative z-10 p-space-lg text-on-primary">
                 <span className="mb-1 block font-label-sm text-label-sm tracking-widest text-on-primary-container uppercase">{t("studio.hall.eyebrow")}</span>
@@ -237,7 +238,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
             <div className="flex flex-col gap-gutter md:col-span-4">
               {(["linen", "tea"] as const).map((key) => (
                 <div key={key} className="relative min-h-[210px] flex-1 overflow-hidden rounded-2xl bg-surface shadow-sm">
-                  <Image src={`/images/about/${key}.jpg`} alt={t(`studio.${key}.alt`)} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
+                  <Image src={assets[key]!} alt={t(`studio.${key}.alt`)} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-on-surface/75 via-transparent to-transparent" />
                   <div className="absolute inset-x-4 bottom-4 text-surface">
                     <p className="font-headline-sm text-headline-sm leading-tight text-surface">{t(`studio.${key}.title`)}</p>

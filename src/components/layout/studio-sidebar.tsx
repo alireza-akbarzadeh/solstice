@@ -5,6 +5,7 @@ import {
   BookOpenIcon,
   CreditCardIcon,
   Flower2Icon,
+  FileTextIcon,
   LayoutGridIcon,
   MegaphoneIcon,
   MessagesSquareIcon,
@@ -55,6 +56,7 @@ const groups = [
       },
       { href: "/instructor/programs", label: "programs", icon: BookOpenIcon },
       { href: "/instructor/journal", label: "journal", icon: BookOpenIcon },
+      { href: "/instructor/pages", label: "pages", icon: FileTextIcon },
     ],
   },
   {

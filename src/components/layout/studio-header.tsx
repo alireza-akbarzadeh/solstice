@@ -9,7 +9,9 @@ import { usePathname } from "@/i18n/navigation";
 // Longest match wins, so /instructor/videos beats /instructor.
 const sections = [
   { href: "/instructor/videos", label: "practices" },
+  { href: "/instructor/programs", label: "programs" },
   { href: "/instructor/journal", label: "journal" },
+  { href: "/instructor/pages", label: "pages" },
   { href: "/instructor/members", label: "members" },
   { href: "/instructor/community", label: "community" },
   { href: "/instructor/posts", label: "announcements" },
