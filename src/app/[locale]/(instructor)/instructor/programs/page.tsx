@@ -4,6 +4,12 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import {
+  StudioCrumb,
+  type StudioCrumbItem,
+} from "@/components/layout/studio-breadcrumb";
+import { localize } from "@/lib/localized";
+
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -74,8 +80,16 @@ export default async function StudioProgramsPage({
   };
   const enrollments =
     inventory.find((p) => p.slug === row?.slug)?.enrollments ?? 0;
+  const tCrumb = await getTranslations("Studio.breadcrumb");
+  const crumbItems: StudioCrumbItem[] = row
+    ? [{ label: localize(row.title, locale) || row.slug }]
+    : creating
+      ? [{ label: tCrumb("new") }]
+      : [];
+
   return (
     <div className="gap-space-lg flex flex-col">
+      <StudioCrumb items={crumbItems} />
       <StudioPageHeader
         eyebrow={t("eyebrow")}
         title={t("title")}

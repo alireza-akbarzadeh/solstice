@@ -4,6 +4,8 @@ import { hasLocale } from "next-intl";
 import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { StudioCrumb, type StudioCrumbItem } from "@/components/layout/studio-breadcrumb";
+
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { routing } from "@/i18n/routing";
 import { ReflectionsPanel } from "@/modules/community/components/reflections-panel";
@@ -84,8 +86,10 @@ export default async function StudioCommunityPage({ params, searchParams }: Page
   };
   const replies = feed.reduce((n, r) => n + r.replies.length, 0);
 
+  const crumbItems: StudioCrumbItem[] = view !== "review" ? [{ label: t(`views.${view}`) }] : [];
   return (
     <div className="flex flex-col gap-space-lg">
+      <StudioCrumb items={crumbItems} />
       <StudioPageHeader
         eyebrow={t("eyebrow")}
         title={t("title")}

@@ -1,10 +1,6 @@
-"use server";
-
 import { desc, eq, ilike, or, sql, type AnyColumn } from "drizzle-orm";
-import { getLocale } from "next-intl/server";
 import { z } from "zod";
 
-import { getViewer } from "@/modules/memberships/server/viewer";
 import { db } from "@/server/db";
 import {
   comments,
@@ -27,8 +23,7 @@ export type StudioSearchGroup =
   | "reflections"
   | "subscribers";
 
-export const studioSearchStatuses = ["draft", "published", "active", "hidden", "pending", "approved", "rejected"] as const;
-export type StudioSearchStatus = (typeof studioSearchStatuses)[number];
+export type StudioSearchStatus = "draft" | "published" | "active" | "hidden" | "pending" | "approved" | "rejected";
 
 export type StudioSearchHit = {
   group: StudioSearchGroup;
@@ -49,22 +44,22 @@ const pattern = (q: string) => `%${q.replace(/[\\%_]/g, "\\$&")}%`;
 /** Matches either language of a `{ en, fa }` jsonb column. */
 const localizedLike = (column: AnyColumn | ReturnType<typeof sql>, like: string) =>
   or(sql`${column}->>'en' ilike ${like}`, sql`${column}->>'fa' ilike ${like}`);
+/** The title in the reader's language, falling back to the other one when it is blank. */
 const pick = (value: unknown, locale: string) => {
   const v = value as { en?: string; fa?: string } | null;
-  return (locale === "fa" ? v?.fa || v?.en : v?.en || v?.fa) ?? "";
+  const order = locale === "fa" ? [v?.fa, v?.en] : [v?.en, v?.fa];
+  return order.find((text) => !!text?.trim()) ?? "";
 };
 
 /**
  * The studio command palette's search: one query fans out across every kind of content the
  * instructor manages and returns a few hits per kind, each linking straight to its editor.
+ * Callers must check the reader is the instructor (see /api/instructor/search).
  */
-export async function searchStudio(input: unknown): Promise<StudioSearchHit[]> {
+export async function searchStudio(input: unknown, locale: string): Promise<StudioSearchHit[]> {
   const parsed = z.string().trim().min(2).max(100).safeParse(input);
   if (!parsed.success) return [];
-  const viewer = await getViewer();
-  if (viewer.user?.role !== "instructor") return [];
 
-  const locale = await getLocale();
   const like = pattern(parsed.data);
   const enc = encodeURIComponent;
 

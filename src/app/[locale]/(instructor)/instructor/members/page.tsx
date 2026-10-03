@@ -4,6 +4,8 @@ import { hasLocale } from "next-intl";
 import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { StudioCrumb, type StudioCrumbItem } from "@/components/layout/studio-breadcrumb";
+
 import { Badge } from "@/components/ui/badge";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { routing } from "@/i18n/routing";
@@ -81,8 +83,10 @@ export default async function StudioMembersPage({ params, searchParams }: PagePr
   const paying = counts.paying;
   const keep = { ...(q ? { q } : {}), ...(selectedId ? { member: selectedId } : {}) };
 
+  const crumbItems: StudioCrumbItem[] = dossier ? [{ label: dossier.account.name }] : [];
   return (
     <div className="flex flex-col gap-space-lg">
+      <StudioCrumb items={crumbItems} />
       <StudioPageHeader eyebrow={t("eyebrow")} title={t("title")} lede={t("lede", { total: members.length, paying })} />
 
       <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2 xl:grid-cols-4">

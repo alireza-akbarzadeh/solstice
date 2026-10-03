@@ -4,6 +4,8 @@ import { hasLocale } from "next-intl";
 import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { StudioCrumb, type StudioCrumbItem } from "@/components/layout/studio-breadcrumb";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
@@ -113,8 +115,12 @@ export default async function StudioJournalPage({ params, searchParams }: PagePr
       ? blank
       : null;
 
+  const tCrumb = await getTranslations("Studio.breadcrumb");
+  const crumbItems: StudioCrumbItem[] = editRow ? [{ label: localize(editRow.title, locale) || editRow.slug }] : creating ? [{ label: tCrumb("new") }] : [];
+
   return (
     <div className="flex flex-col gap-space-lg">
+      <StudioCrumb items={crumbItems} />
       <StudioPageHeader
         eyebrow={t("eyebrow")}
         title={t("title")}

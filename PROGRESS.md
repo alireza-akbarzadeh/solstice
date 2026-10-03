@@ -8,7 +8,7 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** A studio command palette (shadcn Command) to find pages, content, members and actions; dynamic breadcrumbs in the studio header; then move the remaining studio forms (practices, programs, journal, pages, announcements) to react-hook-form + zod. Later: editable categories, more social links, email templates, sitemap/robots. Image upload waits on the customer's storage choice.
+> **Next up:** Move the remaining studio forms (practice, program, journal and page editors, announcement composer, member gift pass) to react-hook-form + zod, like the plan editor. Later: editable categories, more social links, email templates, sitemap/robots. Image upload waits on the customer's storage choice.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -95,6 +95,9 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 A shadcn `Sidebar` shell (`components/layout/studio-sidebar.tsx` + `studio-header.tsx`), separate
 from the public chrome: collapses to icons on desktop, to a sheet on phones, and sits on the end
 side in Persian. Draft and awaiting-reply counts ride on the nav as badges.
+
+**Search & breadcrumbs:** the header holds a breadcrumb (Studio › section › the item a page shows, contributed with `<StudioCrumb>`) and a command palette (**Ctrl/⌘ K**, shadcn `Command`): go to any section, create content, open public pages, switch language, export subscribers, and search practices, programs, essays, pages, plans, members, reflections and subscribers at once through `/api/instructor/search` (instructor-only; requests abort as you type). Recent picks are remembered per browser. Sections are defined once in `components/layout/studio-nav.ts`.
+
 
 **Mobile:** the studio is usable on a phone — every data table (practices, members, ledger,
 essays) renders as a stacked card list below `lg` instead of scrolling sideways, selecting a
@@ -223,3 +226,5 @@ member moves the dossier above the directory, and selects open as drawers.
 - **2026-10-03** — Membership plans moved into the database and the studio: `/instructor/plans` creates, edits, recommends, orders, hides and deletes plans, with a site-wide currency (USD/EUR/GBP/toman). Removed the hardcoded `$24/$220` and the fixed monthly/annual assumption from checkout, profile, banners, sign-up, revenue, members and test mode; plans without a trial start a paid period immediately. Added react-hook-form + @hookform/resolvers for the plan editor. Verified with disposable data against the dev server: guest/member/instructor pages in English and Persian, `?plan=` preselection, hidden plans off sale but still shown to their members, no-trial checkout, toman formatting, and in a browser create (Persian digits) → edit → recommend → hide → delete; fixtures removed. TypeScript and ESLint pass. Published page copy saved before this change still contains older plan wording (e.g. "14 Days Free", "/mo") until it is edited in Pages. Pre-existing: a Radix id hydration warning in the studio header's language menu.
 
 - **2026-10-03** — Comment moderation: member reflections wait for approval. Added `solstice_comment.status` (existing rows approved), visibility rules (guests and other members see only approved; authors see their own with a waiting/not-approved note), approve/reject/approve-all actions with push notices, review and rejected views in `/instructor/community`, and a community sidebar badge. Verified in a browser with disposable accounts: member post → "sent for review" toast and waiting label → instructor approves one and rejects another → member sees the outcome; a guest sees only the approved reflection on a practice page; fixtures removed. TypeScript and ESLint pass.
+
+- **2026-10-03** — Studio command palette and breadcrumbs. Added shadcn `command`, `breadcrumb`, `kbd`, `input-group` (existing `button`/`input` kept), a shared section list, word-match filtering, a GET search endpoint across eight content types, recent picks, and per-page crumbs (editing item, "New", filtered view). Verified in a browser: Ctrl+K, multi-word commands, "annual" → plan → breadcrumb, member search → dossier, guest 404 on the endpoint, Persian phone layout without overflow. Fixed on the way: a `"use server"` file exporting a constant broke every studio page. In development search takes ~1–3 s because each new Neon connection from this machine costs ~1.6 s.

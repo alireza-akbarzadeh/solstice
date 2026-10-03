@@ -20,7 +20,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +37,7 @@ import {
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { Spinner } from "@/components/ui/spinner";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { searchStudio, type StudioSearchGroup, type StudioSearchHit } from "@/modules/instructor/search-actions";
+import type { StudioSearchGroup, StudioSearchHit } from "@/modules/instructor/server/search";
 
 import { studioNavGroups } from "./studio-nav";
 
@@ -56,6 +56,16 @@ const groupIcons: Record<StudioSearchGroup | "page", LucideIcon> = {
   page: SearchIcon,
 };
 const searchGroups: StudioSearchGroup[] = ["practices", "programs", "journal", "pages", "plans", "members", "reflections", "subscribers"];
+
+/**
+ * Every word typed must appear in the item (its label plus keywords), in any order. Stricter
+ * than cmdk's default fuzzy match, which lets "annual" match "Journal".
+ */
+const matchWords = (value: string, search: string, keywords?: string[]) => {
+  const haystack = `${value} ${keywords?.join(" ") ?? ""}`.toLocaleLowerCase();
+  const words = search.toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  return words.every((word) => haystack.includes(word)) ? 1 : 0;
+};
 
 const readRecent = (): Recent[] => {
   try {
@@ -80,8 +90,7 @@ export function StudioCommand() {
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<StudioSearchHit[]>([]);
   const [recent, setRecent] = useState<Recent[]>([]);
-  const [searching, startSearch] = useTransition();
-  const latest = useRef("");
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -102,22 +111,32 @@ export function StudioCommand() {
     }
   }, [open]);
 
-  // Search as the query settles; stale responses are ignored.
+  // Search as the query settles; a newer query aborts the request still in flight.
   useEffect(() => {
     const q = query.trim();
-    latest.current = q;
     if (q.length < 2) {
       setHits([]);
+      setSearching(false);
       return;
     }
+    const controller = new AbortController();
+    setSearching(true);
     const timer = setTimeout(() => {
-      startSearch(async () => {
-        const result = await searchStudio(q);
-        if (latest.current === q) setHits(result);
-      });
-    }, 180);
-    return () => clearTimeout(timer);
-  }, [query]);
+      fetch(`/api/instructor/search?${new URLSearchParams({ q, locale })}`, { signal: controller.signal })
+        .then((res) => (res.ok ? (res.json() as Promise<StudioSearchHit[]>) : []))
+        .then((result) => {
+          setHits(result);
+          setSearching(false);
+        })
+        .catch((error: unknown) => {
+          if ((error as Error).name !== "AbortError") setSearching(false);
+        });
+    }, 150);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query, locale]);
 
   const go = useCallback(
     (href: string, remember?: Omit<Recent, "href">) => {
@@ -178,9 +197,15 @@ export function StudioCommand() {
       </Button>
 
       <CommandDialog open={open} onOpenChange={setOpen} title={t("title")} description={t("description")} className="sm:max-w-xl">
-        <Command loop>
+        <Command loop filter={matchWords}>
           <CommandInput value={query} onValueChange={setQuery} placeholder={t("placeholder")} />
           <CommandList className="max-h-[min(70vh,28rem)]">
+            {searching && query.trim().length >= 2 && (
+              <div role="status" className="text-muted-foreground flex items-center gap-2 px-3 py-2 text-xs">
+                <Spinner />
+                {t("searching")}
+              </div>
+            )}
             <CommandEmpty>
               {searching ? (
                 <span className="inline-flex items-center gap-2">

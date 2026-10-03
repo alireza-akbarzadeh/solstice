@@ -4,6 +4,11 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import {
+  StudioCrumb,
+  type StudioCrumbItem,
+} from "@/components/layout/studio-breadcrumb";
+
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -96,8 +101,16 @@ export default async function StudioPlansPage({
       : null;
   const onSale = plans.filter((plan) => plan.status === "active").length;
 
+  const tCrumb = await getTranslations("Studio.breadcrumb");
+  const crumbItems: StudioCrumbItem[] = editRow
+    ? [{ label: localize(editRow.name, locale) || editRow.id }]
+    : creating
+      ? [{ label: tCrumb("new") }]
+      : [];
+
   return (
     <div className="gap-space-lg flex flex-col">
+      <StudioCrumb items={crumbItems} />
       <StudioPageHeader
         eyebrow={t("eyebrow")}
         title={t("title")}

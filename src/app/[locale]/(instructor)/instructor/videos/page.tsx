@@ -15,6 +15,12 @@ import {
 } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import {
+  StudioCrumb,
+  type StudioCrumbItem,
+} from "@/components/layout/studio-breadcrumb";
+import { localize } from "@/lib/localized";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -124,8 +130,16 @@ export default async function StudioPracticesPage({
     needsVideo: inventory.filter(matches("needsVideo")).length,
   };
 
+  const tCrumb = await getTranslations("Studio.breadcrumb");
+  const crumbItems: StudioCrumbItem[] = editRow
+    ? [{ label: localize(editRow.title, locale) || editRow.slug }]
+    : creating
+      ? [{ label: tCrumb("new") }]
+      : [];
+
   return (
     <div className="gap-space-lg flex flex-col">
+      <StudioCrumb items={crumbItems} />
       <StudioPageHeader
         eyebrow={t("eyebrow")}
         title={t("title")}
