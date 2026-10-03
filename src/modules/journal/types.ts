@@ -1,14 +1,7 @@
 import type { Localized } from "@/lib/localized";
 
-export const journalCategories = [
-  "somatic",
-  "breath",
-  "morning",
-  "sleep",
-  "philosophy",
-  "space",
-] as const;
-export type JournalCategory = (typeof journalCategories)[number];
+/** A category slug; the categories themselves are studio-managed (modules/categories). */
+export type JournalCategory = string;
 
 export type JournalAuthor = {
   name: string;

@@ -52,15 +52,6 @@
   },
   "Practice": {
     "minutes": "{count, number} min",
-    "categories": {
-      "morning": "Morning Flow",
-      "vinyasa": "Vinyasa",
-      "restorative": "Restorative",
-      "yin": "Yin & Bolster",
-      "pranayama": "Pranayama & Silence",
-      "mobility": "Mobility & Somatics",
-      "evening": "Evening Wind-Down"
-    },
     "props": {
       "none": "No Props Needed",
       "bolster-blocks": "Bolster & Blocks",
@@ -921,14 +912,6 @@
     "published": "{count, plural, one {# work published} other {# works published}}",
     "categoriesLabel": "Journal categories",
     "allCategories": "All writings",
-    "categories": {
-      "somatic": "Somatic science",
-      "breath": "Pranayama & breath",
-      "morning": "Morning rituals",
-      "sleep": "Sleep & restorative",
-      "philosophy": "Philosophy & lineage",
-      "space": "Sacred space"
-    },
     "issue": "Issue {issue, number}",
     "featureEssay": "Feature essay",
     "readTime": "{minutes, number} min read",
@@ -1195,6 +1178,7 @@
       "overview": "Overview",
       "practices": "Practices",
       "journal": "Journal",
+      "categories": "Categories",
       "members": "Members",
       "community": "Community",
       "announcements": "Announcements",
@@ -2425,7 +2409,8 @@
         "essay": "New journal essay",
         "page": "New page",
         "plan": "New membership plan",
-        "announcement": "New announcement"
+        "announcement": "New announcement",
+        "category": "New category"
       },
       "site": {
         "home": "Home",
@@ -2449,6 +2434,65 @@
     "breadcrumb": {
       "new": "New",
       "editing": "{name}"
+    },
+    "categories": {
+      "metaTitle": "Categories · Studio",
+      "eyebrow": "Content",
+      "title": "Categories",
+      "lede": "Name and order the categories for practices and journal essays. Hidden categories leave the public filters; content in them keeps its label.",
+      "kinds": {
+        "practice": "Practice categories",
+        "journal": "Journal categories"
+      },
+      "new": "New category",
+      "edit": "Edit",
+      "more": "More actions for {name}",
+      "hidden": "Hidden",
+      "hiddenOption": "{name} (hidden)",
+      "uses": "{count, plural, =0 {Not used yet} one {Used by # item} other {Used by # items}}",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "moved": "Order updated",
+      "hide": "Hide from filters",
+      "show": "Show in filters",
+      "hiddenNow": "{name} is hidden from the filters",
+      "shownNow": "{name} is shown in the filters",
+      "delete": "Delete",
+      "deleteTitle": "Delete “{name}”?",
+      "deleteBody": "The category is removed. This can't be undone.",
+      "deleteInUse": "{count, plural, one {# item uses} other {# items use}} this category, so it can't be deleted. Move them to another category first, or hide it.",
+      "created": "Category created",
+      "saved": "Category saved",
+      "deleted": "Category deleted",
+      "emptyTitle": "No categories yet",
+      "emptyBody": "Create one so practices or essays can be grouped and filtered.",
+      "pickTitle": "Choose a category to edit",
+      "pickBody": "Or create a new one. Names update across the site as soon as you save.",
+      "editor": {
+        "newTitle": "New category",
+        "title": "Edit category",
+        "name": "Name",
+        "slug": "Address in filters",
+        "slugHint": "Lowercase letters, numbers and hyphens, e.g. hatha — used in links like ?category=hatha. Fixed once created.",
+        "visible": "Show in filters",
+        "visibleHint": "Hidden categories leave the public filters; practices and essays already in them keep their label.",
+        "create": "Create category",
+        "save": "Save changes",
+        "close": "Close",
+        "keep": "Keep category"
+      },
+      "validation": {
+        "name": "Enter the name in English and Persian.",
+        "slug": "Use lowercase letters, numbers and single hyphens."
+      },
+      "errors": {
+        "invalid": "Check the name and address.",
+        "duplicate": "A category with that address already exists.",
+        "inUse": "Items use this category, so it can't be deleted.",
+        "notFound": "This category no longer exists.",
+        "forbidden": "Only the instructor can change categories.",
+        "failed": "Something went wrong. Please try again."
+      }
     }
   },
   "Legal": {

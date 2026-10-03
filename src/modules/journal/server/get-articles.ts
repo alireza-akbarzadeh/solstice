@@ -1,3 +1,4 @@
+import { isCategorySlug } from "@/modules/categories/types";
 import { asc, desc, eq } from "drizzle-orm";
 import { cache } from "react";
 
@@ -10,7 +11,6 @@ import {
   type JournalArticle,
   type JournalArticleSummary,
   type JournalBlock,
-  journalCategories,
   type JournalFilters,
   type JournalStoredBlock,
 } from "../types";
@@ -97,7 +97,7 @@ export function parseJournalFilters(params: Record<string, string | string[] | u
   const q = one("q")?.trim().slice(0, 100);
   return {
     q: q === "" ? undefined : q, // an empty search box is no search
-    category: journalCategories.includes(category as never) ? (category as JournalFilters["category"]) : undefined,
+    category: isCategorySlug(category) ? category : undefined,
     page: Number.isInteger(page) && page > 0 ? page : 1,
   };
 }

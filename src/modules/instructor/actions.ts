@@ -16,6 +16,7 @@ import { getPlan } from "@/modules/memberships/server/plans";
 import { deleteSubscriber } from "@/modules/newsletter/server/subscribers";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { notifyEveryone } from "@/modules/notifications/server/send";
+import { categoryExists } from "@/modules/categories/server/categories";
 import { practiceFieldsSchema } from "@/modules/practices/schemas";
 import { auth } from "@/server/better-auth";
 
@@ -245,6 +246,7 @@ export async function newPractice(input: unknown): Promise<StudioResult> {
   if (!parsed.success) return { ok: false, error: "invalid" };
 
   const { videoUrl, ...fields } = parsed.data;
+  if (!(await categoryExists("practice", fields.category))) return { ok: false, error: "invalid" };
   const asset = videoUrl?.trim() ? parseAssetForAnyProvider(videoUrl) : null;
   if (videoUrl?.trim() && !asset) return { ok: false, error: "video" };
   const slug = await uniquePracticeSlug(fields.title.en);
@@ -279,6 +281,7 @@ export async function savePracticeMeta(input: unknown): Promise<StudioResult> {
   if (!parsed.success) return { ok: false, error: "invalid" };
 
   const { videoUrl, ...fields } = parsed.data;
+  if (!(await categoryExists("practice", fields.category))) return { ok: false, error: "invalid" };
   const asset = videoUrl?.trim() ? parseAssetForAnyProvider(videoUrl) : null;
   if (videoUrl?.trim() && !asset) return { ok: false, error: "video" };
   const changed = await updatePracticeMeta({

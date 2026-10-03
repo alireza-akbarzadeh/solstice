@@ -21,11 +21,12 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { featureJournalArticle, publishJournalArticle } from "@/modules/instructor/journal-actions";
 import type { JournalInventoryItem } from "@/modules/instructor/server/journal";
+import { useCategoryName } from "@/modules/categories/names";
 
 /** The shelf of essays: publish, feature and open for editing. Cards on phones, a table above lg. */
 export function JournalInventory({ items, editing }: { items: JournalInventoryItem[]; editing: string | null }) {
   const t = useTranslations("Studio.journal");
-  const tJournal = useTranslations("Journal");
+  const journalCategory = useCategoryName("journal");
   const format = useFormatter();
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -94,7 +95,7 @@ export function JournalInventory({ items, editing }: { items: JournalInventoryIt
           {t("table.featured")}
         </Badge>
       )}
-      <Badge variant="outline">{tJournal(`categories.${item.category}`)}</Badge>
+      <Badge variant="outline">{journalCategory(item.category)}</Badge>
     </>
   );
 

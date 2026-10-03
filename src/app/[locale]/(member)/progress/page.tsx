@@ -14,6 +14,7 @@ import { ProgressOverview } from "@/modules/progress/components/progress-overvie
 import { getCompletions } from "@/modules/progress/server/completions";
 import { getProgram } from "@/modules/programs/server/get-program";
 import { getEnrolledProgramSlugs, getProgramProgress } from "@/modules/programs/server/progress";
+import { getCategoryName } from "@/modules/categories/server/names";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/progress">): Promise<Metadata> {
   const { locale } = await params;
@@ -27,6 +28,7 @@ export default async function ProgressPage({ params }: PageProps<"/[locale]/prog
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const practiceCategory = await getCategoryName("practice");
 
   const viewer = await requireUser(locale, "/progress");
   const [t, tPractice, format, completions, library, programSlugs] = await Promise.all([
@@ -107,7 +109,7 @@ export default async function ProgressPage({ params }: PageProps<"/[locale]/prog
               {categories.map(([category, minutes]) => (
                 <li key={category}>
                   <div className="mb-1 flex items-baseline justify-between gap-3 font-label-md text-label-md">
-                    <span className="text-on-surface">{tPractice(`categories.${category}`)}</span>
+                    <span className="text-on-surface">{practiceCategory(category)}</span>
                     <span className="text-on-surface-variant">{tPractice("minutes", { count: minutes })}</span>
                   </div>
                   <div className="h-2 w-full overflow-hidden rounded-full bg-surface-variant">

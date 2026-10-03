@@ -8,10 +8,34 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** Editable practice/journal categories, more social links (Telegram/WhatsApp) and contact details, editable email templates, `sitemap.xml`/`robots.txt`. Image upload waits on the customer's storage choice; a drag-and-drop page builder (Puck) is still an open idea.
+> **Next up:** Roadmap item **2 — social links & contact details** (see *Handover roadmap* below). When a session says “continue”, start at the first ⬜/🟡 item in that list.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
+
+
+## Handover roadmap
+
+Goal: the customer runs the whole site from `/instructor` without code. Work top to bottom.
+**To resume:** read this list, take the first item that is not ✅ (and not blocked), build it,
+verify it (typecheck, lint, browser check in `en` + `fa`, disposable fixtures removed), then mark
+it ✅ here, move **Next up**, and add a log line. Blocked items wait on a customer decision.
+
+| # | Item | Status | Done when |
+| - | ---- | ------ | --------- |
+| 1 | Editable practice & journal categories | ✅ | `/instructor/categories` (practice / journal tabs): bilingual name, order, show in filters, delete only when unused. `solstice_category` (`pnpm db:seed:categories`); names merged into `Practice.categories` / `Journal.categories` per request; filters, cards, editors and actions read it |
+| 2 | Social links & contact details | ⬜ | Studio settings list any number of social links (Instagram, Telegram, WhatsApp, YouTube, X, …) plus contact email/phone/address; footer and About read them |
+| 3 | Editable email templates | ⬜ | Verification / reset / welcome email subject and body editable in both languages from the studio, with the required `{url}`/`{name}` variables protected |
+| 4 | `sitemap.xml` + `robots.txt` | ⬜ | Generated from published practices, programs, essays and custom pages in both locales; private areas disallowed |
+| 5 | Home sections: show/hide & order | ⬜ | The instructor can hide and reorder Home sections (hero, featured practices/programs, instructor, testimonials, membership) |
+| 6 | Page editor cleanup | ⬜ | “Website content” shows only marketing copy with friendly labels; app microcopy (errors, buttons) sits under an “Advanced” toggle; ICU variables shown as protected chips |
+| 7 | Fixed images become editable | ⬜ | Logo, sign-in/sign-up photos and instructor avatar are page assets (paths/URLs now; uploads once #8 exists); favicon/PWA icons regenerate from the logo |
+| 8 | Image upload & media library | ⛔ blocked | Needs the customer's storage choice (Vercel Blob / ArvanCloud / Neon storage). Then: `StorageProvider`, upload button on every image field, a media library page |
+| 9 | Real payment provider | ⛔ blocked | Needs the customer's gateway (e.g. Zarinpal, Stripe). `PaymentProvider` + webhooks; plans already carry price/currency/period |
+| 10 | Real email delivery | ⛔ blocked | Needs a provider (SMTP/Resend/…); `EmailProvider` replaces the outbox; newsletter sending |
+| 11 | Pre-launch checklist | ⬜ | OAuth keys, legal review, reconcile the drizzle migration journal (`0003` + plans/settings/comment status tables), fix the studio header Radix hydration warning, production 404 for unknown paths, env vars on Vercel |
+
+Optional idea, not scheduled: a drag-and-drop page builder (Puck) for marketing pages — would replace #5/#6 for those pages.
 
 ---
 
@@ -116,6 +140,7 @@ member moves the dossier above the directory, and selects open as drawers.
 | `/instructor/pages` | ✅ | — | Edit 16 website/app content templates in both languages. Create workshop/retreat/offer pages with structured content, cover, YouTube and CTA; private drafts, publishing, menu/footer visibility, unpublish and confirmed custom-page deletion. Inventory links to the editor, saved draft preview and localized live page, with published placement badges. Existing drafts preview in their real layouts with copy/photos; guests/members see published snapshots. Existing routes stay protected. |
 | `/instructor/subscribers` | ✅ | — | Newsletter list: totals by language, email search, remove with confirmation, cards on phones/table above `lg`. **Export CSV** (`/api/instructor/subscribers`, instructor-only, 404 otherwise) downloads every address with a BOM for Excel and neutralises formula-looking cells. |
 | `/instructor/plans` | ✅ | — | Plan list with recommend, reorder and hide/show; react-hook-form + zod editor (same schema as the server action; Persian digits accepted in price/trial); site currency picker. A plan with members can only be hidden; at least one plan stays on sale. |
+| `/instructor/categories` | ✅ | — | Practice and journal categories: react-hook-form editor (name en/fa, URL slug derived from the English name and fixed once created, show in filters), reorder, hide/show, delete blocked while practices or essays use it. Hidden categories leave public filters but stay selectable (marked) in the editors |
 
 ---
 
@@ -230,3 +255,5 @@ member moves the dossier above the directory, and selects open as drawers.
 - **2026-10-03** — Studio command palette and breadcrumbs. Added shadcn `command`, `breadcrumb`, `kbd`, `input-group` (existing `button`/`input` kept), a shared section list, word-match filtering, a GET search endpoint across eight content types, recent picks, and per-page crumbs (editing item, "New", filtered view). Verified in a browser: Ctrl+K, multi-word commands, "annual" → plan → breadcrumb, member search → dossier, guest 404 on the endpoint, Persian phone layout without overflow. Fixed on the way: a `"use server"` file exporting a constant broke every studio page. In development search takes ~1–3 s because each new Neon connection from this machine costs ~1.6 s.
 
 - **2026-10-03** — Forms moved to react-hook-form + zod with shared schemas (each form and its server action validate with the same rules): sign-in, sign-up, forgot/reset password, profile, change password, delete account, newsletter, comment composer and replies, and the studio's practice, program, journal, page and plan editors, announcement composer and gift pass. Fields now show their own message (wrong email format, empty name, short password, terms not accepted, missing translation, bad cover/video link) with `aria-invalid`. New schema modules: `modules/auth|users|journal|practices|instructor/schemas.ts`; `PasswordField` gained a controlled mode. The practice form derives blank cover/alt text and then applies the server schema, reporting every problem at once. Verified in a browser: sign-in/sign-up/forgot (en + fa) field errors and a real sign-up, newsletter rejected client-side, profile blank name, studio editors' empty-submit errors, and creating an essay, practice (YouTube), program (week + days), custom page and announcement; fixtures removed. TypeScript and ESLint pass. Not converted: the mock test-checkout card form (test mode only) and the checkout plan picker (a server-action radio form with nothing to validate).
+
+- **2026-10-03** — Roadmap item 1: editable categories. New `solstice_category` table seeded with the 13 original categories (same names in both languages), `modules/categories` (types/defaults, server reads with fallback, mutations, `useCategoryName` / `getCategoryName`), names merged into the request messages so every card and page shows the studio's names; category slugs replaced the fixed enums in schemas, URL filters and editors, and the practice/journal actions reject unknown categories. Studio page with breadcrumbs, sidebar link and a palette "New category" action. Breadcrumbs now show only the current item on phones. Verified: page/CMS test suites pass; in a browser, public pills (en/fa), create with derived slug, duplicate refused, rename reflected publicly, hide removes the pill but keeps a marked editor option, in-use delete blocked, delete of an unused one, Persian phone layout; categories restored and fixtures removed. TypeScript and ESLint pass.

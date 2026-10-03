@@ -6,19 +6,21 @@ import { useTransition } from "react";
 
 import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { getPathname, Link, useRouter } from "@/i18n/navigation";
+import { useCategoryName } from "@/modules/categories/names";
 import { cn } from "@/lib/utils";
 
 import { practiceFiltersToQuery } from "../filters";
 import {
   durationRanges,
   intensityLevels,
-  practiceCategories,
   propSetups,
   type PracticeFilters as Filters,
 } from "../types";
 
 type Props = {
   filters: Filters;
+  /** Visible practice category slugs, in the studio's order. */
+  categories: string[];
   shown: number;
   total: number;
 };
@@ -27,9 +29,10 @@ type Props = {
 const ALL = "all";
 const pick = <T,>(value: string) => (value === ALL ? undefined : (value as T));
 
-export function PracticeFilters({ filters, shown, total }: Props) {
+export function PracticeFilters({ filters, categories, shown, total }: Props) {
   const t = useTranslations("Practices");
   const tPractice = useTranslations("Practice");
+  const practiceCategory = useCategoryName("practice");
   const router = useRouter();
   const locale = useLocale();
   const [isPending, startTransition] = useTransition();
@@ -79,7 +82,7 @@ export function PracticeFilters({ filters, shown, total }: Props) {
 
       <nav aria-label={t("categoriesLabel")} className="-mx-margin-mobile overflow-x-auto px-margin-mobile pb-2 md:mx-0 md:px-0">
         <ul className="flex items-center gap-2">
-          {[undefined, ...practiceCategories].map((category) => {
+          {[undefined, ...categories].map((category) => {
             const active = filters.category === category;
             return (
               <li key={category ?? "all"}>
@@ -94,7 +97,7 @@ export function PracticeFilters({ filters, shown, total }: Props) {
                       : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-primary",
                   )}
                 >
-                  {category ? tPractice(`categories.${category}`) : t("allCategories")}
+                  {category ? practiceCategory(category) : t("allCategories")}
                 </Link>
               </li>
             );

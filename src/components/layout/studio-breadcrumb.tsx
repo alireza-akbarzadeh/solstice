@@ -78,7 +78,8 @@ export function StudioBreadcrumbTrail() {
           return (
             <Fragment key={`${index}-${item.label}`}>
               <BreadcrumbSeparator className="hidden md:inline-flex rtl:rotate-180" />
-              <BreadcrumbItem className="min-w-0">
+              {/* Phones show only the page itself; wider screens show the whole trail. */}
+              <BreadcrumbItem className={last ? "min-w-0" : "hidden md:inline-flex"}>
                 {last || !item.href ? (
                   <BreadcrumbPage className="truncate">{item.label}</BreadcrumbPage>
                 ) : (

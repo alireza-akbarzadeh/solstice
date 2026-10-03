@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Pagination } from "@/components/layout/pagination";
 import { routing } from "@/i18n/routing";
+import { getCategories } from "@/modules/categories/server/categories";
 import { withNext } from "@/lib/safe-next";
 import { LibraryUpsell } from "@/modules/memberships/components/library-upsell";
 import { getViewer } from "@/modules/memberships/server/viewer";
@@ -31,7 +32,12 @@ export default async function PracticesPage({ params, searchParams }: PageProps<
   setRequestLocale(locale);
 
   const filters = parsePracticeFilters(await searchParams);
-  const [t, result, viewer] = await Promise.all([getTranslations("Practices"), getPractices(locale, filters), getViewer()]);
+  const [t, result, viewer, categories] = await Promise.all([
+    getTranslations("Practices"),
+    getPractices(locale, filters),
+    getViewer(),
+    getCategories("practice", { visibleOnly: true }),
+  ]);
   const savedSlugs = new Set(viewer.user ? await getFavoriteSlugs(viewer.user.id) : []);
   const signInHref = viewer.user ? undefined : withNext("/sign-in", `/practices${practiceFiltersToQuery(filters)}`);
 
@@ -59,7 +65,7 @@ export default async function PracticesPage({ params, searchParams }: PageProps<
             </div>
           </div>
 
-          <PracticeFilters filters={filters} shown={result.items.length} total={result.total} />
+          <PracticeFilters filters={filters} categories={categories.map((c) => c.slug)} shown={result.items.length} total={result.total} />
         </Container>
       </section>
 

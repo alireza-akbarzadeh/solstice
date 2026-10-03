@@ -31,7 +31,7 @@ import {
   saveJournalArticle,
 } from "@/modules/instructor/journal-actions";
 import { journalFieldsSchema, type JournalFieldsInput, type JournalFormValues } from "@/modules/journal/schemas";
-import { journalCategories, type JournalCategory, type JournalStoredBlock } from "@/modules/journal/types";
+import type { JournalCategory, JournalStoredBlock } from "@/modules/journal/types";
 
 import { JournalBlockEditor } from "./journal-block-editor";
 import { emptyLocalized, LocalizedField } from "./localized-field";
@@ -57,9 +57,17 @@ export type EditableArticle = {
  * has no slug yet — saving it creates one from the English title, so nobody has to invent a URL.
  * react-hook-form holds the fields and validates them with the action's own zod schema.
  */
-export function JournalEditor({ article, practiceOptions }: { article: EditableArticle; practiceOptions: { slug: string; title: string }[] }) {
+export function JournalEditor({
+  article,
+  practiceOptions,
+  categoryOptions,
+}: {
+  article: EditableArticle;
+  practiceOptions: { slug: string; title: string }[];
+  /** Journal categories (value = slug), from /instructor/categories. */
+  categoryOptions: { value: string; label: string }[];
+}) {
   const t = useTranslations("Studio.journal.editor");
-  const tJournal = useTranslations("Journal");
   const router = useRouter();
   const [slug, setSlug] = useState(article.slug);
   const [deleting, startDelete] = useTransition();
@@ -178,7 +186,7 @@ export function JournalEditor({ article, practiceOptions }: { article: EditableA
                   value={field.value}
                   disabled={saving}
                   onValueChange={field.onChange}
-                  options={journalCategories.map((c) => ({ value: c, label: tJournal(`categories.${c}`) }))}
+                  options={categoryOptions}
                 />
               </Field>
             )}

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { categoryExists } from "@/modules/categories/server/categories";
 import { journalFieldsSchema } from "@/modules/journal/schemas";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
@@ -34,6 +35,7 @@ export async function createJournalArticle(input: unknown): Promise<JournalResul
   if (!(await instructorOnly())) return { ok: false, error: "forbidden" };
   const parsed = fieldsSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "invalid" };
+  if (!(await categoryExists("journal", parsed.data.category))) return { ok: false, error: "invalid" };
 
   // The slug and issue are derived, so nobody has to invent a URL or count issues.
   const newSlug = await uniqueSlug(parsed.data.title.en);
@@ -50,6 +52,7 @@ export async function saveJournalArticle(input: unknown): Promise<JournalResult>
   if (!(await instructorOnly())) return { ok: false, error: "forbidden" };
   const parsed = z.object({ slug, fields: fieldsSchema }).safeParse(input);
   if (!parsed.success) return { ok: false, error: "invalid" };
+  if (!(await categoryExists("journal", parsed.data.fields.category))) return { ok: false, error: "invalid" };
 
   const changed = await updateArticle(parsed.data.slug, parsed.data.fields);
   if (!changed) return { ok: false, error: "invalid" };

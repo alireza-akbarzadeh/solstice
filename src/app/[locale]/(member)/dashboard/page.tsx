@@ -20,6 +20,7 @@ import { getCompletions } from "@/modules/progress/server/completions";
 import { getFavoriteSlugs } from "@/modules/progress/server/favorites";
 import { findProgramDay, getProgram } from "@/modules/programs/server/get-program";
 import { getEnrolledProgramSlugs, getProgramProgress } from "@/modules/programs/server/progress";
+import { getCategoryName } from "@/modules/categories/server/names";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -35,6 +36,7 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const practiceCategory = await getCategoryName("practice");
 
   const viewer = await requireUser(locale, "/dashboard");
   const userId = viewer.user.id;
@@ -148,7 +150,7 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
                 </span>
                 <div className="absolute inset-x-3 bottom-3 text-inverse-on-surface md:inset-x-5 md:bottom-5">
                   <span className="font-label-md text-label-md tracking-wider text-secondary-fixed uppercase opacity-90">
-                    {tPractice(`categories.${hero.practice.category}`)}
+                    {practiceCategory(hero.practice.category)}
                   </span>
                   <h2 className="font-headline-sm text-headline-sm leading-snug md:font-headline-md md:text-headline-md">{hero.practice.title}</h2>
                 </div>
@@ -207,7 +209,7 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
                   </div>
                   <div className="flex flex-1 flex-col justify-between gap-2 p-3.5">
                     <div>
-                      <span className="font-label-sm text-label-sm tracking-wider text-primary uppercase">{tPractice(`categories.${practice.category}`)}</span>
+                      <span className="font-label-sm text-label-sm tracking-wider text-primary uppercase">{practiceCategory(practice.category)}</span>
                       <h3 className="mt-0.5 line-clamp-2 font-headline-sm text-[1.1rem] leading-tight text-on-surface">
                         <Link href={`/practices/${practice.slug}`} className="after:absolute after:inset-0">
                           {practice.title}

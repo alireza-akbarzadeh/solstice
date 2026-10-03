@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { journalCategories } from "./types";
+import { isCategorySlug } from "@/modules/categories/types";
 
 const localized = (max: number) => z.object({ en: z.string().max(max), fa: z.string().max(max) });
 const required = (max: number) =>
@@ -25,7 +25,7 @@ export const journalBlockSchema = z.discriminatedUnion("type", [
  * editor (react-hook-form + zodResolver) and the action share this one schema.
  */
 export const journalFieldsSchema = z.object({
-  category: z.enum(journalCategories),
+  category: z.string().refine(isCategorySlug),
   issue: z.number().int().min(1).max(9999),
   title: required(200),
   excerpt: required(600),

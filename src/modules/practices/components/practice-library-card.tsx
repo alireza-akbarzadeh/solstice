@@ -5,6 +5,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { SaveButton } from "@/modules/progress/components/practice-actions";
+import { getCategoryName } from "@/modules/categories/server/names";
 
 import type { IntensityLevel, PracticeSummary } from "../types";
 
@@ -32,6 +33,7 @@ export async function PracticeLibraryCard({
   signInHref?: string;
 }) {
   const [t, tBrand, format] = await Promise.all([getTranslations("Practice"), getTranslations("Brand"), getFormatter()]);
+  const practiceCategory = await getCategoryName("practice");
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-xl bg-surface-container-low shadow-sm transition-all duration-300 ease-sanctuary hover:-translate-y-1 hover:shadow-xl motion-reduce:hover:translate-y-0">
@@ -47,7 +49,7 @@ export async function PracticeLibraryCard({
         <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/60 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-40" />
 
         <span className="absolute start-3.5 top-3.5 rounded-md bg-inverse-surface/70 px-2.5 py-1 font-label-sm text-label-sm text-inverse-on-surface backdrop-blur-md">
-          {t(`categories.${practice.category}`)}
+          {practiceCategory(practice.category)}
         </span>
         <div className="absolute end-3.5 top-3.5 flex items-center gap-2">
           {practice.access === "members" && !unlocked && (

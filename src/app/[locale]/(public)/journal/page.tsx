@@ -12,8 +12,9 @@ import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { ArticleCard } from "@/modules/journal/components/article-card";
 import { getJournal, journalFiltersToQuery, parseJournalFilters } from "@/modules/journal/server/get-articles";
-import { journalCategories } from "@/modules/journal/types";
+import { getCategories } from "@/modules/categories/server/categories";
 import { NewsletterForm } from "@/modules/newsletter/components/newsletter-form";
+import { getCategoryName } from "@/modules/categories/server/names";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/journal">): Promise<Metadata> {
   const { locale } = await params;
@@ -27,9 +28,15 @@ export default async function JournalPage({ params, searchParams }: PageProps<"/
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const journalCategory = await getCategoryName("journal");
 
   const filters = parseJournalFilters(await searchParams);
-  const [t, format, journal] = await Promise.all([getTranslations("Journal"), getFormatter(), getJournal(locale, filters)]);
+  const [t, format, journal, categories] = await Promise.all([
+    getTranslations("Journal"),
+    getFormatter(),
+    getJournal(locale, filters),
+    getCategories("journal", { visibleOnly: true }),
+  ]);
   const featured = journal.featured;
 
   const pill = (active: boolean) =>
@@ -82,14 +89,14 @@ export default async function JournalPage({ params, searchParams }: PageProps<"/
             <Link href={`/journal${journalFiltersToQuery({ q: filters.q })}`} className={pill(!filters.category)} aria-current={!filters.category ? "page" : undefined}>
               {t("allCategories")}
             </Link>
-            {journalCategories.map((category) => (
+            {categories.map(({ slug: category }) => (
               <Link
                 key={category}
                 href={`/journal${journalFiltersToQuery({ q: filters.q, category })}`}
                 className={pill(filters.category === category)}
                 aria-current={filters.category === category ? "page" : undefined}
               >
-                {t(`categories.${category}`)}
+                {journalCategory(category)}
               </Link>
             ))}
           </nav>
@@ -112,7 +119,7 @@ export default async function JournalPage({ params, searchParams }: PageProps<"/
                 <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/60 via-transparent to-transparent lg:hidden" />
                 <div className="absolute start-6 top-6 flex items-center gap-2">
                   <span className="rounded-full bg-surface-container-lowest/90 px-3 py-1.5 font-label-sm text-label-sm font-semibold text-primary backdrop-blur-md">
-                    {featured.tags[0] ?? t(`categories.${featured.category}`)}
+                    {featured.tags[0] ?? journalCategory(featured.category)}
                   </span>
                   <span className="rounded-full bg-inverse-surface/80 px-3 py-1.5 font-label-sm text-label-sm text-inverse-on-surface backdrop-blur-md">
                     {t("issue", { issue: featured.issue })}
@@ -161,7 +168,7 @@ export default async function JournalPage({ params, searchParams }: PageProps<"/
           <div>
             <span className="font-label-sm text-label-sm font-semibold tracking-widest text-clay uppercase">{t("anthologyEyebrow")}</span>
             <h2 className="mt-1 font-headline-lg-mobile text-headline-lg-mobile text-on-surface md:font-headline-lg md:text-headline-lg">
-              {filters.category ? t(`categories.${filters.category}`) : t("anthologyTitle")}
+              {filters.category ? journalCategory(filters.category) : t("anthologyTitle")}
             </h2>
           </div>
         </div>

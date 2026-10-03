@@ -8,5 +8,8 @@ Before starting work, read:
 
 After finishing a page or foundation item, update `PROGRESS.md` (row, **Next up**, log line).
 
+When asked to “continue”, open `PROGRESS.md` → **Handover roadmap** and take the first item that
+is not ✅ or ⛔ blocked. Mark it ✅ there when it is built and verified.
+
 Stitch designs: `pnpm stitch:pull` refreshes `design/stitch/`. If the Stitch MCP tools
 aren't attached in a session, that script is the fallback.

@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { useCategoryName } from "@/modules/categories/names";
 
 import type { ProgramDay, ProgramWeek } from "../types";
 
@@ -32,6 +33,7 @@ export function ProgramSyllabus({
 }) {
   const t = useTranslations("Program.syllabus");
   const tPractice = useTranslations("Practice");
+  const practiceCategory = useCategoryName("practice");
   const done = new Set(progress.completed);
 
   const weekOfDay = (day: number | null) => (day === null ? -1 : weeks.findIndex((w) => w.days.some((d) => d.day === day)));
@@ -183,7 +185,7 @@ export function ProgramSyllabus({
                           state === "today" ? "bg-primary-fixed font-semibold text-on-primary-fixed" : "bg-surface-container text-on-surface-variant",
                         )}
                       >
-                        {tPractice(`categories.${day.practice.category}`)}
+                        {practiceCategory(day.practice.category)}
                       </span>
                       <span className="font-body-sm text-body-sm text-outline">{tPractice("minutes", { count: day.practice.durationMinutes })}</span>
                     </div>

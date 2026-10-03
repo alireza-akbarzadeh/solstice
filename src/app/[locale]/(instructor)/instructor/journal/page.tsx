@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { getCategories } from "@/modules/categories/server/categories";
 import { JournalEditor, type EditableArticle } from "@/modules/instructor/components/journal-editor";
 import { JournalInventory } from "@/modules/instructor/components/journal-inventory";
 import { StatCard } from "@/modules/instructor/components/stat-card";
@@ -77,6 +78,11 @@ export default async function StudioJournalPage({ params, searchParams }: PagePr
 
   const editRow = editSlug ? await getArticleRow(editSlug) : null;
   const practiceOptions = practices.map((p) => ({ slug: p.slug, title: p.title }));
+  const tCategories = await getTranslations("Studio.categories");
+  const categoryOptions = (await getCategories("journal")).map((c) => ({
+            value: c.slug,
+            label: c.visible ? localize(c.name, locale) : tCategories("hiddenOption", { name: localize(c.name, locale) }),
+          }));
 
   // A brand-new essay starts from an empty shape; saving it mints the slug.
   const blank: EditableArticle = {
@@ -149,7 +155,7 @@ export default async function StudioJournalPage({ params, searchParams }: PagePr
       </div>
 
       {editing ? (
-        <JournalEditor key={editing.slug ?? "new"} article={editing} practiceOptions={practiceOptions} />
+        <JournalEditor key={editing.slug ?? "new"} article={editing} practiceOptions={practiceOptions} categoryOptions={categoryOptions} />
       ) : (
         <Empty className="rounded-xl bg-surface-container-low">
           <EmptyHeader>

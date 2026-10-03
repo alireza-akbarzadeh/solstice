@@ -1,12 +1,14 @@
 import {
   durationRanges,
   intensityLevels,
-  practiceCategories,
   propSetups,
   type PracticeFilters,
 } from "./types";
+import { isCategorySlug } from "@/modules/categories/types";
 
 type SearchParams = Record<string, string | string[] | undefined>;
+
+const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
 function pick<T extends string>(allowed: readonly T[], value: string | string[] | undefined): T | undefined {
   const v = Array.isArray(value) ? value[0] : value;
@@ -19,7 +21,7 @@ export function parsePracticeFilters(params: SearchParams): PracticeFilters {
   const page = Number(Array.isArray(params.page) ? params.page[0] : params.page);
   return {
     q: q ? q.slice(0, 100) : undefined,
-    category: pick(practiceCategories, params.category),
+    category: isCategorySlug(first(params.category)) ? first(params.category) : undefined,
     duration: pick(durationRanges, params.duration),
     props: pick(propSetups, params.props),
     intensity: pick(intensityLevels, params.intensity),

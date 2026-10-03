@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { parseVideoAsset } from "@/infrastructure/video/assets";
 
-import { practiceCategories } from "./types";
+import { isCategorySlug } from "@/modules/categories/types";
 
 /** A cover or poster: a local `/images/…` path or an https:// address. */
 export const isCoverUrl = (value: string) => {
@@ -23,7 +23,7 @@ export const practiceFieldsSchema = z.object({
   title: required(200),
   summary: required(600),
   series: required(200),
-  category: z.enum(practiceCategories),
+  category: z.string().refine(isCategorySlug),
   intensityLevel: z.enum(["gentle", "moderate", "fire"]),
   intensityLabel: required(120),
   props: z.enum(["none", "bolster-blocks", "strap"]),
@@ -51,7 +51,7 @@ export const practiceFormSchema = z
     title: optional(200),
     summary: optional(600),
     series: optional(200),
-    category: z.enum(practiceCategories),
+    category: z.string(),
     intensityLevel: z.enum(["gentle", "moderate", "fire"]),
     intensityLabel: optional(120),
     props: z.enum(["none", "bolster-blocks", "strap"]),

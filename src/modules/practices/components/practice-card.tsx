@@ -4,10 +4,12 @@ import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { getCategoryName } from "@/modules/categories/server/names";
 
 import type { PracticeCategory, PracticeSummary } from "../types";
 
-const categoryTone: Record<PracticeCategory, string> = {
+// Tones for the original categories; categories added in the studio use the primary tone.
+const categoryTone: Partial<Record<PracticeCategory, string>> = {
   morning: "text-primary",
   vinyasa: "text-primary",
   mobility: "text-primary",
@@ -20,6 +22,7 @@ const categoryTone: Record<PracticeCategory, string> = {
 // Featured card used on the home page.
 export async function PracticeCard({ practice }: { practice: PracticeSummary }) {
   const [t, tBrand] = await Promise.all([getTranslations("Practice"), getTranslations("Brand")]);
+  const practiceCategory = await getCategoryName("practice");
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm transition-shadow duration-300 ease-sanctuary hover:shadow-bloom">
@@ -37,10 +40,10 @@ export async function PracticeCard({ practice }: { practice: PracticeSummary }) 
         <span
           className={cn(
             "absolute start-4 bottom-4 rounded-full bg-surface/90 px-3 py-1 font-label-sm text-label-sm font-semibold tracking-wider uppercase backdrop-blur-sm",
-            categoryTone[practice.category],
+            categoryTone[practice.category] ?? "text-primary",
           )}
         >
-          {t(`categories.${practice.category}`)}
+          {practiceCategory(practice.category)}
         </span>
       </div>
 

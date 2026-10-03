@@ -15,6 +15,7 @@ import {
   NotebookPenIcon,
   PlusIcon,
   SearchIcon,
+  ShapesIcon,
   TagIcon,
   UserIcon,
   type LucideIcon,
@@ -162,6 +163,7 @@ export function StudioCommand() {
     { label: t("create.essay"), href: "/instructor/journal?new=1", icon: NotebookPenIcon },
     { label: t("create.page"), href: "/instructor/pages?new=1", icon: FileTextIcon },
     { label: t("create.plan"), href: "/instructor/plans?new=1", icon: TagIcon },
+    { label: t("create.category"), href: "/instructor/categories?new=1", icon: ShapesIcon },
     { label: t("create.announcement"), href: "/instructor/posts", icon: MegaphoneIcon },
   ];
   const sitePages = [

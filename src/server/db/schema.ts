@@ -537,3 +537,20 @@ export const settings = createTable("setting", (d) => ({
     .defaultNow()
     .$onUpdate(() => new Date()),
 }));
+
+/**
+ * Practice and journal categories the instructor manages at /instructor/categories. Practices
+ * and essays store the slug; a category in use can be hidden but not deleted.
+ */
+export const categories = createTable(
+  "category",
+  (d) => ({
+    kind: d.text().$type<"practice" | "journal">().notNull(),
+    slug: d.text().notNull(),
+    name: d.jsonb().$type<Localized>().notNull(),
+    sortOrder: d.integer().notNull().default(0),
+    visible: d.boolean().notNull().default(true),
+    createdAt: d.timestamp({ withTimezone: true }).notNull().defaultNow(),
+  }),
+  (t) => [primaryKey({ columns: [t.kind, t.slug] })],
+);

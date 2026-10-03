@@ -38,6 +38,7 @@ import {
 } from "@/modules/instructor/actions";
 import { DeleteContentButton } from "./delete-content-button";
 import type { InventoryItem } from "@/modules/instructor/server/content";
+import { useCategoryName } from "@/modules/categories/names";
 
 /**
  * Stitch: the inventory table at the foot of studio-admin-content-video-publisher.
@@ -52,6 +53,7 @@ export function PracticeInventory({
 }) {
   const t = useTranslations("Studio.practices");
   const tPractice = useTranslations("Practice");
+  const practiceCategory = useCategoryName("practice");
   const format = useFormatter();
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -157,7 +159,7 @@ export function PracticeInventory({
                   {item.series}
                 </p>
                 <p className="font-label-sm text-label-sm text-outline">
-                  {tPractice(`categories.${item.category}`)} ·{" "}
+                  {practiceCategory(item.category)} ·{" "}
                   {tPractice("minutes", { count: item.durationMinutes })}
                 </p>
               </div>
@@ -289,7 +291,7 @@ export function PracticeInventory({
                           {item.series}
                         </p>
                         <p className="font-label-sm text-label-sm text-outline">
-                          {tPractice(`categories.${item.category}`)} ·{" "}
+                          {practiceCategory(item.category)} ·{" "}
                           {tPractice("minutes", {
                             count: item.durationMinutes,
                           })}

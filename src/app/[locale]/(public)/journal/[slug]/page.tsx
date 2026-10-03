@@ -16,6 +16,7 @@ import { getArticle, getRelatedArticles } from "@/modules/journal/server/get-art
 import type { JournalBlock } from "@/modules/journal/types";
 import { NewsletterForm } from "@/modules/newsletter/components/newsletter-form";
 import { getPractice } from "@/modules/practices/server/get-practice";
+import { getCategoryName } from "@/modules/categories/server/names";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/journal/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -98,6 +99,8 @@ export default async function ArticlePage({ params }: PageProps<"/[locale]/journ
   const { locale, slug } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const journalCategory = await getCategoryName("journal");
+  const practiceCategory = await getCategoryName("practice");
 
   const article = await getArticle(locale, slug);
   if (!article) notFound();
@@ -124,7 +127,7 @@ export default async function ArticlePage({ params }: PageProps<"/[locale]/journ
             </Link>
             <span className="text-outline-variant">/</span>
             <Link href={`/journal?category=${article.category}`} className="transition-colors hover:text-primary">
-              {t(`categories.${article.category}`)}
+              {journalCategory(article.category)}
             </Link>
             <span className="text-outline-variant">/</span>
             <span aria-current="page" className="text-on-surface-variant">
@@ -217,7 +220,7 @@ export default async function ArticlePage({ params }: PageProps<"/[locale]/journ
                     </div>
                     <div className="flex min-w-0 flex-col justify-center">
                       <span className="font-label-sm text-label-sm tracking-wider text-clay uppercase">
-                        {tPractice("minutes", { count: practice.durationMinutes })} · {tPractice(`categories.${practice.category}`)}
+                        {tPractice("minutes", { count: practice.durationMinutes })} · {practiceCategory(practice.category)}
                       </span>
                       <h3 className="line-clamp-2 font-headline-sm text-[1.05rem] leading-snug text-on-surface transition-colors group-hover:text-primary">
                         {practice.title}

@@ -33,7 +33,6 @@ import { EmbedPlayer } from "@/modules/practices/components/embed-player";
 import { practiceFormSchema, type PracticeFormOutput, type PracticeFormValues } from "@/modules/practices/schemas";
 import {
   intensityLevels,
-  practiceCategories,
   propSetups,
   type IntensityLevel,
   type PracticeAccess,
@@ -79,8 +78,11 @@ const videoLink = (practice: EditablePractice) =>
 export function PracticeEditor({
   practice,
   usage,
+  categoryOptions,
 }: {
   practice: EditablePractice;
+  /** Practice categories (value = slug), from /instructor/categories. */
+  categoryOptions: { value: string; label: string }[];
   /** What deleting would take with it, shown in the confirmation. */
   usage?: { saves: number; reflections: number; sessions: number; programs: number };
 }) {
@@ -310,7 +312,7 @@ export function PracticeEditor({
                     label={t("fields.category")}
                     value={field.value}
                     onValueChange={field.onChange}
-                    options={practiceCategories.map((c) => ({ value: c, label: tPractice(`categories.${c}`) }))}
+                    options={categoryOptions}
                   />
                 </Field>
               )}

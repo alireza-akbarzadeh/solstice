@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/empty";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { getCategories } from "@/modules/categories/server/categories";
 import {
   PracticeEditor,
   type EditablePractice,
@@ -121,6 +122,12 @@ export default async function StudioPracticesPage({
     videoProvider: null,
   };
 
+  const tCategories = await getTranslations("Studio.categories");
+  const categoryOptions = (await getCategories("practice")).map((c) => ({
+            value: c.slug,
+            label: c.visible ? localize(c.name, locale) : tCategories("hiddenOption", { name: localize(c.name, locale) }),
+          }));
+
   const shown = inventory.filter(matches(view));
   const counts: Record<View, number> = {
     all: inventory.length,
@@ -185,6 +192,7 @@ export default async function StudioPracticesPage({
         <PracticeEditor
           key={editRow?.slug ?? "new"}
           usage={usage}
+          categoryOptions={categoryOptions}
           practice={
             editRow
               ? {

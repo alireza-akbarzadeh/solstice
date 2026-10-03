@@ -1,13 +1,5 @@
-export const practiceCategories = [
-  "morning",
-  "vinyasa",
-  "restorative",
-  "yin",
-  "pranayama",
-  "mobility",
-  "evening",
-] as const;
-export type PracticeCategory = (typeof practiceCategories)[number];
+/** A category slug; the categories themselves are studio-managed (modules/categories). */
+export type PracticeCategory = string;
 
 export const intensityLevels = ["gentle", "moderate", "fire"] as const;
 export type IntensityLevel = (typeof intensityLevels)[number];

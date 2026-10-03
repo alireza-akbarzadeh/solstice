@@ -30,6 +30,7 @@
     "db:seed:pages": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-pages.ts",
     "db:seed:plans": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-plans.ts",
     "db:seed:moderation": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-moderation.ts",
+    "db:seed:categories": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-categories.ts",
     "test:pages": "node --env-file=.env --experimental-strip-types --no-warnings scripts/check-pages.mjs",
     "test:pages:preview": "node --experimental-strip-types --test tests/page-preview.test.mjs"
   },

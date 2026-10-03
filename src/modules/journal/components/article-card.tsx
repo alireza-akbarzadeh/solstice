@@ -2,12 +2,14 @@ import Image from "next/image";
 import { getFormatter, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
+import { getCategoryName } from "@/modules/categories/server/names";
 
 import type { JournalArticleSummary } from "../types";
 
 // Grid card (the-solstice-chronicle-editorial-journal "Dispatches from the Atelier").
 export async function ArticleCard({ article }: { article: JournalArticleSummary }) {
   const [t, format] = await Promise.all([getTranslations("Journal"), getFormatter()]);
+  const journalCategory = await getCategoryName("journal");
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-xl bg-surface-container-lowest shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl motion-reduce:hover:translate-y-0">
@@ -23,7 +25,7 @@ export async function ArticleCard({ article }: { article: JournalArticleSummary 
           {t("readTime", { minutes: article.readMinutes })}
         </span>
         <span className="absolute start-4 bottom-3 rounded-md bg-surface-container-lowest/90 px-2.5 py-1 font-label-sm text-label-sm font-semibold text-primary backdrop-blur-md">
-          {t(`categories.${article.category}`)}
+          {journalCategory(article.category)}
         </span>
       </div>
       <div className="flex flex-1 flex-col justify-between p-space-lg">

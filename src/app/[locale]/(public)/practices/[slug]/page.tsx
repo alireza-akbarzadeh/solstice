@@ -37,6 +37,7 @@ import { getViewer } from "@/modules/memberships/server/viewer";
 import { resolvePracticeAccess, toPlaybackGrant } from "@/modules/practices/server/access";
 import { getPractice, getRelatedPractices } from "@/modules/practices/server/get-practice";
 import type { ImplementKind } from "@/modules/practices/types";
+import { getCategoryName } from "@/modules/categories/server/names";
 
 const implementIcons: Record<ImplementKind, typeof BoxesIcon> = {
   blocks: BoxesIcon,
@@ -63,6 +64,7 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
   const { locale, slug } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const practiceCategory = await getCategoryName("practice");
 
   const practice = await getPractice(locale, slug);
   if (!practice) notFound();
@@ -117,7 +119,7 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
     signInHref: withNext("/sign-in", here),
     trialDays: (await getPlanCatalog()).trialDays,
   };
-  const categoryLabel = tPractice(`categories.${practice.category}`);
+  const categoryLabel = practiceCategory(practice.category);
   const durationSeconds = practice.durationMinutes * 60;
 
   const chips = [
@@ -326,7 +328,7 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
                           {item.title}
                         </h3>
                         <span className="mt-0.5 font-body-sm text-[12px] text-outline">
-                          {item.intensity.label} • {tPractice(`categories.${item.category}`)}
+                          {item.intensity.label} • {practiceCategory(item.category)}
                         </span>
                       </div>
                     </Link>
