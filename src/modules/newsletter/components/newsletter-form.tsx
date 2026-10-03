@@ -1,10 +1,13 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleCheckIcon, LoaderCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
+import { forgotPasswordSchema as emailFormSchema, type ForgotPasswordValues } from "@/modules/auth/schemas";
 
 import { subscribeToNewsletter } from "../actions";
 
@@ -17,19 +20,22 @@ export function NewsletterForm({
   tone?: "light" | "primary";
 }) {
   const t = useTranslations("Newsletter");
-  const [email, setEmail] = useState("");
-  const [state, setState] = useState<"idle" | "done" | "invalid">("idle");
-  const [pending, startTransition] = useTransition();
+  const [done, setDone] = useState(false);
+  // Checked in the browser with the same email rule the action applies on the server.
+  const form = useForm<ForgotPasswordValues>({
+    resolver: zodResolver(emailFormSchema),
+    defaultValues: { email: "" },
+  });
+  const pending = form.formState.isSubmitting;
+  const invalid = !!form.formState.errors.email;
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    startTransition(async () => {
-      const result = await subscribeToNewsletter({ email, source });
-      setState(result.ok ? "done" : "invalid");
-    });
-  };
+  const submit = form.handleSubmit(async ({ email }) => {
+    const result = await subscribeToNewsletter({ email, source });
+    if (result.ok) setDone(true);
+    else form.setError("email", { message: "emailInvalid" });
+  });
 
-  if (state === "done") {
+  if (done) {
     return (
       <p
         role="status"
@@ -63,17 +69,12 @@ export function NewsletterForm({
           id={`newsletter-${source}`}
           type="email"
           dir="ltr"
-          required
           autoComplete="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setState("idle");
-          }}
+          {...form.register("email")}
           placeholder={t("placeholder")}
-          aria-invalid={state === "invalid"}
+          aria-invalid={invalid || undefined}
           aria-describedby={
-            state === "invalid" ? `newsletter-${source}-error` : undefined
+            invalid ? `newsletter-${source}-error` : undefined
           }
           className="bg-surface-container-lowest font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:ring-primary min-w-0 flex-1 rounded-lg px-4 py-3 focus:ring-2 focus:outline-none rtl:placeholder:text-right"
         />
@@ -91,7 +92,7 @@ export function NewsletterForm({
           {t("submit")}
         </button>
       </form>
-      {state === "invalid" && (
+      {invalid && (
         <p
           id={`newsletter-${source}-error`}
           role="alert"

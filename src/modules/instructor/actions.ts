@@ -7,7 +7,6 @@ import { z } from "zod";
 import { env } from "@/env";
 import { getPathname } from "@/i18n/navigation";
 import { parseAssetForAnyProvider } from "@/infrastructure/video";
-import { REFLECTION_MAX_LENGTH } from "@/modules/community/schemas";
 import {
   createReflection,
   setReflectionPinned,
@@ -17,9 +16,10 @@ import { getPlan } from "@/modules/memberships/server/plans";
 import { deleteSubscriber } from "@/modules/newsletter/server/subscribers";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { notifyEveryone } from "@/modules/notifications/server/send";
-import { practiceCategories } from "@/modules/practices/types";
+import { practiceFieldsSchema } from "@/modules/practices/schemas";
 import { auth } from "@/server/better-auth";
 
+import { announcementSchema, giftPassSchema } from "./schemas";
 import { endAccess, grantAccess, setMemberRole } from "./server/members";
 import { getPracticeRow } from "./server/content";
 import { unpinAnnouncements } from "./server/posts";
@@ -55,13 +55,7 @@ const slug = z.string().min(1).max(200);
 
 export async function grantMemberAccess(input: unknown): Promise<StudioResult> {
   if (!(await instructorOnly())) return { ok: false, error: "forbidden" };
-  const parsed = z
-    .object({
-      userId,
-      plan: z.string().trim().min(1).max(100),
-      months: z.number().int().min(1).max(36),
-    })
-    .safeParse(input);
+  const parsed = giftPassSchema.extend({ userId }).safeParse(input);
   if (!parsed.success) return { ok: false, error: "invalid" };
   if (!(await getPlan(parsed.data.plan))) return { ok: false, error: "invalid" };
 
@@ -142,13 +136,7 @@ export async function publishAnnouncement(
 ): Promise<StudioResult> {
   const actor = await instructorOnly();
   if (!actor) return { ok: false, error: "forbidden" };
-  const parsed = z
-    .object({
-      body: z.string().trim().min(1).max(REFLECTION_MAX_LENGTH),
-      pinned: z.boolean(),
-      notify: z.boolean(),
-    })
-    .safeParse(input);
+  const parsed = announcementSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "invalid" };
 
   const created = await createReflection(
@@ -247,51 +235,6 @@ export async function attachPracticeVideo(
   refresh();
   return { ok: true };
 }
-
-const isCoverUrl = (value: string) => {
-  if (value.startsWith("/images/") && !value.includes("..")) return true;
-  try {
-    return new URL(value).protocol === "https:";
-  } catch {
-    return false;
-  }
-};
-
-const practiceFieldsSchema = z.object({
-  title: z.object({
-    en: z.string().trim().min(1).max(200),
-    fa: z.string().trim().min(1).max(200),
-  }),
-  summary: z.object({
-    en: z.string().trim().min(1).max(600),
-    fa: z.string().trim().min(1).max(600),
-  }),
-  series: z.object({
-    en: z.string().trim().min(1).max(200),
-    fa: z.string().trim().min(1).max(200),
-  }),
-  category: z.enum(practiceCategories),
-  intensityLevel: z.enum(["gentle", "moderate", "fire"]),
-  intensityLabel: z.object({
-    en: z.string().trim().min(1).max(120),
-    fa: z.string().trim().min(1).max(120),
-  }),
-  props: z.enum(["none", "bolster-blocks", "strap"]),
-  durationMinutes: z.number().int().min(1).max(600),
-  access: z.enum(["open", "members"]),
-  previewSeconds: z.number().int().min(0).max(3600).nullable(),
-  image: z.string().trim().min(1).max(2000).refine(isCoverUrl),
-  imageAlt: z.object({
-    en: z.string().trim().min(1).max(300),
-    fa: z.string().trim().min(1).max(300),
-  }),
-  poster: z
-    .string()
-    .trim()
-    .max(2000)
-    .refine((value) => !value || isCoverUrl(value))
-    .nullable(),
-});
 
 /** Creates a practice as a draft and hands back its slug, derived from the English title. */
 export async function newPractice(input: unknown): Promise<StudioResult> {

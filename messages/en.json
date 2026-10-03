@@ -402,6 +402,16 @@
       "verifyFailed": "That verification link has expired or is invalid.",
       "resend": "Send verification link",
       "resent": "Link sent"
+    },
+    "validation": {
+      "emailRequired": "Enter your email address.",
+      "emailInvalid": "Enter a valid email address, like name@example.com.",
+      "passwordRequired": "Enter your password.",
+      "passwordShort": "Use at least 8 characters.",
+      "passwordLong": "Use at most 128 characters.",
+      "nameRequired": "Enter your name.",
+      "nameLong": "Keep your name under 100 characters.",
+      "termsRequired": "Please accept the Terms of Practice to continue."
     }
   },
   "Membership": {
@@ -1380,7 +1390,14 @@
         "publishedState": "Published",
         "deleteTitle": "Delete “{title}”?",
         "inUse": "Used in {count, number} programs. Remove it from their curriculum before deleting.",
-        "inUseError": "This practice is used in a program. Remove it from the program first."
+        "inUseError": "This practice is used in a program. Remove it from the program first.",
+        "validation": {
+          "bothLanguages": "Fill this in both English and Persian.",
+          "image": "Use an /images/… path or an https:// address (or paste a YouTube link to use its thumbnail).",
+          "duration": "Enter whole minutes from 1 to 600.",
+          "preview": "Enter seconds from 0 to 3600.",
+          "video": "Paste a YouTube or Aparat link, or a direct link to a video file."
+        }
       },
       "newPractice": "New practice"
     },
@@ -1752,6 +1769,11 @@
             "stepTitle": "Step title",
             "stepBody": "Step text"
           }
+        },
+        "validation": {
+          "bothLanguages": "Fill this in both English and Persian.",
+          "issue": "Enter an issue number from 1 to 9999.",
+          "image": "Add a cover image path or https:// address."
         }
       }
     },
@@ -1852,6 +1874,10 @@
           "practices": "One of the selected practices no longer exists. Choose another.",
           "curriculum": "Add at least one week and one practice per week. Every selected practice must be published.",
           "enrolled": "Members have already enrolled. Keep their day order and unlock schedule unchanged."
+        },
+        "validation": {
+          "bothLanguages": "Fill this in both English and Persian.",
+          "image": "Use an /images/… path or an https:// address."
         }
       }
     },
@@ -2216,7 +2242,13 @@
       },
       "previewTitle": "Draft preview: {title}",
       "menuPlacement": "In the main menu",
-      "footerPlacement": "In the footer"
+      "footerPlacement": "In the footer",
+      "validation": {
+        "bothLanguages": "Fill this in both English and Persian.",
+        "image": "Use an /images/… path or an https:// address.",
+        "video": "Paste a YouTube link (youtube.com or youtu.be).",
+        "link": "Use a site path like /membership or an https:// address."
+      }
     },
     "subscribers": {
       "metaTitle": "Newsletter subscribers · Studio",

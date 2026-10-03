@@ -18,8 +18,10 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import Image from "next/image";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import {
@@ -40,7 +42,13 @@ import {
   postReflection,
   removeReflection,
 } from "../actions";
-import { REFLECTION_MAX_LENGTH } from "../schemas";
+import {
+  REFLECTION_MAX_LENGTH,
+  reflectionFormSchema,
+  replyFormSchema,
+  type ReflectionFormValues,
+  type ReplyFormValues,
+} from "../schemas";
 import type { ReflectAccess } from "../server/access";
 import { type ReflectionStatus, type ReflectionTag, reflectionTags, somaticTags } from "../types";
 
@@ -291,36 +299,32 @@ function Composer({ practiceSlug }: { practiceSlug: string | null }) {
   const t = useTranslations("Reflections");
   const clock = useClock();
   const { hasVideo, currentTime } = usePracticeStage();
-  const [body, setBody] = useState("");
-  const [tag, setTag] = useState<ReflectionTag | null>(null);
-  const [withTime, setWithTime] = useState(false);
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [pending, startTransition] = useTransition();
+  const form = useForm<ReflectionFormValues>({
+    resolver: zodResolver(reflectionFormSchema),
+    defaultValues: { body: "", tag: null, withTime: false, isPrivate: false },
+  });
+  const pending = form.formState.isSubmitting;
+  const { body, tag, withTime, isPrivate } = form.watch();
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!body.trim()) return;
-    startTransition(async () => {
-      const result = await postReflection({
-        practiceSlug,
-        body,
-        tag,
-        atSeconds: hasVideo && withTime ? Math.floor(currentTime) : null,
-        visibility: isPrivate ? "private" : "circle",
-        parentId: null,
-      });
-      if (result.ok) {
-        setBody("");
-        setTag(null);
-        setWithTime(false);
-        toast.success(t(result.status === "pending" ? "sentForReview" : isPrivate ? "sharedPrivately" : "shared"));
-      } else toast.error(errorMessage(t, result.error));
+  const submit = form.handleSubmit(async (values) => {
+    const result = await postReflection({
+      practiceSlug,
+      body: values.body,
+      tag: values.tag,
+      atSeconds: hasVideo && values.withTime ? Math.floor(currentTime) : null,
+      visibility: values.isPrivate ? "private" : "circle",
+      parentId: null,
     });
-  };
+    if (result.ok) {
+      form.reset({ body: "", tag: null, withTime: false, isPrivate: values.isPrivate });
+      toast.success(t(result.status === "pending" ? "sentForReview" : values.isPrivate ? "sharedPrivately" : "shared"));
+    } else toast.error(errorMessage(t, result.error));
+  });
 
   return (
     <form
       onSubmit={submit}
+      noValidate
       className="bg-surface flex flex-col gap-2.5 rounded-xl p-3.5 shadow-2xs"
     >
       <label className="sr-only" htmlFor="reflection-body">
@@ -329,8 +333,7 @@ function Composer({ practiceSlug }: { practiceSlug: string | null }) {
       <textarea
             dir="auto"
         id="reflection-body"
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
+        {...form.register("body")}
         maxLength={REFLECTION_MAX_LENGTH}
         rows={3}
         placeholder={t(practiceSlug === null ? "circle.placeholder" : "composer.placeholder")}
@@ -346,7 +349,7 @@ function Composer({ practiceSlug }: { practiceSlug: string | null }) {
             key={id}
             type="button"
             aria-pressed={tag === id}
-            onClick={() => setTag((current) => (current === id ? null : id))}
+            onClick={() => form.setValue("tag", tag === id ? null : id)}
             className={cn(
               "font-label-sm inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs transition-colors",
               tag === id
@@ -365,7 +368,7 @@ function Composer({ practiceSlug }: { practiceSlug: string | null }) {
             <button
               type="button"
               aria-pressed={withTime}
-              onClick={() => setWithTime((v) => !v)}
+              onClick={() => form.setValue("withTime", !withTime)}
               title={t("composer.timeHint")}
               className={cn(
                 "font-label-sm inline-flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors",
@@ -383,7 +386,7 @@ function Composer({ practiceSlug }: { practiceSlug: string | null }) {
           <button
             type="button"
             aria-pressed={isPrivate}
-            onClick={() => setIsPrivate((v) => !v)}
+            onClick={() => form.setValue("isPrivate", !isPrivate)}
             title={t("composer.privacyHint")}
             className="font-label-sm text-outline hover:text-on-surface inline-flex items-center gap-1 text-xs transition-colors"
           >
@@ -430,7 +433,8 @@ function ReflectionItem({
   const clock = useClock();
   const { hasVideo, seek } = usePracticeStage();
   const [replying, setReplying] = useState(false);
-  const [reply, setReply] = useState("");
+  const replyForm = useForm<ReplyFormValues>({ resolver: zodResolver(replyFormSchema), defaultValues: { body: "" } });
+  const reply = replyForm.watch("body");
   const [liked, setLiked] = useState(reflection.liked);
   const [likes, setLikes] = useState(reflection.likes);
   const [pending, startTransition] = useTransition();
@@ -452,25 +456,21 @@ function ReflectionItem({
     });
   };
 
-  const sendReply = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reply.trim()) return;
-    startTransition(async () => {
-      const result = await postReflection({
-        practiceSlug,
-        body: reply,
-        tag: null,
-        atSeconds: null,
-        visibility: "circle",
-        parentId: reflection.id,
-      });
-      if (result.ok) {
-        setReply("");
-        setReplying(false);
-        if (result.status === "pending") toast.success(t("sentForReview"));
-      } else toast.error(errorMessage(t, result.error));
+  const sendReply = replyForm.handleSubmit(async ({ body }) => {
+    const result = await postReflection({
+      practiceSlug,
+      body,
+      tag: null,
+      atSeconds: null,
+      visibility: "circle",
+      parentId: reflection.id,
     });
-  };
+    if (result.ok) {
+      replyForm.reset();
+      setReplying(false);
+      if (result.status === "pending") toast.success(t("sentForReview"));
+    } else toast.error(errorMessage(t, result.error));
+  });
 
   const run = (work: () => Promise<{ ok: boolean; error?: string }>) =>
     startTransition(async () => {
@@ -731,6 +731,7 @@ function ReflectionItem({
       {replying && (
         <form
           onSubmit={sendReply}
+          noValidate
           className="bg-surface ms-3 flex flex-col gap-2 rounded-lg p-2.5"
         >
           <label className="sr-only" htmlFor={`reply-${reflection.id}`}>
@@ -740,8 +741,7 @@ function ReflectionItem({
             dir="auto"
             id={`reply-${reflection.id}`}
             autoFocus
-            value={reply}
-            onChange={(e) => setReply(e.target.value)}
+            {...replyForm.register("body")}
             maxLength={REFLECTION_MAX_LENGTH}
             rows={2}
             placeholder={t("replyPlaceholder", { name: author.name })}
@@ -757,7 +757,7 @@ function ReflectionItem({
             </button>
             <button
               type="submit"
-              disabled={pending || !reply.trim()}
+              disabled={replyForm.formState.isSubmitting || !reply.trim()}
               className="bg-primary font-label-sm text-on-primary hover:bg-primary-container rounded px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-60"
             >
               {t("sendReply")}

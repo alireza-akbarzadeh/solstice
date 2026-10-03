@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { journalCategories } from "@/modules/journal/types";
+import { journalFieldsSchema } from "@/modules/journal/schemas";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
 import {
@@ -26,37 +26,7 @@ async function instructorOnly() {
 
 const refresh = () => revalidatePath("/[locale]", "layout");
 
-const localized = (max: number) => z.object({ en: z.string().max(max), fa: z.string().max(max) });
-const required = (max: number) => z.object({ en: z.string().min(1).max(max), fa: z.string().min(1).max(max) });
-
-// Mirrors JournalStoredBlock: the shapes the essay page knows how to render.
-const blockSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("p"), text: localized(4000) }),
-  z.object({ type: z.literal("h2"), text: localized(200) }),
-  z.object({ type: z.literal("quote"), text: localized(1000), source: localized(200) }),
-  z.object({ type: z.literal("figure"), image: z.string().max(2000), alt: localized(300), caption: localized(500) }),
-  z.object({
-    type: z.literal("steps"),
-    title: localized(200),
-    intro: localized(1000),
-    items: z.array(z.object({ title: localized(200), body: localized(2000) })).max(20),
-  }),
-]);
-
-const fieldsSchema = z.object({
-  category: z.enum(journalCategories),
-  issue: z.number().int().min(1).max(9999),
-  title: required(200),
-  excerpt: required(600),
-  tags: z.array(localized(60)).max(8),
-  authorName: required(120),
-  authorRole: required(160),
-  authorImage: z.string().max(2000).nullable(),
-  image: z.string().min(1).max(2000),
-  imageAlt: required(300),
-  body: z.array(blockSchema).max(200),
-  practices: z.array(z.string().min(1).max(200)).max(12),
-});
+const fieldsSchema = journalFieldsSchema;
 
 const slug = z.string().min(1).max(200);
 

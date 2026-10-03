@@ -3,11 +3,12 @@
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
 
+import { emailSchema } from "@/modules/auth/schemas";
 import { db } from "@/server/db";
 import { newsletterSubscribers } from "@/server/db/schema";
 
 const inputSchema = z.object({
-  email: z.string().trim().toLowerCase().email().max(254),
+  email: emailSchema.pipe(z.string().max(254)).transform((email) => email.toLowerCase()),
   source: z.enum(["footer", "journal"]),
 });
 

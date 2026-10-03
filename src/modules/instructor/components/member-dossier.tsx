@@ -1,8 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { BadgeCheckIcon, CalendarOffIcon, GiftIcon, KeyRoundIcon, PlayIcon, RotateCcwIcon, ShieldIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import {
@@ -28,6 +30,7 @@ import {
   sendMemberPasswordReset,
   setMemberCancelAtPeriodEnd,
 } from "@/modules/instructor/actions";
+import { giftPassMonths, giftPassSchema, type GiftPassValues } from "@/modules/instructor/schemas";
 import type { MemberDossier } from "@/modules/instructor/server/members";
 
 import type { StudioPlanOption } from "./member-directory";
@@ -40,9 +43,6 @@ import type { StudioPlanOption } from "./member-directory";
 export function MemberDossierPanel({ dossier, isSelf, plans }: { dossier: MemberDossier; isSelf: boolean; plans: StudioPlanOption[] }) {
   const t = useTranslations("Studio.members.dossier");
   const format = useFormatter();
-  const [months, setMonths] = useState("1");
-  const onSale = plans.filter((p) => p.active);
-  const [plan, setPlan] = useState(onSale[0]?.id ?? plans[0]?.id ?? "");
   const planName = (id: string) => plans.find((p) => p.id === id)?.name ?? id;
   const [pending, start] = useTransition();
 
@@ -114,32 +114,7 @@ export function MemberDossierPanel({ dossier, isSelf, plans }: { dossier: Member
         ))}
       </dl>
 
-      <section className="flex flex-col gap-space-sm">
-        <span className="font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">{t("grantTitle")}</span>
-        <div className="flex gap-space-xs">
-          <ResponsiveSelect
-            label={t("grantPlan")}
-            value={plan}
-            onValueChange={setPlan}
-            className="flex-1"
-            options={(onSale.length ? onSale : plans).map((p) => ({ value: p.id, label: p.name }))}
-          />
-          <ResponsiveSelect
-            label={t("grantMonths")}
-            value={months}
-            onValueChange={setMonths}
-            className="w-28"
-            options={["1", "3", "6", "12"].map((m) => ({ value: m, label: t("months", { count: Number(m) }) }))}
-          />
-        </div>
-        <Button
-          disabled={pending}
-          onClick={() => run(() => grantMemberAccess({ userId: account.id, plan, months: Number(months) }), t("granted"))}
-        >
-          <GiftIcon data-icon="inline-start" />
-          {t("grant")}
-        </Button>
-      </section>
+      <GiftPassForm key={account.id} userId={account.id} plans={plans} />
 
       <Separator />
 
@@ -275,5 +250,55 @@ export function MemberDossierPanel({ dossier, isSelf, plans }: { dossier: Member
         </section>
       )}
     </aside>
+  );
+}
+
+/** The comped pass: pick a plan and a length; nothing is charged ("studio" provider). */
+function GiftPassForm({ userId, plans }: { userId: string; plans: StudioPlanOption[] }) {
+  const t = useTranslations("Studio.members.dossier");
+  const onSale = plans.filter((p) => p.active);
+  const options = (onSale.length ? onSale : plans).map((p) => ({ value: p.id, label: p.name }));
+  const form = useForm<GiftPassValues>({
+    resolver: zodResolver(giftPassSchema),
+    defaultValues: { plan: options[0]?.value ?? "", months: 1 },
+  });
+  const saving = form.formState.isSubmitting;
+
+  const onSubmit = form.handleSubmit(async (values) => {
+    const result = await grantMemberAccess({ userId, ...values });
+    if (result.ok) toast.success(t("granted"));
+    else toast.error(t("failed"));
+  });
+
+  return (
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-space-sm">
+      <span className="font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">{t("grantTitle")}</span>
+      <div className="flex gap-space-xs">
+        <Controller
+          control={form.control}
+          name="plan"
+          render={({ field }) => (
+            <ResponsiveSelect label={t("grantPlan")} value={field.value} onValueChange={field.onChange} className="flex-1" options={options} />
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="months"
+          render={({ field }) => (
+            <ResponsiveSelect
+              label={t("grantMonths")}
+              value={String(field.value)}
+              onValueChange={(value) => field.onChange(Number(value))}
+              className="w-28"
+              options={giftPassMonths.map((m) => ({ value: String(m), label: t("months", { count: m }) }))}
+            />
+          )}
+        />
+      </div>
+      <Button type="submit" disabled={saving || !options.length}>
+        <GiftIcon data-icon="inline-start" />
+        {t("grant")}
+      </Button>
+    </form>
   );
 }

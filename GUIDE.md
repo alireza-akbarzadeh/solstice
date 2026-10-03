@@ -111,6 +111,8 @@ Keep decorative elements inside the phone width rather than hiding page overflow
 interactivity (menus, players, forms). Use shadcn primitives (`Button`, `Input`, …)
 styled with Stitch classes rather than hand-rolled equivalents when one fits.
 
+**Forms.** Use react-hook-form with `zodResolver` and a zod schema exported from the module's `schemas.ts`, and validate the server action with the same schema. Wrap controls in `Controller` + shadcn `Field`, set `data-invalid` on the field and `aria-invalid` on the control, and show the message with `FieldError`. Schema messages are translation keys (e.g. `Auth.validation.emailInvalid`), so errors read in both languages. Bilingual inputs use `LocalizedField`'s `error` prop; lists use `useFieldArray`.
+
 **Motion.** Keep Stitch's restraint: color/shadow transitions ~300ms, image hover
 `scale-105` over 500ms, `ease-sanctuary`. Respect `motion-reduce:`.
 

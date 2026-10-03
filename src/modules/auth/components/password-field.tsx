@@ -4,6 +4,7 @@ import { EyeIcon, EyeOffIcon, KeyRoundIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+import { FieldError } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 
 // 0–4: length, then variety of character classes.
@@ -22,6 +23,10 @@ export function PasswordField({
   autoComplete,
   showStrength = false,
   trailing,
+  value: controlledValue,
+  onChange,
+  onBlur,
+  error,
 }: {
   id: string;
   /** Form field name; defaults to "password". */
@@ -31,12 +36,20 @@ export function PasswordField({
   showStrength?: boolean;
   /** Rendered beside the label, e.g. a "forgot password" link. */
   trailing?: React.ReactNode;
+  /** Controlled mode (react-hook-form); without it the field keeps its own value. */
+  value?: string;
+  onChange?: (value: string) => void;
+  onBlur?: () => void;
+  /** Validation message shown under the field. */
+  error?: string;
 }) {
   const t = useTranslations("Auth");
   const tSignUp = useTranslations("Auth.signUp");
   const [visible, setVisible] = useState(false);
-  const [value, setValue] = useState("");
+  const [ownValue, setOwnValue] = useState("");
+  const value = controlledValue ?? ownValue;
   const strength = strengthOf(value);
+  const describedBy = [showStrength && `${id}-strength`, error && `${id}-error`].filter(Boolean).join(" ") || undefined;
 
   return (
     <div className="space-y-1.5">
@@ -46,18 +59,23 @@ export function PasswordField({
         </label>
         {trailing}
       </div>
-      <div className="relative rounded-lg bg-surface-container transition-all duration-200 focus-within:bg-surface-container-lowest focus-within:ring-2 focus-within:ring-primary/20">
+      <div
+        className={cn(
+          "relative rounded-lg bg-surface-container transition-all duration-200 focus-within:bg-surface-container-lowest focus-within:ring-2 focus-within:ring-primary/20",
+          error && "ring-2 ring-error/50 focus-within:ring-error/50",
+        )}
+      >
         <KeyRoundIcon aria-hidden className="pointer-events-none absolute start-3.5 top-1/2 size-5 -translate-y-1/2 text-on-surface-variant" />
         <input
           id={id}
           name={name}
           type={visible ? "text" : "password"}
-          required
-          minLength={8}
           autoComplete={autoComplete}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          aria-describedby={showStrength ? `${id}-strength` : undefined}
+          onChange={(e) => (onChange ? onChange(e.target.value) : setOwnValue(e.target.value))}
+          onBlur={onBlur}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           className="w-full rounded-lg bg-transparent py-3.5 ps-11 pe-11 font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none"
         />
         <button
@@ -70,6 +88,7 @@ export function PasswordField({
           {visible ? <EyeOffIcon className="size-5" /> : <EyeIcon className="size-5" />}
         </button>
       </div>
+      {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
       {showStrength && (
         <div id={`${id}-strength`} className="mt-1 flex items-center justify-between gap-3" aria-live="polite">
           <div className="flex w-2/3 items-center gap-1.5" aria-hidden>
