@@ -6,12 +6,21 @@ import { getPathname } from "@/i18n/navigation";
 // PaymentProvider boundary (README: providers stay replaceable). Domain code in
 // modules/memberships decides what a membership is; providers only move money.
 
-export type BillingPlan = "monthly" | "annual";
+/** The plan being bought, as the studio priced it (modules/memberships/plans). */
+export type BillingPlan = {
+  id: string;
+  /** Amount per billing period, in `currency`. */
+  price: number;
+  /** ISO 4217 code, or "IRT" for tomans (a toman is 10 rials). */
+  currency: string;
+  intervalMonths: number;
+};
 
 export type CheckoutInput = {
   userId: string;
   email: string;
   plan: BillingPlan;
+  /** 0 charges straight away. */
   trialDays: number;
   /** Language for the hosted checkout page. */
   locale: Locale;
@@ -32,7 +41,7 @@ export interface PaymentProvider {
   testMode: boolean;
   startCheckout(input: CheckoutInput): Promise<CheckoutResult>;
   cancelSubscription(providerSubscriptionId: string): Promise<void>;
-  /** Monthly ↔ annual; takes effect at the next renewal. */
+  /** Moves the subscription to another plan; takes effect at the next renewal. */
   changePlan(providerSubscriptionId: string, plan: BillingPlan): Promise<void>;
   resumeSubscription(providerSubscriptionId: string): Promise<void>;
 }
@@ -44,7 +53,7 @@ const mockPaymentProvider: PaymentProvider = {
   testMode: true,
   async startCheckout(input) {
     const path = getPathname({
-      href: { pathname: "/checkout/test", query: { plan: input.plan, success: input.successUrl, cancel: input.cancelUrl } },
+      href: { pathname: "/checkout/test", query: { plan: input.plan.id, success: input.successUrl, cancel: input.cancelUrl } },
       locale: input.locale,
     });
     return { kind: "redirect", url: new URL(path, input.successUrl).toString() };

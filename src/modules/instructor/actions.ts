@@ -13,6 +13,8 @@ import {
   setReflectionPinned,
 } from "@/modules/community/server/reflections";
 import { setCancelAtPeriodEnd } from "@/modules/memberships/server/memberships";
+import { getPlan } from "@/modules/memberships/server/plans";
+import { deleteSubscriber } from "@/modules/newsletter/server/subscribers";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { notifyEveryone } from "@/modules/notifications/server/send";
 import { practiceCategories } from "@/modules/practices/types";
@@ -56,11 +58,12 @@ export async function grantMemberAccess(input: unknown): Promise<StudioResult> {
   const parsed = z
     .object({
       userId,
-      plan: z.enum(["monthly", "annual"]),
+      plan: z.string().trim().min(1).max(100),
       months: z.number().int().min(1).max(36),
     })
     .safeParse(input);
   if (!parsed.success) return { ok: false, error: "invalid" };
+  if (!(await getPlan(parsed.data.plan))) return { ok: false, error: "invalid" };
 
   await grantAccess(parsed.data.userId, parsed.data.plan, parsed.data.months);
   refresh();
@@ -345,6 +348,19 @@ export async function savePracticeMeta(input: unknown): Promise<StudioResult> {
         }),
   });
   if (!changed) return { ok: false, error: "invalid" };
+  refresh();
+  return { ok: true };
+}
+
+/** Removes an address from the newsletter list (an unsubscribe on the reader's behalf). */
+export async function removeNewsletterSubscriber(
+  input: unknown,
+): Promise<StudioResult> {
+  if (!(await instructorOnly())) return { ok: false, error: "forbidden" };
+  const parsed = z.object({ id: z.number().int().positive() }).safeParse(input);
+  if (!parsed.success) return { ok: false, error: "invalid" };
+
+  if (!(await deleteSubscriber(parsed.data.id))) return { ok: false, error: "failed" };
   refresh();
   return { ok: true };
 }

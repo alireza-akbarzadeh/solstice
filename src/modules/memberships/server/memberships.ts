@@ -1,12 +1,11 @@
 import { eq } from "drizzle-orm";
 
-import type { BillingPlan } from "@/infrastructure/payment";
 import { db } from "@/server/db";
 import { memberships } from "@/server/db/schema";
 
-export type Membership = typeof memberships.$inferSelect;
+import { addBillingPeriod, addDays } from "../plans";
 
-const DAY = 24 * 60 * 60 * 1000;
+export type Membership = typeof memberships.$inferSelect;
 
 /** Trialing and active memberships grant access until the paid-through date. */
 export function isMembershipActive(membership: Membership | null | undefined, now = new Date()) {
@@ -20,22 +19,25 @@ export async function getMembership(userId: string): Promise<Membership | null> 
   return row ?? null;
 }
 
-// Starts (or restarts) a membership with a free trial. Called after the provider confirms checkout.
+// Starts (or restarts) a membership. Called after the provider confirms checkout. A plan with a
+// free trial starts trialing until the trial ends; without one, the first period is paid.
 export async function startMembership(input: {
   userId: string;
-  plan: BillingPlan;
+  planId: string;
+  intervalMonths: number;
   provider: string;
   providerSubscriptionId: string;
   trialDays: number;
 }) {
-  const trialEndsAt = new Date(Date.now() + input.trialDays * DAY);
+  const now = new Date();
+  const trialEndsAt = input.trialDays > 0 ? addDays(now, input.trialDays) : null;
   const values = {
-    plan: input.plan,
-    status: "trialing" as const,
+    plan: input.planId,
+    status: trialEndsAt ? ("trialing" as const) : ("active" as const),
     provider: input.provider,
     providerSubscriptionId: input.providerSubscriptionId,
     trialEndsAt,
-    currentPeriodEnd: trialEndsAt,
+    currentPeriodEnd: trialEndsAt ?? addBillingPeriod(now, input.intervalMonths),
     cancelAtPeriodEnd: false,
   };
   await db
@@ -44,8 +46,8 @@ export async function startMembership(input: {
     .onConflictDoUpdate({ target: memberships.userId, set: values });
 }
 
-export async function setPlan(userId: string, plan: BillingPlan) {
-  await db.update(memberships).set({ plan }).where(eq(memberships.userId, userId));
+export async function setPlan(userId: string, planId: string) {
+  await db.update(memberships).set({ plan: planId }).where(eq(memberships.userId, userId));
 }
 
 // Cancellation keeps access until the period ends, as promised on the checkout page.

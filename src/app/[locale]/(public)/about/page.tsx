@@ -23,7 +23,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { sanctuaryPlan } from "@/modules/memberships/plans";
+import { getPlanCatalog } from "@/modules/memberships/server/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { getPageAssets } from "@/modules/pages/server/request";
 
@@ -52,7 +52,14 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  const [t, tBrand, format, viewer, assets] = await Promise.all([getTranslations("About"), getTranslations("Brand"), getFormatter(), getViewer(), getPageAssets("about")]);
+  const [t, tBrand, format, viewer, assets, { trialDays }] = await Promise.all([
+    getTranslations("About"),
+    getTranslations("Brand"),
+    getFormatter(),
+    getViewer(),
+    getPageAssets("about"),
+    getPlanCatalog(),
+  ]);
   const stats = t.raw("hero.stats") as Stat[];
   const credentials = t.raw("lineage.credentials") as string[];
   const story = t.raw("lineage.story") as string[];
@@ -327,13 +334,13 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
           <div className="relative z-10 max-w-2xl space-y-space-md">
             <span className="block font-label-sm text-label-sm font-semibold tracking-widest text-on-primary-container uppercase">{t("cta.eyebrow")}</span>
             <h2 className="font-display-mobile text-display-mobile leading-tight md:font-display md:text-display">{t("cta.title")}</h2>
-            <p className="mx-auto max-w-xl font-body-lg text-body-lg text-on-primary/90">{t("cta.body", { days: sanctuaryPlan.trialDays })}</p>
+            <p className="mx-auto max-w-xl font-body-lg text-body-lg text-on-primary/90">{t("cta.body", { days: trialDays })}</p>
             <div className="mx-auto flex w-full max-w-lg flex-col items-center justify-center gap-space-sm pt-space-md sm:flex-row">
               <Link
                 href={viewer.hasAccess ? "/practices" : "/membership"}
                 className="inline-flex w-full items-center justify-center rounded-lg bg-secondary-fixed px-7 py-3.5 font-label-lg text-label-lg text-on-secondary-fixed transition-colors hover:bg-secondary-fixed-dim sm:w-auto"
               >
-                {viewer.hasAccess ? t("cta.member") : t("cta.trial", { days: sanctuaryPlan.trialDays })}
+                {viewer.hasAccess ? t("cta.member") : t("cta.trial", { days: trialDays })}
               </Link>
               <Link
                 href="/practices"

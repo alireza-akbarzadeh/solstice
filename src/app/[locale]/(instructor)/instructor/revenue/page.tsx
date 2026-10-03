@@ -47,7 +47,10 @@ import {
   getMembershipCounts,
   projectRevenue,
 } from "@/modules/instructor/server/studio";
-import { billingPlans, sanctuaryPlan } from "@/modules/memberships/plans";
+import { localize } from "@/lib/localized";
+import { formatMoney, monthlyEquivalent } from "@/modules/memberships/plans";
+import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
+import { getAllPlans } from "@/modules/memberships/server/plans";
 import { requireInstructor } from "@/modules/memberships/server/viewer";
 
 export async function generateMetadata({
@@ -69,39 +72,33 @@ export default async function StudioRevenuePage({
   setRequestLocale(locale);
 
   await requireInstructor(locale, "/instructor/revenue");
-  const [t, format, counts, series, ledger, churn] = await Promise.all([
+  const [t, format, counts, series, ledger, churn, plans, display] = await Promise.all([
     getTranslations("Studio.revenue"),
     getFormatter(),
     getMembershipCounts(),
     getRevenueSeries(12),
     getLedger(60),
     getChurn(),
+    getAllPlans(),
+    getPlanDisplay(locale),
   ]);
 
-  const revenue = projectRevenue(counts);
-  const money = (n: number) =>
-    format.number(n, {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    });
-  const paying = counts.monthly + counts.annual;
+  const revenue = projectRevenue(counts, plans);
+  // Projections are whole amounts; plan prices keep their cents.
+  const money = (n: number) => formatMoney(format, Math.round(n), display.catalog.currency, locale);
+  const planName = (id: string) => {
+    const plan = plans.find((p) => p.id === id);
+    return plan ? localize(plan.name, locale) : id;
+  };
+  const paying = counts.paying;
   const lastMonth = series.at(-2)?.mrr ?? 0;
   const growth =
     lastMonth === 0 ? 0 : ((revenue.mrr - lastMonth) / lastMonth) * 100;
 
-  const tiers = [
-    {
-      id: "monthly" as const,
-      price: billingPlans.monthly.priceUsd,
-      members: counts.monthly,
-    },
-    {
-      id: "annual" as const,
-      price: billingPlans.annual.priceUsd,
-      members: counts.annual,
-    },
-  ];
+  // Every plan on sale, plus hidden plans that still have paying members.
+  const tiers = plans
+    .filter((plan) => plan.status === "active" || (counts.byPlan[plan.id] ?? 0) > 0)
+    .map((plan) => ({ plan, members: counts.byPlan[plan.id] ?? 0 }));
 
   return (
     <div className="gap-space-lg flex flex-col">
@@ -173,21 +170,21 @@ export default async function StudioRevenuePage({
       <section className="gap-gutter grid grid-cols-1 lg:grid-cols-3">
         {tiers.map((tier) => (
           <div
-            key={tier.id}
+            key={tier.plan.id}
             className="gap-space-xs bg-surface-container-low p-space-md md:p-space-lg flex flex-col rounded-xl shadow-sm"
           >
             <span className="font-label-sm text-label-sm text-clay tracking-widest uppercase">
-              {t(`tiers.${tier.id}.label`)}
+              {localize(tier.plan.name, locale)}
             </span>
             <p className="font-headline-md text-headline-md text-on-surface">
-              {money(tier.price)}
+              {display.money(tier.plan.price)}
               <span className="font-body-sm text-body-sm text-on-surface-variant">
                 {" "}
-                / {t(`tiers.${tier.id}.interval`)}
+                {display.per(tier.plan.intervalMonths)}
               </span>
             </p>
             <p className="font-body-sm text-body-sm text-on-surface-variant">
-              {t(`tiers.${tier.id}.body`)}
+              {tier.plan.status === "hidden" ? t("tiers.hidden") : display.describe(tier.plan).billing}
             </p>
             <div className="pt-space-sm mt-auto flex items-center justify-between gap-2">
               <Badge variant="outline">
@@ -196,7 +193,7 @@ export default async function StudioRevenuePage({
               <span className="font-label-md text-label-md text-primary">
                 {t("tiers.contributes", {
                   amount: money(
-                    tier.members * billingPlans[tier.id].monthlyEquivalentUsd,
+                    tier.members * monthlyEquivalent(tier.plan),
                   ),
                 })}
               </span>
@@ -209,7 +206,7 @@ export default async function StudioRevenuePage({
             {t("tiers.trial.label")}
           </span>
           <p className="font-headline-md text-headline-md text-on-surface">
-            {t("tiers.trial.days", { count: sanctuaryPlan.trialDays })}
+            {t("tiers.trial.days", { count: display.catalog.trialDays })}
           </p>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             {t("tiers.trial.body")}
@@ -275,10 +272,10 @@ export default async function StudioRevenuePage({
                       </span>
                     </span>
                     <span className="font-label-lg text-label-lg text-on-surface shrink-0">
-                      {entry.amountUsd === 0 ? (
+                      {entry.amount === 0 ? (
                         <span className="text-outline">{t("ledger.free")}</span>
                       ) : (
-                        money(entry.amountUsd)
+                        money(entry.amount)
                       )}
                     </span>
                   </Link>
@@ -296,7 +293,7 @@ export default async function StudioRevenuePage({
                       {t(`ledger.states.${entry.status}`)}
                     </Badge>
                     <Badge variant="outline">
-                      {t(`tiers.${entry.plan}.label`)}
+                      {planName(entry.plan)}
                     </Badge>
                     <span className="font-label-sm text-label-sm text-outline ms-auto">
                       {t("ledger.paidThrough")}{" "}
@@ -375,7 +372,7 @@ export default async function StudioRevenuePage({
                               {t(`ledger.states.${entry.status}`)}
                             </Badge>
                             <span className="font-label-sm text-label-sm text-outline">
-                              {t(`tiers.${entry.plan}.label`)}
+                              {planName(entry.plan)}
                             </span>
                             {entry.cancelAtPeriodEnd &&
                               entry.status !== "canceled" && (
@@ -396,12 +393,12 @@ export default async function StudioRevenuePage({
                           })}
                         </TableCell>
                         <TableCell className="font-label-lg text-label-lg text-on-surface text-end">
-                          {entry.amountUsd === 0 ? (
+                          {entry.amount === 0 ? (
                             <span className="text-outline">
                               {t("ledger.free")}
                             </span>
                           ) : (
-                            money(entry.amountUsd)
+                            money(entry.amount)
                           )}
                         </TableCell>
                       </TableRow>

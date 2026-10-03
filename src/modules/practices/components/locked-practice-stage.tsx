@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
-import { sanctuaryPlan } from "@/modules/memberships/plans";
+import { getPlanCatalog } from "@/modules/memberships/server/plans";
 
 // practice-detail-locked-sanctuary-preview: poster behind a members-only invitation.
 export async function LockedPracticeStage({
@@ -21,7 +21,7 @@ export async function LockedPracticeStage({
   /** Only for guests. */
   signInHref?: string;
 }) {
-  const t = await getTranslations("PracticeDetail.locked");
+  const [t, { trialDays }] = await Promise.all([getTranslations("PracticeDetail.locked"), getPlanCatalog()]);
 
   return (
     <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-inverse-surface shadow-2xl sm:aspect-video">
@@ -33,13 +33,13 @@ export async function LockedPracticeStage({
         </span>
         <span className="font-label-md text-label-md tracking-widest text-secondary-fixed uppercase">{t("badge")}</span>
         <p className="max-w-lg font-body-md text-body-md text-inverse-on-surface">
-          {t("body", { minutes: durationMinutes, days: sanctuaryPlan.trialDays })}
+          {t("body", { minutes: durationMinutes, days: trialDays })}
         </p>
         <Link
           href={primaryHref}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-label-lg text-label-lg text-on-primary shadow-md transition-colors hover:bg-primary-container"
         >
-          {t("cta", { days: sanctuaryPlan.trialDays })}
+          {t("cta", { days: trialDays })}
           <ArrowRightIcon className="size-4 rtl:rotate-180" />
         </Link>
         {signInHref && (

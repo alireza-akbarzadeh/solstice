@@ -1,7 +1,7 @@
 import { CircleAlertIcon, FlaskConicalIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
-import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
@@ -9,7 +9,8 @@ import { redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { withNext } from "@/lib/safe-next";
 import { TestCheckoutForm } from "@/modules/memberships/components/test-checkout-form";
-import { billingPlans, isBillingPlan, sanctuaryPlan } from "@/modules/memberships/plans";
+import { localize } from "@/lib/localized";
+import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
 import { sameSiteUrl, testCards, testModeEnabled } from "@/modules/memberships/server/test-mode";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
@@ -28,21 +29,19 @@ export default async function TestCheckoutPage({ params, searchParams }: PagePro
   if (!testModeEnabled()) notFound();
 
   const query = await searchParams;
-  const plan = query.plan;
+  const { catalog, money, per } = await getPlanDisplay(locale);
+  const plan = catalog.plans.find((p) => p.id === query.plan);
   const success = sameSiteUrl(query.success);
   const cancel = sameSiteUrl(query.cancel);
-  if (!isBillingPlan(plan) || !success || !cancel) return redirect({ href: "/membership", locale });
+  if (!plan || !success || !cancel) return redirect({ href: "/membership", locale });
 
   const viewer = await getViewer();
   if (!viewer.user) return redirect({ href: withNext("/sign-in", "/membership"), locale });
 
-  const [t, tPlans, format] = await Promise.all([
-    getTranslations("TestMode.checkout"),
-    getTranslations("Membership.plans"),
-    getFormatter(),
-  ]);
-  const price = format.number(billingPlans[plan].priceUsd, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-  const zero = format.number(0, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const t = await getTranslations("TestMode.checkout");
+  const price = money(plan.price);
+  const period = per(plan.intervalMonths);
+  const hasTrial = plan.trialDays > 0;
   const error = query.error === "declined" || query.error === "unknownCard" ? query.error : null;
 
   return (
@@ -59,14 +58,14 @@ export default async function TestCheckoutPage({ params, searchParams }: PagePro
 
         <dl className="space-y-2 rounded-xl bg-surface-container-low p-4 font-body-sm text-body-sm">
           <div className="flex justify-between gap-4">
-            <dt className="text-on-surface-variant">{tPlans(`${plan}.name`)}</dt>
+            <dt className="text-on-surface-variant">{localize(plan.name, locale)}</dt>
             <dd className="text-on-surface">
-              {t(plan === "annual" ? "afterTrialYear" : "afterTrialMonth", { price, days: sanctuaryPlan.trialDays })}
+              {hasTrial ? t("afterTrial", { price, per: period, days: plan.trialDays }) : t("noTrial", { price, per: period })}
             </dd>
           </div>
           <div className="flex justify-between gap-4 border-t border-hairline pt-2">
             <dt className="font-label-lg text-label-lg text-on-surface">{t("dueToday")}</dt>
-            <dd className="font-label-lg text-label-lg text-primary">{zero}</dd>
+            <dd className="font-label-lg text-label-lg text-primary">{hasTrial ? money(0) : price}</dd>
           </div>
           <div className="flex justify-between gap-4">
             <dt className="text-on-surface-variant">{t("account")}</dt>
@@ -82,11 +81,11 @@ export default async function TestCheckoutPage({ params, searchParams }: PagePro
         )}
 
         <TestCheckoutForm
-          plan={plan}
+          plan={plan.id}
           success={success}
           cancel={cancel}
           cards={testCards}
-          payLabel={t("pay", { days: sanctuaryPlan.trialDays })}
+          payLabel={hasTrial ? t("pay", { days: plan.trialDays }) : t("payNow", { price })}
         />
       </div>
     </Container>

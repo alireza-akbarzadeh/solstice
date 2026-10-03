@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
-import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
@@ -9,7 +9,7 @@ import { paymentProvider } from "@/infrastructure/payment";
 import { safeNextPath } from "@/lib/safe-next";
 import { Checkout } from "@/modules/memberships/components/checkout";
 import { MembershipStatus } from "@/modules/memberships/components/membership-status";
-import { billingPlans, isBillingPlan, sanctuaryPlan } from "@/modules/memberships/plans";
+import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/membership">): Promise<Metadata> {
@@ -27,12 +27,7 @@ export default async function MembershipPage({ params, searchParams }: PageProps
 
   const query = await searchParams;
   const next = safeNextPath(query.next, "/practices");
-  const [t, tBrand, format, viewer] = await Promise.all([
-    getTranslations("Membership"),
-    getTranslations("Brand"),
-    getFormatter(),
-    getViewer(),
-  ]);
+  const [t, tBrand, viewer] = await Promise.all([getTranslations("Membership"), getTranslations("Brand"), getViewer()]);
 
   if (viewer.hasAccess) {
     return (
@@ -42,8 +37,20 @@ export default async function MembershipPage({ params, searchParams }: PageProps
     );
   }
 
-  const usd = (value: number, fractionDigits = 0) =>
-    format.number(value, { style: "currency", currency: "USD", minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits });
+  const { catalog, money, describe } = await getPlanDisplay(locale);
+  if (!catalog.plans.length) {
+    return (
+      <Container className="py-space-2xl">
+        <div className="mx-auto max-w-xl rounded-2xl bg-surface-container-low p-space-lg text-center">
+          <h1 className="font-headline-md text-headline-md text-primary">{t("noPlansTitle")}</h1>
+          <p className="mt-2 font-body-md text-body-md text-on-surface-variant">{t("noPlansBody")}</p>
+        </div>
+      </Container>
+    );
+  }
+  const requested = catalog.plans.find((plan) => plan.id === query.plan);
+  const initialPlan = (requested ?? catalog.featured ?? catalog.plans[0]!).id;
+  const trialDays = (requested ?? catalog.featured)?.trialDays ?? 0;
 
   return (
     <div className="relative overflow-hidden">
@@ -59,22 +66,19 @@ export default async function MembershipPage({ params, searchParams }: PageProps
               <span className="font-label-lg text-label-lg text-on-surface">{t("invitation")}</span>
             </div>
           </div>
-          <span className="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
-            <span className="size-1.5 rounded-full bg-primary" />
-            {t("ribbon", { days: sanctuaryPlan.trialDays })}
-          </span>
+          {trialDays > 0 && (
+            <span className="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+              <span className="size-1.5 rounded-full bg-primary" />
+              {t("ribbon", { days: trialDays })}
+            </span>
+          )}
         </div>
 
         <Checkout
-          initialPlan={isBillingPlan(query.plan) ? query.plan : "annual"}
+          plans={catalog.plans.map(describe)}
+          initialPlan={initialPlan}
           next={next}
-          prices={{
-            annual: usd(billingPlans.annual.priceUsd),
-            annualPerMonth: usd(billingPlans.annual.monthlyEquivalentUsd, 2),
-            monthly: usd(billingPlans.monthly.priceUsd, 2),
-            zero: usd(0, 2),
-          }}
-          trialDays={sanctuaryPlan.trialDays}
+          zero={money(0)}
           signedIn={!!viewer.user}
           testMode={paymentProvider.testMode}
           instructorName={tBrand("instructor")}

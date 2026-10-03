@@ -1,14 +1,16 @@
 import { ArrowRightIcon, CircleCheckIcon } from "lucide-react";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
-import { sanctuaryPlan } from "@/modules/memberships/plans";
+import { localize } from "@/lib/localized";
+import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
 
 export async function MembershipBanner() {
-  const [t, format] = await Promise.all([getTranslations("Home.membership"), getFormatter()]);
-  const usd = (value: number) =>
-    format.number(value, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const locale = await getLocale();
+  const [t, { catalog, money, per }] = await Promise.all([getTranslations("Home.membership"), getPlanDisplay(locale)]);
+  const { entry, featured, trialDays } = catalog;
+  const alternative = featured && featured.id !== entry?.id ? featured : null;
   const benefits = [t("benefit1"), t("benefit2"), t("benefit3"), t("benefit4")];
 
   return (
@@ -40,27 +42,35 @@ export async function MembershipBanner() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-label-md text-label-md tracking-wider text-clay uppercase">{t("tier")}</span>
-                  <span className="rounded bg-secondary-fixed/60 px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-secondary-fixed">
-                    {t("trial")}
-                  </span>
+                  {trialDays > 0 && (
+                    <span className="rounded bg-secondary-fixed/60 px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-secondary-fixed">
+                      {t("trial", { days: trialDays })}
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-display text-primary">{usd(sanctuaryPlan.monthlyUsd)}</span>
-                  <span className="font-body-md text-body-md text-outline">{t("perMonth")}</span>
-                </div>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">
-                  {t.rich("annual", {
-                    price: usd(sanctuaryPlan.annualUsd),
-                    strong: (chunks) => <strong className="text-on-surface">{chunks}</strong>,
-                  })}
-                </p>
+                {entry && (
+                  <div className="flex flex-wrap items-baseline gap-2">
+                    <span className="font-display text-display text-primary">{money(entry.price)}</span>
+                    <span className="font-body-md text-body-md text-outline">{per(entry.intervalMonths)}</span>
+                  </div>
+                )}
+                {alternative && (
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">
+                    {t.rich("annual", {
+                      name: localize(alternative.name, locale),
+                      price: money(alternative.price),
+                      per: per(alternative.intervalMonths),
+                      strong: (chunks) => <strong className="text-on-surface">{chunks}</strong>,
+                    })}
+                  </p>
+                )}
               </div>
               <div className="mt-8 space-y-3">
                 <Link
                   href="/membership"
                   className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3.5 font-label-lg text-label-lg text-on-primary shadow-sm transition-colors duration-300 hover:bg-primary-container"
                 >
-                  {t("cta")}
+                  {trialDays > 0 ? t("cta", { days: trialDays }) : t("ctaJoin")}
                   <ArrowRightIcon className="size-4 rtl:rotate-180" />
                 </Link>
                 <p className="text-center font-label-sm text-label-sm text-outline">{t("reassurance")}</p>

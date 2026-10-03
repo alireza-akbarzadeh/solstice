@@ -1,23 +1,25 @@
-import { and, asc, desc, eq, inArray, isNull, or, type SQL, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, isNull, or, type SQL, sql } from "drizzle-orm";
 
 import { db } from "@/server/db";
 import { commentLikes, comments, user } from "@/server/db/schema";
 
 import type { NewReflection } from "../schemas";
-import type { Reflection } from "../types";
+import type { Reflection, ReflectionStatus } from "../types";
 
 type Reader = { id: string; isInstructor: boolean } | null;
 
 /**
  * Private reflections are seen by their author, the instructor, and — for private replies —
- * the author of the reflection being answered. A reflection the instructor has hidden leaves
- * the circle for everyone but its own author, who still sees what they wrote.
+ * the author of the reflection being answered. A reflection the instructor has hidden — or
+ * hasn't approved yet — leaves the circle for everyone but its own author, who still sees what
+ * they wrote (marked as waiting or not approved).
  */
 function visibleTo(reader: Reader): SQL | undefined {
   if (reader?.isInstructor) return undefined;
-  if (!reader) return and(eq(comments.visibility, "circle"), eq(comments.hidden, false));
+  if (!reader)
+    return and(eq(comments.visibility, "circle"), eq(comments.hidden, false), eq(comments.status, "approved"));
   return and(
-    or(eq(comments.hidden, false), eq(comments.userId, reader.id)),
+    or(and(eq(comments.hidden, false), eq(comments.status, "approved")), eq(comments.userId, reader.id)),
     or(
       eq(comments.visibility, "circle"),
       eq(comments.userId, reader.id),
@@ -36,6 +38,7 @@ const reflectionColumns = (reader: Reader) => ({
   visibility: comments.visibility,
   pinned: comments.pinned,
   hidden: comments.hidden,
+  status: comments.status,
   createdAt: comments.createdAt,
   authorId: user.id,
   authorName: user.name,
@@ -73,6 +76,7 @@ function toThreads(rows: Row[]): Reflection[] {
       visibility: row.visibility,
       pinned: row.pinned,
       hidden: row.hidden,
+      status: row.status,
       createdAt: row.createdAt,
       likes: row.likes,
       likedByViewer: row.liked,
@@ -141,6 +145,8 @@ export async function createReflection(
     if (root?.visibility === "private") visibility = "private";
   }
 
+  // The instructor's own words, and private notes only the instructor reads, need no review.
+  const status: ReflectionStatus = author.isInstructor || visibility === "private" ? "approved" : "pending";
   const [row] = await db
     .insert(comments)
     .values({
@@ -151,15 +157,63 @@ export async function createReflection(
       tag: input.tag,
       atSeconds: input.atSeconds,
       visibility,
+      status,
     })
-    .returning({ id: comments.id });
+    .returning({ id: comments.id, status: comments.status });
   return row ?? null;
+}
+
+/** Approves or rejects reflections; returns what changed, for notifying their authors. */
+export async function setReflectionStatus(ids: number[], status: ReflectionStatus) {
+  if (ids.length === 0) return [];
+  return db
+    .update(comments)
+    .set({ status })
+    .where(inArray(comments.id, ids))
+    .returning({
+      id: comments.id,
+      userId: comments.userId,
+      parentId: comments.parentId,
+      practiceSlug: comments.practiceSlug,
+    });
+}
+
+/** Threads holding anything that waits for review (a pending reflection or a pending reply). */
+export async function getPendingThreadIds(limit = 100) {
+  const rows = await db
+    .selectDistinct({ id: sql<number>`coalesce(${comments.parentId}, ${comments.id})`.as("thread") })
+    .from(comments)
+    .where(eq(comments.status, "pending"))
+    .limit(limit);
+  return rows.map((row) => row.id);
+}
+
+/** Every pending reflection id, for "approve all". */
+export async function getPendingIds() {
+  const rows = await db.select({ id: comments.id }).from(comments).where(eq(comments.status, "pending"));
+  return rows.map((row) => row.id);
+}
+
+export async function countPendingReflections() {
+  const [row] = await db.select({ n: count() }).from(comments).where(eq(comments.status, "pending"));
+  return row?.n ?? 0;
+}
+
+/** Threads holding a rejected reflection, so a call can be reviewed and reversed. */
+export async function getRejectedThreadIds(limit = 100) {
+  const rows = await db
+    .selectDistinct({ id: sql<number>`coalesce(${comments.parentId}, ${comments.id})`.as("thread") })
+    .from(comments)
+    .where(eq(comments.status, "rejected"))
+    .limit(limit);
+  return rows.map((row) => row.id);
 }
 
 export async function getReflectionOwner(id: number) {
   const [row] = await db
     .select({
       userId: comments.userId,
+      status: comments.status,
       parentId: comments.parentId,
       practiceSlug: comments.practiceSlug,
     })

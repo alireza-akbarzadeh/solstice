@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { AccountMenu } from "@/components/layout/account-menu";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
+import { StudioBreadcrumbProvider } from "@/components/layout/studio-breadcrumb";
 import { StudioHeader } from "@/components/layout/studio-header";
 import { StudioSidebar } from "@/components/layout/studio-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -33,12 +34,15 @@ export default async function InstructorLayout({ children, params }: LayoutProps
       <SidebarProvider>
         <StudioSidebar badges={badges} />
         <SidebarInset className="min-w-0 bg-surface">
-          <StudioHeader>
-            <LocaleSwitcher />
-            {isPushConfigured() && <PushToggle />}
-            <AccountMenu user={viewer.user} status="instructor" />
-          </StudioHeader>
-          <div className="min-w-0 flex-1 px-margin-mobile py-space-lg md:px-space-lg md:py-space-xl">{children}</div>
+          {/* Pages extend the header breadcrumb with <StudioCrumb>, so both share this provider. */}
+          <StudioBreadcrumbProvider>
+            <StudioHeader>
+              <LocaleSwitcher />
+              {isPushConfigured() && <PushToggle />}
+              <AccountMenu user={viewer.user} status="instructor" />
+            </StudioHeader>
+            <div className="min-w-0 flex-1 px-margin-mobile py-space-lg md:px-space-lg md:py-space-xl">{children}</div>
+          </StudioBreadcrumbProvider>
         </SidebarInset>
         <TestPanel />
       </SidebarProvider>

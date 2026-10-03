@@ -2,7 +2,6 @@ import { desc, eq, sql } from "drizzle-orm";
 
 import type { Locale } from "@/i18n/routing";
 import { localize } from "@/lib/localized";
-import type { BillingPlan } from "@/infrastructure/payment";
 import { db } from "@/server/db";
 import { comments, favorites, memberships, practiceCompletions, practices, user } from "@/server/db/schema";
 
@@ -12,7 +11,7 @@ const DAY = 24 * 60 * 60 * 1000;
  * Gives a member paid access for `months` without a payment — the studio's comped pass.
  * Recorded against the "studio" provider so it is never mistaken for a provider subscription.
  */
-export async function grantAccess(userId: string, plan: BillingPlan, months: number) {
+export async function grantAccess(userId: string, plan: string, months: number) {
   const current = await db.select({ end: memberships.currentPeriodEnd }).from(memberships).where(eq(memberships.userId, userId)).limit(1);
   // Extend from the existing paid-through date when it is still in the future, so a gift adds on.
   const from = current[0]?.end && current[0].end > new Date() ? current[0].end : new Date();

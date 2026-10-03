@@ -1,13 +1,15 @@
 import { ArrowRightIcon, CircleCheckIcon, SparklesIcon } from "lucide-react";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 
-import { sanctuaryPlan } from "../plans";
+import { getPlanDisplay } from "../server/plan-display";
 
 // Membership invitation at the foot of the practice library (hidden for members by the page).
 export async function LibraryUpsell({ openCount }: { openCount: number }) {
-  const [t, format] = await Promise.all([getTranslations("Practices.banner"), getFormatter()]);
+  const locale = await getLocale();
+  const [t, { catalog, money, per }] = await Promise.all([getTranslations("Practices.banner"), getPlanDisplay(locale)]);
+  const { entry, trialDays } = catalog;
   const benefits = [t("benefit1"), t("benefit2"), t("benefit3")];
 
   return (
@@ -38,15 +40,17 @@ export async function LibraryUpsell({ openCount }: { openCount: number }) {
         <div className="flex flex-col items-start justify-center lg:col-span-4 lg:items-end">
           <div className="w-full max-w-sm space-y-4 rounded-xl bg-surface/95 p-space-md text-on-surface shadow-lg backdrop-blur-md">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <div>
-                <span className="font-headline-md text-headline-md text-primary">
-                  {format.number(sanctuaryPlan.monthlyUsd, { style: "currency", currency: "USD", maximumFractionDigits: 0 })}
+              {entry && (
+                <div>
+                  <span className="font-headline-md text-headline-md text-primary">{money(entry.price)}</span>
+                  <span className="font-body-sm text-body-sm text-outline"> {per(entry.intervalMonths)}</span>
+                </div>
+              )}
+              {trialDays > 0 && (
+                <span className="rounded bg-secondary-fixed px-2 py-0.5 font-label-sm text-label-sm font-semibold tracking-wider text-clay uppercase">
+                  {t("trial", { days: trialDays })}
                 </span>
-                <span className="font-body-sm text-body-sm text-outline"> {t("perMonth")}</span>
-              </div>
-              <span className="rounded bg-secondary-fixed px-2 py-0.5 font-label-sm text-label-sm font-semibold tracking-wider text-clay uppercase">
-                {t("trial")}
-              </span>
+              )}
             </div>
             <p className="font-body-sm text-body-sm text-on-surface-variant">{t("cardBody")}</p>
             <div className="space-y-2 pt-1">

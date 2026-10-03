@@ -30,16 +30,20 @@ import {
 } from "@/modules/instructor/actions";
 import type { MemberDossier } from "@/modules/instructor/server/members";
 
+import type { StudioPlanOption } from "./member-directory";
+
 /**
  * Stitch: the practitioner dossier drawer on studio-admin-members-access. Every control here
  * is a real mutation; the gift pass writes a membership against the "studio" provider, since
  * nothing was charged.
  */
-export function MemberDossierPanel({ dossier, isSelf }: { dossier: MemberDossier; isSelf: boolean }) {
+export function MemberDossierPanel({ dossier, isSelf, plans }: { dossier: MemberDossier; isSelf: boolean; plans: StudioPlanOption[] }) {
   const t = useTranslations("Studio.members.dossier");
   const format = useFormatter();
   const [months, setMonths] = useState("1");
-  const [plan, setPlan] = useState<"monthly" | "annual">("monthly");
+  const onSale = plans.filter((p) => p.active);
+  const [plan, setPlan] = useState(onSale[0]?.id ?? plans[0]?.id ?? "");
+  const planName = (id: string) => plans.find((p) => p.id === id)?.name ?? id;
   const [pending, start] = useTransition();
 
   const { account, membership } = dossier;
@@ -95,7 +99,7 @@ export function MemberDossierPanel({ dossier, isSelf }: { dossier: MemberDossier
 
       <dl className="flex flex-col gap-1.5 rounded-lg bg-surface p-space-md shadow-sm">
         {[
-          [t("tier"), membership ? t(`plans.${membership.plan}`) : t("plans.none")],
+          [t("tier"), membership ? planName(membership.plan) : t("plans.none")],
           [t("state"), membership ? t(`states.${membership.status}`) : t("plans.none")],
           [t("paidThrough"), membership ? format.dateTime(membership.currentPeriodEnd, { dateStyle: "medium" }) : "—"],
           [t("provider"), membership ? membership.provider : "—"],
@@ -116,12 +120,9 @@ export function MemberDossierPanel({ dossier, isSelf }: { dossier: MemberDossier
           <ResponsiveSelect
             label={t("grantPlan")}
             value={plan}
-            onValueChange={(v) => setPlan(v as "monthly" | "annual")}
+            onValueChange={setPlan}
             className="flex-1"
-            options={[
-              { value: "monthly", label: t("plans.monthly") },
-              { value: "annual", label: t("plans.annual") },
-            ]}
+            options={(onSale.length ? onSale : plans).map((p) => ({ value: p.id, label: p.name }))}
           />
           <ResponsiveSelect
             label={t("grantMonths")}

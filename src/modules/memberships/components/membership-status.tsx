@@ -1,17 +1,24 @@
 import { ArrowRightIcon, BadgeCheckIcon } from "lucide-react";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
+import { localize } from "@/lib/localized";
 
 import { cancelMembership, resumeMembership } from "../actions";
+import { getPlan } from "../server/plans";
 import type { Viewer } from "../server/viewer";
 
 // Shown on /membership to people who already have access.
 export async function MembershipStatus({ viewer, next }: { viewer: Viewer; next: string }) {
-  const [t, format] = await Promise.all([getTranslations("Membership.active"), getFormatter()]);
   const membership = viewer.membership;
+  const [t, format, locale, planRow] = await Promise.all([
+    getTranslations("Membership.active"),
+    getFormatter(),
+    getLocale(),
+    membership ? getPlan(membership.plan) : null,
+  ]);
   const date = membership ? format.dateTime(membership.currentPeriodEnd, { dateStyle: "long" }) : "";
-  const plan = membership ? t(`planNames.${membership.plan}`) : "";
+  const plan = planRow ? localize(planRow.name, locale) : (membership?.plan ?? "");
 
   let detail = t("instructor");
   if (membership?.cancelAtPeriodEnd) detail = t("canceled", { date });

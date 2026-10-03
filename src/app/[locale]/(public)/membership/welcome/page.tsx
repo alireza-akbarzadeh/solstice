@@ -8,7 +8,7 @@ import { Container } from "@/components/layout/container";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { safeNextPath, withNext } from "@/lib/safe-next";
-import { sanctuaryPlan } from "@/modules/memberships/plans";
+import { getPlan } from "@/modules/memberships/server/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/membership/welcome">): Promise<Metadata> {
@@ -28,7 +28,8 @@ export default async function MembershipWelcomePage({ params, searchParams }: Pa
   const viewer = await getViewer();
   if (!viewer.hasAccess) redirect({ href: withNext("/membership", next), locale });
 
-  const t = await getTranslations("Membership.welcome");
+  const [t, plan] = await Promise.all([getTranslations("Membership.welcome"), viewer.membership ? getPlan(viewer.membership.plan) : null]);
+  const trialing = viewer.membership?.status === "trialing" && (plan?.trialDays ?? 0) > 0;
 
   return (
     <Container className="py-space-2xl">
@@ -37,7 +38,7 @@ export default async function MembershipWelcomePage({ params, searchParams }: Pa
           <SparklesIcon className="size-7" />
         </span>
         <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-headline-lg md:text-headline-lg">{t("title")}</h1>
-        <p className="font-body-md text-body-md text-on-surface-variant">{t("body", { days: sanctuaryPlan.trialDays })}</p>
+        <p className="font-body-md text-body-md text-on-surface-variant">{trialing ? t("body", { days: plan!.trialDays }) : t("bodyPaid")}</p>
         <Link
           href={next}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-label-lg text-label-lg text-on-primary transition-colors hover:bg-primary-container"

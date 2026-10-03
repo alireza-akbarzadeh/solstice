@@ -167,7 +167,8 @@ export const memberships = createTable(
       .notNull()
       .unique()
       .references(() => user.id, { onDelete: "cascade" }),
-    plan: d.text().$type<"monthly" | "annual">().notNull(),
+    /** The membership plan id (solstice_membership_plan.id), e.g. "monthly". */
+    plan: d.text().notNull(),
     status: d
       .text()
       .$type<"trialing" | "active" | "past_due" | "canceled">()
@@ -347,6 +348,15 @@ export const comments = createTable(
     pinned: d.boolean().default(false).notNull(),
     /** Taken off the public feed by the instructor. The author still sees their own. */
     hidden: d.boolean().default(false).notNull(),
+    /**
+     * Members' circle reflections wait for the instructor's approval; until then only the
+     * author and the instructor see them. Rows from before moderation default to approved.
+     */
+    status: d
+      .text()
+      .$type<"pending" | "approved" | "rejected">()
+      .default("approved")
+      .notNull(),
     createdAt: d
       .timestamp({ withTimezone: true })
       .$defaultFn(() => new Date())
@@ -355,6 +365,7 @@ export const comments = createTable(
   (t) => [
     index("comment_practice_idx").on(t.practiceSlug, t.createdAt),
     index("comment_parent_idx").on(t.parentId),
+    index("comment_status_idx").on(t.status),
   ],
 );
 
@@ -484,3 +495,45 @@ export const sitePages = createTable(
   }),
   (t) => [index("site_page_builtin_idx").on(t.builtin)],
 );
+
+/**
+ * Membership plans the instructor manages at /instructor/plans. A membership stores the plan
+ * id, so a plan that members are on can be hidden from sale but never deleted.
+ */
+export const membershipPlans = createTable(
+  "membership_plan",
+  (d) => ({
+    id: d.text().primaryKey(),
+    status: d.text().$type<"active" | "hidden">().notNull().default("active"),
+    /** The recommended plan: preselected at checkout and used for marketing copy. */
+    featured: d.boolean().notNull().default(false),
+    sortOrder: d.integer().notNull().default(0),
+    name: d.jsonb().$type<Localized>().notNull(),
+    description: d.jsonb().$type<Localized>().notNull(),
+    /** Short highlight such as "Best value"; empty strings show no badge. */
+    badge: d.jsonb().$type<Localized>().notNull(),
+    features: d.jsonb().$type<Localized[]>().notNull().default([]),
+    /** Price per billing period, in the site currency (solstice_setting "billing"). */
+    price: d.numeric({ precision: 14, scale: 2, mode: "number" }).notNull(),
+    intervalMonths: d.integer().notNull(),
+    trialDays: d.integer().notNull().default(0),
+    createdAt: d.timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: d
+      .timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  }),
+  (t) => [index("membership_plan_status_idx").on(t.status)],
+);
+
+/** Small site-wide settings the studio edits, keyed by name (e.g. "billing"). */
+export const settings = createTable("setting", (d) => ({
+  key: d.text().primaryKey(),
+  value: d.jsonb().$type<Record<string, unknown>>().notNull(),
+  updatedAt: d
+    .timestamp({ withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+}));

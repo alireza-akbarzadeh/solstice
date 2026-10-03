@@ -2,7 +2,7 @@ import { AwardIcon, BadgeCheckIcon, Flower2Icon, HourglassIcon, UsersIcon, Infin
 import type { Metadata } from "next";
 import Image from "next/image";
 import { hasLocale } from "next-intl";
-import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
@@ -11,7 +11,7 @@ import { routing } from "@/i18n/routing";
 import { safeNextPath, withNext } from "@/lib/safe-next";
 import { SignUpForm } from "@/modules/auth/components/sign-up-form";
 import { SocialButtons } from "@/modules/auth/components/social-buttons";
-import { sanctuaryPlan } from "@/modules/memberships/plans";
+import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
 import { enabledSocialProviders } from "@/server/better-auth/config";
 import { getSession } from "@/server/better-auth/server";
 import { getBuiltinPagePreview } from "@/modules/pages/server/request";
@@ -33,7 +33,8 @@ export default async function SignUpPage({ params, searchParams }: PageProps<"/[
   const next = safeNextPath((await searchParams).next, "/membership");
   if ((await getSession()) && (await getBuiltinPagePreview())?.slug !== "account-access") redirect({ href: next, locale });
 
-  const [t, tBrand, format] = await Promise.all([getTranslations("Auth"), getTranslations("Brand"), getFormatter()]);
+  const [t, tBrand, { catalog, money, per }] = await Promise.all([getTranslations("Auth"), getTranslations("Brand"), getPlanDisplay(locale)]);
+  const { trialDays, entry } = catalog;
   const benefits = [
     { icon: Flower2Icon, text: t("signUp.benefit1") },
     { icon: HourglassIcon, text: t("signUp.benefit2") },
@@ -80,11 +81,9 @@ export default async function SignUpPage({ params, searchParams }: PageProps<"/[
               <AwardIcon className="size-5" />
             </span>
             <div className="flex flex-col">
-              <span className="font-label-lg text-label-lg text-on-surface">{t("signUp.passTitle", { days: sanctuaryPlan.trialDays })}</span>
+              <span className="font-label-lg text-label-lg text-on-surface">{t("signUp.passTitle", { days: trialDays })}</span>
               <span className="font-body-sm text-body-sm text-on-secondary-container">
-                {t("signUp.passBody", {
-                  price: format.number(sanctuaryPlan.monthlyUsd, { style: "currency", currency: "USD", maximumFractionDigits: 0 }),
-                })}
+                {entry && t("signUp.passBody", { price: money(entry.price), per: per(entry.intervalMonths) })}
               </span>
             </div>
           </div>
@@ -97,7 +96,7 @@ export default async function SignUpPage({ params, searchParams }: PageProps<"/[
               <h1 className="mb-2 font-headline-lg-mobile text-headline-lg-mobile font-normal text-on-surface md:font-headline-lg md:text-headline-lg">
                 {t("signUp.title")}
               </h1>
-              <p className="font-body-lg text-body-lg text-on-surface-variant">{t("signUp.lede", { days: sanctuaryPlan.trialDays })}</p>
+              <p className="font-body-lg text-body-lg text-on-surface-variant">{t("signUp.lede", { days: trialDays })}</p>
             </div>
             {enabledSocialProviders.length > 0 && (
               <>

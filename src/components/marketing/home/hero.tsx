@@ -5,14 +5,15 @@ import { getPageAssets } from "@/modules/pages/server/request";
 
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
-import { sanctuaryPlan } from "@/modules/memberships/plans";
+import { getPlanCatalog } from "@/modules/memberships/server/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
 export async function Hero() {
-  const [t, viewer, assets] = await Promise.all([
+  const [t, viewer, assets, { trialDays }] = await Promise.all([
     getTranslations("Home.hero"),
     getViewer(),
     getPageAssets("home"),
+    getPlanCatalog(),
   ]);
 
   return (
@@ -66,9 +67,9 @@ export async function Hero() {
                 {t("secondaryCta")}
               </Link>
             </div>
-            {!viewer.hasAccess && (
+            {!viewer.hasAccess && trialDays > 0 && (
               <p className="text-on-primary/70 mt-4 text-xs leading-relaxed">
-                {t("trialNote", { days: sanctuaryPlan.trialDays })}
+                {t("trialNote", { days: trialDays })}
               </p>
             )}
 

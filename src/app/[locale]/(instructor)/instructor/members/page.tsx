@@ -16,6 +16,9 @@ import { StudioPageHeader } from "@/modules/instructor/components/studio-page-he
 import { StudioSearch } from "@/modules/instructor/components/studio-search";
 import { getMemberDossier } from "@/modules/instructor/server/members";
 import { getMembershipCounts, listMembers, projectRevenue, type MemberRow } from "@/modules/instructor/server/studio";
+import { localize } from "@/lib/localized";
+import { formatMoney } from "@/modules/memberships/plans";
+import { getAllPlans, getBillingSettings } from "@/modules/memberships/server/plans";
 import { requireInstructor } from "@/modules/memberships/server/viewer";
 
 const views = ["all", "paying", "trial", "attention", "lapsed", "instructors"] as const;
@@ -60,18 +63,22 @@ export default async function StudioMembersPage({ params, searchParams }: PagePr
   const view: View = views.includes(rawView as View) ? (rawView as View) : "all";
   const selectedId = one("member");
 
-  const [t, format, members, counts] = await Promise.all([
+  const [t, format, members, counts, plans, { currency }] = await Promise.all([
     getTranslations("Studio.members"),
     getFormatter(),
     listMembers(q),
     getMembershipCounts(),
+    getAllPlans(),
+    getBillingSettings(),
   ]);
+  // Plan names for badges and the gift-pass picker; hidden plans still name existing members.
+  const planOptions = plans.map((plan) => ({ id: plan.id, name: localize(plan.name, locale), active: plan.status === "active" }));
 
   const shown = members.filter(matches(view));
   // A member reached by URL who is filtered out still opens; the panel is about that person.
   const dossier = selectedId ? await getMemberDossier(locale, selectedId) : null;
-  const revenue = projectRevenue(counts);
-  const paying = counts.monthly + counts.annual;
+  const revenue = projectRevenue(counts, plans);
+  const paying = counts.paying;
   const keep = { ...(q ? { q } : {}), ...(selectedId ? { member: selectedId } : {}) };
 
   return (
@@ -83,7 +90,7 @@ export default async function StudioMembersPage({ params, searchParams }: PagePr
         <StatCard
           label={t("stats.paying")}
           value={format.number(paying)}
-          note={t("stats.split", { monthly: counts.monthly, annual: counts.annual })}
+          note={t("stats.split", { plans: Object.keys(counts.byPlan).length })}
           icon={CircleDollarSignIcon}
         />
         <StatCard label={t("stats.trialing")} value={format.number(counts.trialing)} note={t("stats.trialingNote")} icon={HeartHandshakeIcon} />
@@ -91,7 +98,7 @@ export default async function StudioMembersPage({ params, searchParams }: PagePr
           label={t("stats.attention")}
           value={format.number(counts.pastDue + counts.canceling)}
           note={t("stats.attentionNote", { pastDue: counts.pastDue, leaving: counts.canceling })}
-          hint={format.number(revenue.mrr, { style: "currency", currency: "USD", maximumFractionDigits: 0 })}
+          hint={formatMoney(format, Math.round(revenue.mrr), currency, locale)}
           icon={TimerResetIcon}
         />
       </div>
@@ -121,7 +128,7 @@ export default async function StudioMembersPage({ params, searchParams }: PagePr
             </Empty>
           ) : (
             <>
-              <MemberDirectory members={shown} selected={dossier?.account.id ?? null} />
+              <MemberDirectory members={shown} selected={dossier?.account.id ?? null} plans={planOptions} />
               <Badge variant="outline" className="self-start">
                 {t("showing", { shown: shown.length, total: members.length })}
               </Badge>
@@ -132,7 +139,7 @@ export default async function StudioMembersPage({ params, searchParams }: PagePr
         {/* Selecting someone on a phone should not mean scrolling past the whole directory. */}
         <div className={cn("xl:col-span-4 xl:order-none", dossier && "order-first")}>
           {dossier ? (
-            <MemberDossierPanel dossier={dossier} isSelf={dossier.account.id === viewer.user.id} />
+            <MemberDossierPanel dossier={dossier} isSelf={dossier.account.id === viewer.user.id} plans={planOptions} />
           ) : (
             <Empty className="rounded-xl bg-surface-container-low">
               <EmptyHeader>

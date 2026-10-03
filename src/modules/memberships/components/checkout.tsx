@@ -1,19 +1,16 @@
 "use client";
 
 import {
-  BookOpenIcon,
   CalendarCheckIcon,
   CheckIcon,
+  CircleCheckIcon,
   ClockIcon,
-  DownloadIcon,
   FlaskConicalIcon,
-  Flower2Icon,
   InfinityIcon,
   LoaderCircleIcon,
   LockIcon,
   LockOpenIcon,
   MailIcon,
-  RadioIcon,
   XCircleIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -21,12 +18,27 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import type { BillingPlan } from "@/infrastructure/payment";
 import { cn } from "@/lib/utils";
 
 import { startCheckout } from "../actions";
 
-type Prices = { annual: string; annualPerMonth: string; monthly: string; zero: string };
+/** A plan as the checkout shows it, with every price already formatted on the server. */
+export type CheckoutPlan = {
+  id: string;
+  name: string;
+  description: string;
+  badge: string;
+  features: string[];
+  /** Price per billing period, e.g. "$220". */
+  price: string;
+  /** The period after the price, e.g. "/ year". */
+  per: string;
+  /** Monthly equivalent for periods longer than a month, e.g. "$18.33 / month". */
+  perMonth: string | null;
+  /** "Billed yearly after a 14-day free trial". */
+  billing: string;
+  trialDays: number;
+};
 
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
@@ -43,46 +55,51 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 export function Checkout({
+  plans,
   initialPlan,
   next,
-  prices,
-  trialDays,
+  zero,
   signedIn,
   testMode,
   instructorName,
 }: {
-  initialPlan: BillingPlan;
+  plans: CheckoutPlan[];
+  initialPlan: string;
   next: string;
-  prices: Prices;
-  trialDays: number;
+  /** Zero in the site currency, for "due today". */
+  zero: string;
   signedIn: boolean;
   testMode: boolean;
   instructorName: string;
 }) {
   const t = useTranslations("Membership");
-  const [plan, setPlan] = useState<BillingPlan>(initialPlan);
+  const [planId, setPlanId] = useState(initialPlan);
+  const selected = plans.find((p) => p.id === planId) ?? plans[0]!;
+  const trialDays = selected.trialDays;
+  const hasTrial = trialDays > 0;
 
-  const planCard = (id: BillingPlan) => {
-    const active = plan === id;
+  const planCard = (plan: CheckoutPlan) => {
+    const active = selected.id === plan.id;
     return (
       <label
+        key={plan.id}
         className={cn(
           "relative block cursor-pointer rounded-2xl p-6 transition-all duration-300 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary",
           active ? "bg-surface-container-lowest shadow-ambient ring-1 ring-primary" : "bg-surface-container-low hover:bg-surface-container",
         )}
       >
-        <input type="radio" name="plan" value={id} checked={active} onChange={() => setPlan(id)} className="sr-only" />
+        <input type="radio" name="plan" value={plan.id} checked={active} onChange={() => setPlanId(plan.id)} className="sr-only" />
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-headline-sm text-headline-sm text-on-surface">{t(`plans.${id}.name`)}</span>
-              {id === "annual" && (
+              <span className="font-headline-sm text-headline-sm text-on-surface">{plan.name}</span>
+              {plan.badge && (
                 <span className="rounded bg-secondary-fixed px-2 py-0.5 font-label-sm text-label-sm font-semibold text-on-secondary-fixed">
-                  {t("plans.annual.badge")}
+                  {plan.badge}
                 </span>
               )}
             </div>
-            <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">{t(`plans.${id}.body`)}</p>
+            {plan.description && <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">{plan.description}</p>}
           </div>
           <span
             aria-hidden
@@ -95,22 +112,16 @@ export function Checkout({
           </span>
         </div>
         <div className="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <span className="font-headline-md text-headline-md text-primary">{id === "annual" ? prices.annualPerMonth : prices.monthly}</span>
-          <span className="font-body-sm text-body-sm text-outline">{t("perMonth")}</span>
-          <span className="w-full font-body-sm text-body-sm text-on-surface-variant">
-            {t(`plans.${id}.billing`, { price: prices.annual, days: trialDays })}
-          </span>
+          <span className="font-headline-md text-headline-md text-primary">{plan.price}</span>
+          <span className="font-body-sm text-body-sm text-outline">{plan.per}</span>
+          {plan.perMonth && <span className="font-body-sm text-body-sm text-on-surface-variant">· {plan.perMonth}</span>}
+          <span className="w-full font-body-sm text-body-sm text-on-surface-variant">{plan.billing}</span>
         </div>
-        {id === "annual" && (
+        {plan.features.length > 0 && (
           <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {[
-              { icon: Flower2Icon, text: t("features.f1") },
-              { icon: DownloadIcon, text: t("features.f2") },
-              { icon: RadioIcon, text: t("features.f3") },
-              { icon: BookOpenIcon, text: t("features.f4") },
-            ].map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-center gap-2 font-body-sm text-body-sm text-on-surface">
-                <Icon className="size-4 shrink-0 text-clay" />
+            {plan.features.map((text, index) => (
+              <li key={index} className="flex items-center gap-2 font-body-sm text-body-sm text-on-surface">
+                <CircleCheckIcon className="size-4 shrink-0 text-clay" />
                 {text}
               </li>
             ))}
@@ -120,15 +131,15 @@ export function Checkout({
     );
   };
 
-  const renewPrice = plan === "annual" ? prices.annual : prices.monthly;
+  // A reminder only makes sense when the trial is long enough to send one before it ends.
   const timeline = [
-    { day: 0, icon: CalendarCheckIcon, title: t("timeline.arrivalTitle"), body: t("timeline.arrivalBody", { zero: prices.zero }) },
-    { day: trialDays - 2, icon: MailIcon, title: t("timeline.noticeTitle"), body: t("timeline.noticeBody") },
+    { day: 0, icon: CalendarCheckIcon, title: t("timeline.arrivalTitle"), body: t("timeline.arrivalBody", { zero }) },
+    ...(trialDays > 2 ? [{ day: trialDays - 2, icon: MailIcon, title: t("timeline.noticeTitle"), body: t("timeline.noticeBody") }] : []),
     {
       day: trialDays,
       icon: InfinityIcon,
       title: t("timeline.renewTitle"),
-      body: plan === "annual" ? t("timeline.renewAnnual", { price: renewPrice }) : t("timeline.renewMonthly", { price: renewPrice }),
+      body: t("timeline.renew", { price: selected.price, per: selected.per }),
     },
   ];
 
@@ -147,28 +158,29 @@ export function Checkout({
 
         <fieldset className="flex flex-col gap-4">
           <legend className="sr-only">{t("title")}</legend>
-          {planCard("annual")}
-          {planCard("monthly")}
+          {plans.map(planCard)}
         </fieldset>
 
-        <section className="rounded-2xl bg-surface-container-low p-6">
-          <p className="font-label-md text-label-md tracking-widest text-clay uppercase">{t("timeline.eyebrow")}</p>
-          <h2 className="mt-1 font-headline-sm text-headline-sm text-on-surface">{t("timeline.title", { days: trialDays })}</h2>
-          <ol className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-            {timeline.map(({ day, icon: Icon, title, body }) => (
-              <li key={day} className="flex gap-3 sm:flex-col">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-primary">
-                  <Icon className="size-4" />
-                </span>
-                <div>
-                  <span className="font-label-sm text-label-sm tracking-wider text-clay uppercase">{t("timeline.day", { day })}</span>
-                  <p className="font-label-lg text-label-lg text-on-surface">{title}</p>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">{body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
+        {hasTrial && (
+          <section className="rounded-2xl bg-surface-container-low p-6">
+            <p className="font-label-md text-label-md tracking-widest text-clay uppercase">{t("timeline.eyebrow")}</p>
+            <h2 className="mt-1 font-headline-sm text-headline-sm text-on-surface">{t("timeline.title", { days: trialDays })}</h2>
+            <ol className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+              {timeline.map(({ day, icon: Icon, title, body }) => (
+                <li key={day} className="flex gap-3 sm:flex-col">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-primary">
+                    <Icon className="size-4" />
+                  </span>
+                  <div>
+                    <span className="font-label-sm text-label-sm tracking-wider text-clay uppercase">{t("timeline.day", { day })}</span>
+                    <p className="font-label-lg text-label-lg text-on-surface">{title}</p>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">{body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
 
         <figure className="flex flex-col gap-4 rounded-2xl bg-surface-container p-6 sm:flex-row sm:items-start">
           <Image src="/images/brand/elena-closeup.jpg" alt="" width={64} height={64} className="size-16 shrink-0 rounded-full object-cover" />
@@ -202,33 +214,42 @@ export function Checkout({
 
           <dl className="space-y-3 rounded-xl bg-surface-container-low p-4 font-body-sm text-body-sm">
             <dt className="font-label-md text-label-md tracking-widest text-clay uppercase">{t("checkout.ledger")}</dt>
+            {hasTrial && (
+              <div className="flex justify-between gap-4">
+                <dt className="text-on-surface-variant">{t("checkout.trialLine", { days: trialDays })}</dt>
+                <dd className="text-on-surface">{zero}</dd>
+              </div>
+            )}
             <div className="flex justify-between gap-4">
-              <dt className="text-on-surface-variant">{t("checkout.trialLine", { days: trialDays })}</dt>
-              <dd className="text-on-surface">{prices.zero}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-on-surface-variant">
-                {plan === "annual" ? t("checkout.renewsAnnual", { days: trialDays }) : t("checkout.renewsMonthly", { days: trialDays })}
-              </dt>
+              <dt className="text-on-surface-variant">{hasTrial ? t("checkout.renews", { days: trialDays }) : selected.name}</dt>
               <dd className="text-on-surface">
-                {renewPrice}
-                {plan === "annual" ? t("checkout.perYear") : t("checkout.perMonth")}
+                {selected.price} {selected.per}
               </dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-on-surface-variant">{t("checkout.taxes")}</dt>
-              <dd className="text-on-surface">{prices.zero}</dd>
+              <dd className="text-on-surface">{zero}</dd>
             </div>
             <div className="flex items-end justify-between gap-4 border-t border-hairline pt-3">
               <dt>
                 <span className="block font-label-lg text-label-lg text-on-surface">{t("checkout.dueNow")}</span>
-                <span className="font-label-sm text-label-sm text-outline">{t("checkout.firstCharge", { days: trialDays })}</span>
+                <span className="font-label-sm text-label-sm text-outline">
+                  {hasTrial ? t("checkout.firstCharge", { days: trialDays }) : t("checkout.firstChargeNow")}
+                </span>
               </dt>
-              <dd className="font-headline-md text-headline-md text-primary">{prices.zero}</dd>
+              <dd className="font-headline-md text-headline-md text-primary">{hasTrial ? zero : selected.price}</dd>
             </div>
           </dl>
 
-          <SubmitButton label={signedIn ? t("checkout.cta", { days: trialDays }) : t("checkout.ctaGuest")} />
+          <SubmitButton
+            label={
+              !signedIn
+                ? t("checkout.ctaGuest")
+                : hasTrial
+                  ? t("checkout.cta", { days: trialDays })
+                  : t("checkout.ctaNow", { price: selected.price })
+            }
+          />
           {!signedIn && <p className="text-center font-body-sm text-body-sm text-on-surface-variant">{t("checkout.guestNote")}</p>}
 
           <div className="flex flex-wrap items-center justify-center gap-3 font-label-sm text-label-sm text-outline">

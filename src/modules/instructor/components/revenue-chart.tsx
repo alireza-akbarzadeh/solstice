@@ -1,7 +1,9 @@
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 
 import type { RevenueMonth } from "@/modules/instructor/server/revenue";
 import { cn } from "@/lib/utils";
+import { formatMoney } from "@/modules/memberships/plans";
+import { getBillingSettings } from "@/modules/memberships/server/plans";
 
 const W = 600;
 const H = 200;
@@ -13,9 +15,13 @@ const GUIDES = 4;
  * Persian, so the axis labels and the curve always read in the same direction.
  */
 export async function RevenueChart({ series }: { series: RevenueMonth[] }) {
-  const [t, format] = await Promise.all([getTranslations("Studio.revenue"), getFormatter()]);
+  const [t, format, locale, { currency }] = await Promise.all([getTranslations("Studio.revenue"), getFormatter(), getLocale(), getBillingSettings()]);
 
-  const money = (n: number) => format.number(n, { style: "currency", currency: "USD", maximumFractionDigits: 0, notation: "compact" });
+  // Axis labels are compact ($1.2K); tomans have no Intl currency, so they drop the unit there.
+  const money = (n: number) =>
+    currency === "IRT"
+      ? format.number(n, { notation: "compact", maximumFractionDigits: 1 })
+      : format.number(n, { style: "currency", currency, maximumFractionDigits: 0, notation: "compact" });
   const month = (m: string) => format.dateTime(new Date(`${m}-01T00:00:00Z`), { month: "short", timeZone: "UTC" });
 
   const peak = Math.max(1, ...series.map((m) => m.mrr));
@@ -93,7 +99,7 @@ export async function RevenueChart({ series }: { series: RevenueMonth[] }) {
         </div>
 
         <p className="mt-space-sm font-label-md text-label-md text-primary">
-          {t("chart.current", { amount: format.number(series.at(-1)?.mrr ?? 0, { style: "currency", currency: "USD", maximumFractionDigits: 0 }) })}
+          {t("chart.current", { amount: formatMoney(format, Math.round(series.at(-1)?.mrr ?? 0), currency, locale) })}
         </p>
       </section>
 

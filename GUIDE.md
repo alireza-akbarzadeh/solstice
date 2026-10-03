@@ -177,6 +177,16 @@ password, …) are built last, composed from existing sections in the same langu
 - Node 22+: `pnpm test:cms` checks URL parsing and curriculum validation. `pnpm test:cms:db` creates isolated fixtures in the configured database, checks CMS mutations and progress guards, and cleans up those fixtures.
 
 
+### Membership plans
+
+Open `/instructor/plans`. Each plan has an English and Persian name, description, optional badge and feature list, a price per billing period (1, 3, 6 or 12 months) and a free trial in days (0 means members pay straight away). **Recommended** preselects the plan at checkout, and its trial is the one quoted across the site. Hidden plans leave the membership page but members already on them keep them; a plan with members can't be deleted, and at least one plan stays on sale. The currency (USD, EUR, GBP or toman) is site-wide; changing it does not convert prices.
+
+On a new database run `pnpm db:seed:plans`; it creates `solstice_membership_plan` and `solstice_setting` and imports the original monthly/annual plans without overwriting edits. The editor uses react-hook-form with the shared zod schema in `modules/memberships/plan-schemas.ts`.
+
+### Community moderation
+
+Members' reflections and replies wait for approval at `/instructor/community` (the **Awaiting approval** view opens first; the sidebar badge counts them). Until approved, only the author — who sees a "waiting for approval" note — and the instructor can read them. **Approve** publishes to the circle and notifies the author; **Reject** keeps it visible only to its author, and can be reversed from **Not approved**. The instructor's own posts and private notes skip review. On an existing database run `pnpm db:seed:moderation` once to add the `status` column (existing reflections stay approved).
+
 ### Website pages and offers
 
 Open `/instructor/pages` (or `/fa/instructor/pages`). The **Website and app pages** section edits 16 existing content templates, including About, Home, Membership, legal text, brand/navigation/footer and member-facing copy. Expand a section to edit the English and Persian fields together. About also exposes its photos, story, credentials, milestones and FAQs; repeatable items can be added, moved and removed. Collection items still use their practice, program or journal editor.

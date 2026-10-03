@@ -1,8 +1,11 @@
 "use client";
 
 import {
+  CheckIcon,
   ChevronDownIcon,
   ClockIcon,
+  HourglassIcon,
+  XIcon,
   EllipsisIcon,
   GlobeIcon,
   HeartIcon,
@@ -32,13 +35,14 @@ import { usePracticeStage } from "@/modules/practices/components/practice-stage"
 import {
   likeReflection,
   hideReflection,
+  moderateReflections,
   pinReflection,
   postReflection,
   removeReflection,
 } from "../actions";
 import { REFLECTION_MAX_LENGTH } from "../schemas";
 import type { ReflectAccess } from "../server/access";
-import { type ReflectionTag, reflectionTags, somaticTags } from "../types";
+import { type ReflectionStatus, type ReflectionTag, reflectionTags, somaticTags } from "../types";
 
 export type ReflectionView = {
   id: number;
@@ -58,6 +62,8 @@ export type ReflectionView = {
   pinned: boolean;
   /** Taken off the circle by the instructor; shown struck-through to them. */
   hidden: boolean;
+  /** Moderation; only the author and the instructor ever see a non-approved one. */
+  status: ReflectionStatus;
   ago: string;
   likes: number;
   liked: boolean;
@@ -307,7 +313,7 @@ function Composer({ practiceSlug }: { practiceSlug: string | null }) {
         setBody("");
         setTag(null);
         setWithTime(false);
-        toast.success(t(isPrivate ? "sharedPrivately" : "shared"));
+        toast.success(t(result.status === "pending" ? "sentForReview" : isPrivate ? "sharedPrivately" : "shared"));
       } else toast.error(errorMessage(t, result.error));
     });
   };
@@ -461,6 +467,7 @@ function ReflectionItem({
       if (result.ok) {
         setReply("");
         setReplying(false);
+        if (result.status === "pending") toast.success(t("sentForReview"));
       } else toast.error(errorMessage(t, result.error));
     });
   };
@@ -472,6 +479,13 @@ function ReflectionItem({
     });
 
   const canPin = isInstructor && !nested;
+  const reviewing = reflection.status !== "approved";
+  const moderate = (status: "approved" | "rejected") =>
+    startTransition(async () => {
+      const result = await moderateReflections({ ids: [reflection.id], status });
+      if (result.ok) toast.success(t(status === "approved" ? "approvedToast" : "rejectedToast"));
+      else toast.error(errorMessage(t, result.error));
+    });
   const moment =
     reflection.atSeconds !== null ? (
       <span dir="ltr" className="tabular-nums">
@@ -485,6 +499,7 @@ function ReflectionItem({
         "space-y-2 rounded-xl",
         nested ? "bg-surface-container/60 ms-3 p-2.5" : "p-3.5 shadow-2xs",
         !nested && (featured ? "bg-primary-fixed/30" : "bg-surface/70"),
+        reviewing && "ring-1 ring-secondary-fixed-dim",
         pending && "opacity-70",
       )}
     >
@@ -548,6 +563,18 @@ function ReflectionItem({
             <span className="font-label-sm text-outline inline-flex items-center gap-1 text-[10px]">
               <LockIcon className="size-3" />
               {t("privateBadge")}
+            </span>
+          )}
+          {reflection.status === "pending" && (
+            <span className="font-label-sm bg-secondary-fixed text-on-secondary-fixed inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold">
+              <HourglassIcon className="size-3" />
+              {t("status.pending")}
+            </span>
+          )}
+          {reflection.status === "rejected" && (
+            <span className="font-label-sm bg-error-container text-on-error-container inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold">
+              <XIcon className="size-3" />
+              {t("status.rejected")}
             </span>
           )}
         </div>
@@ -632,6 +659,35 @@ function ReflectionItem({
         {reflection.body}
       </p>
 
+      {/* The review workflow: approve puts it on the circle, reject keeps it with its author. */}
+      {isInstructor && reviewing && (
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => moderate("approved")}
+            className="bg-primary font-label-sm text-on-primary hover:bg-primary-container inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-60"
+          >
+            <CheckIcon className="size-3.5" />
+            {t("approve")}
+          </button>
+          {reflection.status === "pending" && (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => moderate("rejected")}
+              className="bg-surface-container font-label-sm text-on-surface-variant hover:bg-surface-container-high inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-60"
+            >
+              <XIcon className="size-3.5" />
+              {t("reject")}
+            </button>
+          )}
+        </div>
+      )}
+      {!isInstructor && reviewing && (
+        <p className="font-body-sm text-outline text-xs">{t(reflection.status === "pending" ? "status.pendingNote" : "status.rejectedNote")}</p>
+      )}
+
       {!nested && (
         <div className="text-outline flex items-center gap-3 pt-0.5 text-xs">
           <button
@@ -646,7 +702,7 @@ function ReflectionItem({
             <HeartIcon className={cn("size-3.5", liked && "fill-current")} />
             {t("held", { count: likes })}
           </button>
-          {canReply && (
+          {canReply && (!reviewing || isInstructor) && (
             <button
               type="button"
               onClick={() => setReplying((v) => !v)}

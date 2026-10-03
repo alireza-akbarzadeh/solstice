@@ -11,6 +11,10 @@ export const somaticTags: ReflectionTag[] = ["epiphany", "breath", "release"];
 
 export type ReflectionVisibility = "circle" | "private";
 
+/** Moderation: members' circle reflections wait for the instructor before anyone else sees them. */
+export const reflectionStatuses = ["pending", "approved", "rejected"] as const;
+export type ReflectionStatus = (typeof reflectionStatuses)[number];
+
 export type Reflection = {
   id: number;
   /** Null for posts made in the community circle itself. */
@@ -28,6 +32,7 @@ export type Reflection = {
   pinned: boolean;
   /** Taken off the circle by the instructor; the author still sees their own. */
   hidden: boolean;
+  status: ReflectionStatus;
   createdAt: Date;
   likes: number;
   likedByViewer: boolean;

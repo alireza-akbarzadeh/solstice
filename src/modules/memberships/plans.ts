@@ -1,20 +1,74 @@
-import type { BillingPlan } from "@/infrastructure/payment";
+import type { Localized } from "@/lib/localized";
 
-// TODO(memberships): replace with MembershipPlan rows once pricing is managed in the app.
-// Single source for displayed prices — the Stitch screens disagree ($24 vs $48 / month).
-export const sanctuaryPlan = {
-  monthlyUsd: 24,
-  annualUsd: 220,
-  trialDays: 14,
-} as const;
+// Membership plans are rows the instructor manages at /instructor/plans
+// (solstice_membership_plan). This file holds what both server and client need: the shape,
+// the currencies the studio offers, and price formatting.
 
-export const billingPlans: Record<BillingPlan, { priceUsd: number; interval: "month" | "year"; monthlyEquivalentUsd: number }> = {
-  monthly: { priceUsd: sanctuaryPlan.monthlyUsd, interval: "month", monthlyEquivalentUsd: sanctuaryPlan.monthlyUsd },
-  annual: {
-    priceUsd: sanctuaryPlan.annualUsd,
-    interval: "year",
-    monthlyEquivalentUsd: Math.round((sanctuaryPlan.annualUsd / 12) * 100) / 100,
-  },
+/** One currency for the whole site; "IRT" is the Iranian toman, which Intl has no code for. */
+export const currencies = ["USD", "EUR", "GBP", "IRT"] as const;
+export type Currency = (typeof currencies)[number];
+export const DEFAULT_CURRENCY: Currency = "USD";
+export const isCurrency = (value: unknown): value is Currency =>
+  currencies.includes(value as Currency);
+
+/** Billing periods the studio offers, in months. */
+export const billingIntervals = [1, 3, 6, 12] as const;
+
+export type PlanStatus = "active" | "hidden";
+
+export type MembershipPlan = {
+  id: string;
+  status: PlanStatus;
+  featured: boolean;
+  sortOrder: number;
+  name: Localized;
+  description: Localized;
+  badge: Localized;
+  features: Localized[];
+  price: number;
+  intervalMonths: number;
+  trialDays: number;
 };
 
-export const isBillingPlan = (value: unknown): value is BillingPlan => value === "monthly" || value === "annual";
+/** What a plan costs per month, used to compare plans and to project revenue. */
+export const monthlyEquivalent = (
+  plan: Pick<MembershipPlan, "price" | "intervalMonths">,
+) => plan.price / plan.intervalMonths;
+
+type NumberFormatter = {
+  number: (value: number, options?: Intl.NumberFormatOptions) => string;
+};
+
+/**
+ * Formats an amount in the site currency. Whole amounts drop the decimals ($24, not $24.00);
+ * tomans are always whole and written after the number, as Iranian shops do.
+ */
+export function formatMoney(
+  format: NumberFormatter,
+  amount: number,
+  currency: Currency,
+  locale: string,
+) {
+  if (currency === "IRT") {
+    return `${format.number(Math.round(amount), { maximumFractionDigits: 0 })} ${locale === "fa" ? "تومان" : "Toman"}`;
+  }
+  const digits = Number.isInteger(Math.round(amount * 100) / 100) ? 0 : 2;
+  return format.number(amount, {
+    style: "currency",
+    currency,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
+const DAY = 24 * 60 * 60 * 1000;
+
+/** The end of one billing period from `from`, in calendar months. */
+export function addBillingPeriod(from: Date, months: number) {
+  const end = new Date(from);
+  end.setUTCMonth(end.getUTCMonth() + months);
+  return end;
+}
+
+export const addDays = (from: Date, days: number) =>
+  new Date(from.getTime() + days * DAY);

@@ -120,8 +120,7 @@
       "benefit1": "Unlimited HD Streaming",
       "benefit2": "Full Pranayama & Sound Curriculums",
       "benefit3": "Cancel Anytime",
-      "perMonth": "/ month",
-      "trial": "14-Day Sanctuary Trial",
+      "trial": "{days, number}-Day Sanctuary Trial",
       "cardBody": "Full immersion into the complete archive, lineage discourse, and monthly direct mentor calls with Elena.",
       "cta": "Unlock Complete Library",
       "note": "Seamless sign-in with your current profile"
@@ -255,11 +254,11 @@
       "benefit3": "Weekly live Q&A and practice sangha",
       "benefit4": "Cancel or pause effortlessly at any time",
       "tier": "Membership Tier",
-      "trial": "14 Days Free",
-      "perMonth": "/ month",
-      "annual": "Or choose annual sanctuary at <strong>{price} / year</strong> (saving 24% with full offline practice downloads).",
-      "cta": "Begin 14-Day Free Sanctuary",
-      "reassurance": "No commitment. No questions asked."
+      "trial": "{days, number} Days Free",
+      "annual": "Or choose {name} at <strong>{price} {per}</strong>.",
+      "cta": "Begin {days, number}-Day Free Sanctuary",
+      "reassurance": "No commitment. No questions asked.",
+      "ctaJoin": "Become a member"
     }
   },
   "Notifications": {
@@ -368,7 +367,7 @@
       "benefit3": "Live Sunday Satsang & monthly workshops with Elena",
       "benefit4": "A supportive Sangha community circle",
       "passTitle": "{days, number}-Day Complimentary Pass",
-      "passBody": "{price}/mo thereafter • Cancel anytime in one click"
+      "passBody": "Then {price} {per} • Cancel anytime in one click"
     },
     "errors": {
       "invalidCredentials": "That email and password don’t match.",
@@ -414,26 +413,6 @@
     "eyebrow": "A gentle dedication to self",
     "title": "Choose your cadence of practice",
     "lede": "Begin with a two-week complimentary immersion into Elena Vance’s complete cinematic archive. No charge will be made today.",
-    "perMonth": "/ month",
-    "plans": {
-      "annual": {
-        "name": "Annual Sanctuary Pass",
-        "badge": "Recommended · Save 24%",
-        "body": "An uninterrupted year of mindful somatic alignment and seasonal retreats.",
-        "billing": "Billed annually as {price} after {days, number}-day trial"
-      },
-      "monthly": {
-        "name": "Monthly Sanctuary Pass",
-        "body": "Complete freedom to practice month by month. Pause or cancel in one click.",
-        "billing": "Billed monthly after {days, number}-day trial"
-      }
-    },
-    "features": {
-      "f1": "140+ cinematic practices",
-      "f2": "Offline downloads in the app",
-      "f3": "Live Sunday Satsangs with Elena",
-      "f4": "All structured immersions"
-    },
     "timeline": {
       "eyebrow": "Unhurried assurance",
       "title": "Transparent {days, number}-day timeline",
@@ -443,8 +422,7 @@
       "noticeTitle": "Gentle notice",
       "noticeBody": "A reminder email before your trial concludes.",
       "renewTitle": "Deepened path",
-      "renewAnnual": "Renews at {price}/year unless canceled online.",
-      "renewMonthly": "Renews at {price}/month unless canceled online."
+      "renew": "Renews at {price} {per} unless canceled online."
     },
     "promise": {
       "label": "Founder’s personal promise",
@@ -457,10 +435,6 @@
       "testModeBody": "You’ll pay on a test page with a test card — no real money moves.",
       "ledger": "Order summary",
       "trialLine": "{days, number}-day free sanctuary access",
-      "renewsAnnual": "Renews on day {days, number} (annual)",
-      "renewsMonthly": "Renews on day {days, number} (monthly)",
-      "perYear": "/yr",
-      "perMonth": "/mo",
       "taxes": "Taxes",
       "dueNow": "Due right now",
       "firstCharge": "First charge on day {days, number}",
@@ -468,29 +442,36 @@
       "ctaGuest": "Create account to continue",
       "guestNote": "Your plan choice is kept while you create your account.",
       "instant": "Instant studio unlock",
-      "cancelAnytime": "One-click cancel"
+      "cancelAnytime": "One-click cancel",
+      "renews": "Renews on day {days, number}",
+      "firstChargeNow": "Your first period starts today",
+      "ctaNow": "Join now for {price}"
     },
     "active": {
       "title": "You’re a member",
-      "trial": "Your free trial ends on {date}. Your {plan} membership starts then.",
-      "renews": "Your {plan} membership renews on {date}.",
+      "trial": "Your free trial ends on {date}. Your {plan} starts then.",
+      "renews": "Your {plan} renews on {date}.",
       "canceled": "Canceled — your access continues until {date}.",
       "instructor": "You have full access as the studio’s instructor.",
       "continue": "Continue your practice",
       "cancel": "Cancel membership",
-      "resume": "Keep my membership",
-      "planNames": {
-        "monthly": "monthly",
-        "annual": "annual"
-      }
+      "resume": "Keep my membership"
     },
     "welcome": {
       "metaTitle": "Welcome",
       "title": "Welcome to the sanctuary",
       "body": "Your {days, number}-day free trial is active. Every practice is now open to you.",
+      "bodyPaid": "Your membership is active. Every practice is now open to you.",
       "continue": "Continue to your practice",
       "browse": "Browse the library"
-    }
+    },
+    "per": "/ {months, plural, =1 {month} =12 {year} other {# months}}",
+    "billedEvery": "{months, plural, =1 {Billed monthly} =12 {Billed yearly} other {Billed every # months}}",
+    "billingTrial": "{billed} after a {days, number}-day free trial",
+    "billingNow": "{billed}, starting today",
+    "perMonthEquivalent": "{price} / month",
+    "noPlansTitle": "Membership opens soon",
+    "noPlansBody": "There are no plans on offer right now. Please check back shortly."
   },
   "Account": {
     "menu": "Account menu",
@@ -509,8 +490,6 @@
       "title": "Test payment",
       "badge": "Test mode",
       "body": "Payments aren’t connected yet. Pay with a test card below — no real money moves.",
-      "afterTrialMonth": "{price}/mo after {days, number} days",
-      "afterTrialYear": "{price}/yr after {days, number} days",
       "dueToday": "Due today",
       "account": "Account",
       "cardsTitle": "Test cards",
@@ -526,7 +505,10 @@
       "errors": {
         "declined": "Your card was declined (test card). Try the “Payment succeeds” card.",
         "unknownCard": "Use one of the test cards above."
-      }
+      },
+      "afterTrial": "{price} {per} after {days, number} days",
+      "noTrial": "{price} {per}",
+      "payNow": "Pay {price}"
     },
     "panel": {
       "open": "Open test panel",
@@ -653,7 +635,9 @@
     "sendReply": "Reply",
     "notification": {
       "title": "{name} replied to your reflection",
-      "body": "Open the practice to read the reply."
+      "body": "Open the practice to read the reply.",
+      "approvedTitle": "Your reflection is live",
+      "approvedBody": "Elena approved it — the circle can read it now."
     },
     "circle": {
       "eyebrow": "Community feed",
@@ -662,7 +646,18 @@
       "after": "After {title}"
     },
     "hide": "Hide from the circle",
-    "show": "Show in the circle"
+    "show": "Show in the circle",
+    "sentForReview": "Thank you — your reflection will appear once Elena has approved it.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approvedToast": "Approved — it's now on the circle",
+    "rejectedToast": "Not approved — only its author sees it",
+    "status": {
+      "pending": "Waiting for approval",
+      "rejected": "Not approved",
+      "pendingNote": "Only you can see this until it's approved.",
+      "rejectedNote": "This wasn't approved for the circle. Only you can see it."
+    }
   },
   "PracticeActions": {
     "save": "Save to Sanctuary",
@@ -1094,20 +1089,18 @@
       "privacy": "Privacy"
     },
     "plan": {
-      "billedYearly": "Billed yearly",
-      "billedMonthly": "Billed monthly",
-      "priceAnnual": "{perMonth} / month ({total} billed annually).",
-      "priceMonthly": "{price} / month, billed monthly.",
       "renew": "Renew membership",
-      "switchMonthly": "Switch to monthly ({price}/mo) at renewal",
-      "switchAnnual": "Switch to annual ({price}/yr) at renewal",
       "noneTitle": "You don’t have a membership",
       "noneBody": "Open practices are yours to keep. Members-only practices, programs and the circle open with membership.",
       "join": "See membership",
       "cancelNote": "Leaving? You keep access until the end of the period.",
       "resumeNote": "Changed your mind? Your membership can continue as before.",
       "cancel": "Cancel membership",
-      "resume": "Keep my membership"
+      "resume": "Keep my membership",
+      "price": "{price} {per}",
+      "priceEquivalent": "{price} {per} ({perMonth} / month).",
+      "switchTo": "Switch to {name} ({price} {per}) at renewal",
+      "otherPlans": "Other plans"
     },
     "ledger": {
       "title": "Billing summary",
@@ -1188,6 +1181,7 @@
       "content": "Content",
       "people": "People",
       "business": "Business",
+      "plans": "Plans",
       "overview": "Overview",
       "practices": "Practices",
       "journal": "Journal",
@@ -1197,7 +1191,8 @@
       "revenue": "Revenue",
       "site": "Public sanctuary",
       "programs": "Programs",
-      "pages": "Pages"
+      "pages": "Pages",
+      "subscribers": "Subscribers"
     },
     "overview": {
       "metaTitle": "Studio overview",
@@ -1411,7 +1406,7 @@
         "accounts": "Accounts",
         "accountsNote": "Everyone with a sign-in",
         "paying": "Paying members",
-        "split": "{monthly, number} monthly · {annual, number} annual",
+        "split": "Across {plans, plural, one {# plan} other {# plans}}",
         "trialing": "On trial",
         "trialingNote": "Inside the free window",
         "attention": "Needs attention",
@@ -1422,9 +1417,7 @@
         "none": "No membership",
         "trial": "Trial",
         "pastDue": "Past due",
-        "canceled": "Lapsed",
-        "monthly": "Monthly",
-        "annual": "Annual"
+        "canceled": "Lapsed"
       },
       "table": {
         "practitioner": "Practitioner",
@@ -1462,8 +1455,6 @@
         "minutes": "Minutes",
         "saves": "Saved",
         "plans": {
-          "monthly": "Monthly",
-          "annual": "Annual",
           "none": "None"
         },
         "states": {
@@ -1531,23 +1522,14 @@
         "title": "Memberships started"
       },
       "tiers": {
-        "monthly": {
-          "label": "Monthly sanctuary",
-          "interval": "month",
-          "body": "Month to month, after the free trial."
-        },
-        "annual": {
-          "label": "Annual patron",
-          "interval": "year",
-          "body": "A year at once, at a gentler monthly rate."
-        },
         "trial": {
           "label": "Free trial",
           "days": "{count, number} days",
           "body": "Full access before the first charge."
         },
         "members": "{count, number} members",
-        "contributes": "{amount} / mo"
+        "contributes": "{amount} / mo",
+        "hidden": "Hidden from sale — existing members keep it."
       },
       "ledger": {
         "title": "Membership ledger",
@@ -1573,7 +1555,7 @@
       "metaTitle": "Community moderation",
       "eyebrow": "Community moderation",
       "title": "What the circle is saying",
-      "lede": "{awaiting, number} reflections are waiting for you, out of {total, number} threads.",
+      "lede": "{review, plural, =0 {Nothing to approve} one {# reflection to approve} other {# reflections to approve}} · {awaiting, number} waiting for a reply · {total, number} threads.",
       "stats": {
         "awaiting": "Awaiting reply",
         "awaitingNote": "Questions and private notes",
@@ -1582,19 +1564,28 @@
         "private": "Private to you",
         "privateNote": "Only you and the author",
         "pinned": "Pinned",
-        "pinnedNote": "Held at the top"
+        "pinnedNote": "Held at the top",
+        "review": "To approve",
+        "reviewNote": "Members' reflections waiting for you"
       },
       "views": {
+        "review": "Awaiting approval",
         "awaiting": "Awaiting reply",
         "all": "Everything",
         "private": "Private",
         "pinned": "Pinned",
-        "circle": "Circle posts"
+        "circle": "Circle posts",
+        "rejected": "Not approved"
       },
       "clearTitle": "Nothing is waiting",
       "clearBody": "Every question and private note has an answer. The circle is tended.",
       "emptyTitle": "Nothing in this view",
-      "emptyBody": "Try another filter."
+      "emptyBody": "Try another filter.",
+      "reviewClearTitle": "Nothing to approve",
+      "reviewClearBody": "New reflections from members appear here before anyone else sees them.",
+      "approveAll": "Approve all ({count, number})",
+      "approvedAll": "{count, plural, one {# reflection} other {# reflections}} approved",
+      "approveFailed": "Approving didn't work. Please try again."
     },
     "posts": {
       "metaTitle": "Announcements",
@@ -2226,6 +2217,206 @@
       "previewTitle": "Draft preview: {title}",
       "menuPlacement": "In the main menu",
       "footerPlacement": "In the footer"
+    },
+    "subscribers": {
+      "metaTitle": "Newsletter subscribers · Studio",
+      "eyebrow": "Newsletter",
+      "title": "Subscribers",
+      "lede": "Addresses from the footer and journal sign-up forms. Export them as a CSV to use in your mailing tool.",
+      "export": "Export CSV",
+      "searchPlaceholder": "Search by email…",
+      "stats": {
+        "total": "Subscribers",
+        "totalNote": "Every address on the list",
+        "languages": "English / Persian",
+        "languagesNote": "The site language they signed up in"
+      },
+      "emptyTitle": "No subscribers yet",
+      "emptyBody": "Addresses appear here when visitors sign up from the footer or the journal.",
+      "noMatchTitle": "No matching addresses",
+      "noMatchBody": "Try another part of the email address.",
+      "capped": "Showing the newest {count, number}. The CSV export includes everyone.",
+      "table": {
+        "email": "Email",
+        "details": "Language & form",
+        "date": "Signed up",
+        "actions": "Actions"
+      },
+      "locale": {
+        "en": "English",
+        "fa": "Persian"
+      },
+      "source": {
+        "footer": "Footer",
+        "journal": "Journal"
+      },
+      "remove": "Remove",
+      "removeTitle": "Remove this subscriber?",
+      "removeBody": "{email} will be taken off the newsletter list. They can sign up again at any time.",
+      "removeConfirm": "Remove",
+      "cancel": "Cancel",
+      "removed": "{email} removed",
+      "actionFailed": "That didn't work. Please try again."
+    },
+    "plans": {
+      "metaTitle": "Membership plans · Studio",
+      "eyebrow": "Membership",
+      "title": "Plans",
+      "lede": "{onSale, plural, =0 {No plans on sale} one {# plan on sale} other {# plans on sale}} of {total, number}. Prices, trials and features show on the membership page, checkout and across the site.",
+      "new": "New plan",
+      "edit": "Edit",
+      "more": "More actions for {name}",
+      "recommended": "Recommended",
+      "status": {
+        "active": "On sale",
+        "hidden": "Hidden"
+      },
+      "members": "{count, plural, =0 {No members} one {# member} other {# members}}",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "moved": "Order updated",
+      "recommend": "Make recommended",
+      "recommendedNow": "{name} is now recommended",
+      "hide": "Hide from sale",
+      "show": "Put on sale",
+      "hiddenNow": "{name} is hidden from sale",
+      "shownNow": "{name} is on sale",
+      "emptyTitle": "No plans yet",
+      "emptyBody": "Create a plan so visitors can become members.",
+      "pickTitle": "Choose a plan to edit",
+      "pickBody": "Or create a new one. Changes appear on the public site as soon as you save.",
+      "currency": {
+        "title": "Currency",
+        "body": "Every price on the site uses this currency. Changing it doesn't convert prices — update each plan's price afterwards.",
+        "label": "Site currency",
+        "save": "Save currency",
+        "saved": "Currency saved",
+        "failed": "The currency couldn't be saved.",
+        "names": {
+          "USD": "US dollar ($)",
+          "EUR": "Euro (€)",
+          "GBP": "British pound (£)",
+          "IRT": "Iranian toman (تومان)"
+        },
+        "short": {
+          "USD": "USD",
+          "EUR": "EUR",
+          "GBP": "GBP",
+          "IRT": "Toman"
+        }
+      },
+      "editor": {
+        "newTitle": "New plan",
+        "title": "Edit plan",
+        "membersOnPlan": "{count, plural, =0 {No members are on this plan.} one {# member is on this plan.} other {# members are on this plan.}}",
+        "close": "Close",
+        "create": "Create plan",
+        "save": "Save changes",
+        "created": "Plan created",
+        "saved": "Plan saved",
+        "delete": "Delete",
+        "keep": "Keep plan",
+        "deleted": "Plan deleted",
+        "deleteTitle": "Delete “{name}”?",
+        "deleteBody": "The plan is removed from the site. This can't be undone.",
+        "deleteInUse": "{count, plural, one {# member is} other {# members are}} on this plan, so it can't be deleted. Hide it from sale instead — they keep it.",
+        "addFeature": "Add feature",
+        "removeFeature": "Remove feature",
+        "feature": "Feature {number, number}",
+        "intervals": "{months, plural, =1 {Every month} =12 {Every year} other {Every # months}}",
+        "fields": {
+          "name": "Plan name",
+          "description": "Short description",
+          "price": "Price per billing period",
+          "priceHint": "What members pay each period, before any trial.",
+          "interval": "Billing period",
+          "trial": "Free trial (days)",
+          "trialHint": "0 for no trial — members pay straight away. Up to 90.",
+          "badge": "Badge",
+          "badgeHint": "Optional highlight such as “Best value”. Leave empty for none.",
+          "features": "Features",
+          "featuresHint": "Shown as a checklist on the plan card.",
+          "onSale": "On sale",
+          "onSaleHint": "Hidden plans disappear from the membership page; members already on them keep them.",
+          "featured": "Recommended",
+          "featuredHint": "Preselected at checkout. Its trial is the one mentioned across the site."
+        },
+        "errors": {
+          "invalid": "Check the plan: a name in both languages, a valid price, and a trial of 0–90 days.",
+          "forbidden": "Only the instructor can change plans.",
+          "failed": "Something went wrong. Please try again.",
+          "notFound": "This plan no longer exists.",
+          "inUse": "Members are on this plan, so it can't be deleted. Hide it instead.",
+          "lastActive": "At least one plan must stay on sale."
+        },
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "validation": {
+          "name": "Enter the plan name in English and Persian.",
+          "description": "Keep the description under 400 characters.",
+          "price": "Enter a price of 0 or more, with at most two decimals.",
+          "trial": "Enter whole days from 0 to 90.",
+          "badge": "Keep the badge under 40 characters.",
+          "feature": "Fill in this feature in both languages, or remove it."
+        }
+      }
+    },
+    "command": {
+      "open": "Open search",
+      "trigger": "Search or jump to…",
+      "title": "Search the studio",
+      "description": "Find pages, content, members and actions",
+      "placeholder": "Search practices, members, pages, plans…  or type a command",
+      "searching": "Searching…",
+      "empty": "Nothing found. Try another word.",
+      "here": "You're here",
+      "switchLanguage": "Switch to Persian",
+      "exportSubscribers": "Export newsletter subscribers (CSV)",
+      "groups": {
+        "recent": "Recent",
+        "goto": "Go to",
+        "create": "Create",
+        "site": "Public site",
+        "tools": "Tools",
+        "practices": "Practices",
+        "programs": "Programs",
+        "journal": "Journal essays",
+        "pages": "Website pages",
+        "plans": "Membership plans",
+        "members": "Members",
+        "reflections": "Reflections",
+        "subscribers": "Subscribers"
+      },
+      "create": {
+        "practice": "New practice",
+        "program": "New program",
+        "essay": "New journal essay",
+        "page": "New page",
+        "plan": "New membership plan",
+        "announcement": "New announcement"
+      },
+      "site": {
+        "home": "Home",
+        "practices": "Practice library",
+        "programs": "Programs",
+        "journal": "Journal",
+        "about": "About",
+        "membership": "Membership",
+        "community": "Community"
+      },
+      "status": {
+        "draft": "Draft",
+        "published": "Published",
+        "active": "On sale",
+        "hidden": "Hidden",
+        "pending": "Awaiting approval",
+        "approved": "Approved",
+        "rejected": "Not approved"
+      }
+    },
+    "breadcrumb": {
+      "new": "New",
+      "editing": "{name}"
     }
   },
   "Legal": {

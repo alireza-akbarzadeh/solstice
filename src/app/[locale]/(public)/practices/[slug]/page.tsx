@@ -32,7 +32,7 @@ import { isFavorite } from "@/modules/progress/server/favorites";
 import { ProgramContextCard } from "@/modules/programs/components/program-context-card";
 import { resolveProgramDay } from "@/modules/programs/server/get-program";
 import { getProgramProgress } from "@/modules/programs/server/progress";
-import { sanctuaryPlan } from "@/modules/memberships/plans";
+import { getPlanCatalog } from "@/modules/memberships/server/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { resolvePracticeAccess, toPlaybackGrant } from "@/modules/practices/server/access";
 import { getPractice, getRelatedPractices } from "@/modules/practices/server/get-practice";
@@ -115,7 +115,7 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
     signedIn: !!viewer.user,
     primaryHref: viewer.user ? membershipHref : withNext("/sign-up", membershipHref),
     signInHref: withNext("/sign-in", here),
-    trialDays: sanctuaryPlan.trialDays,
+    trialDays: (await getPlanCatalog()).trialDays,
   };
   const categoryLabel = tPractice(`categories.${practice.category}`);
   const durationSeconds = practice.durationMinutes * 60;

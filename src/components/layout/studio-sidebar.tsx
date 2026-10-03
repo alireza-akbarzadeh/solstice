@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  ArrowUpRightIcon,
-  BookOpenIcon,
-  CreditCardIcon,
-  Flower2Icon,
-  FileTextIcon,
-  LayoutGridIcon,
-  MegaphoneIcon,
-  MessagesSquareIcon,
-  UsersIcon,
-} from "lucide-react";
+import { ArrowUpRightIcon } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -30,68 +20,9 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
 
-/** Unread-style counts the sidebar surfaces, so the instructor sees work without opening pages. */
-export type StudioBadges = { drafts: number; awaiting: number };
+import { studioNavGroups as groups, type StudioBadges } from "./studio-nav";
 
-const groups = [
-  {
-    label: "studio",
-    items: [
-      {
-        href: "/instructor",
-        label: "overview",
-        icon: LayoutGridIcon,
-        exact: true,
-      },
-    ],
-  },
-  {
-    label: "content",
-    items: [
-      {
-        href: "/instructor/videos",
-        label: "practices",
-        icon: Flower2Icon,
-        badge: "drafts",
-      },
-      { href: "/instructor/programs", label: "programs", icon: BookOpenIcon },
-      { href: "/instructor/journal", label: "journal", icon: BookOpenIcon },
-      { href: "/instructor/pages", label: "pages", icon: FileTextIcon },
-    ],
-  },
-  {
-    label: "people",
-    items: [
-      { href: "/instructor/members", label: "members", icon: UsersIcon },
-      {
-        href: "/instructor/community",
-        label: "community",
-        icon: MessagesSquareIcon,
-        badge: "awaiting",
-      },
-      {
-        href: "/instructor/posts",
-        label: "announcements",
-        icon: MegaphoneIcon,
-      },
-    ],
-  },
-  {
-    label: "business",
-    items: [
-      { href: "/instructor/revenue", label: "revenue", icon: CreditCardIcon },
-    ],
-  },
-] as const satisfies readonly {
-  label: string;
-  items: readonly {
-    href: string;
-    label: string;
-    icon: typeof LayoutGridIcon;
-    exact?: true;
-    badge?: keyof StudioBadges;
-  }[];
-}[];
+export type { StudioBadges } from "./studio-nav";
 
 /**
  * The studio's primary navigation. Collapses to icons on desktop and to a sheet on
@@ -147,12 +78,12 @@ export function StudioSidebar({ badges }: { badges: StudioBadges }) {
               <SidebarMenu>
                 {group.items.map((item) => {
                   const active =
-                    "exact" in item
+                    item.exact
                       ? pathname === item.href
                       : pathname === item.href ||
                         pathname.startsWith(`${item.href}/`);
                   const count =
-                    "badge" in item && item.badge ? badges[item.badge] : 0;
+                    item.badge ? badges[item.badge] : 0;
                   return (
                     <SidebarMenuItem key={item.href}>
                       <SidebarMenuButton

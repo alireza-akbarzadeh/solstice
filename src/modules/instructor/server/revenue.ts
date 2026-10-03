@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 
-import { billingPlans } from "@/modules/memberships/plans";
+import { getAllPlans, planMonthlyValue } from "@/modules/memberships/server/plans";
 import { db } from "@/server/db";
 import { memberships, user } from "@/server/db/schema";
 
@@ -10,11 +10,12 @@ export type LedgerEntry = {
   name: string;
   email: string;
   image: string | null;
-  plan: "monthly" | "annual";
+  plan: string;
   status: "trialing" | "active" | "past_due" | "canceled";
   provider: string;
   cancelAtPeriodEnd: boolean;
-  amountUsd: number;
+  /** Price of the plan in the site currency; 0 while trialing. */
+  amount: number;
   startedAt: Date;
   currentPeriodEnd: Date;
   trialEndsAt: Date | null;
@@ -22,9 +23,10 @@ export type LedgerEntry = {
 
 /**
  * Every membership on record, newest first. With the mock PaymentProvider nothing was
- * actually charged, so `amountUsd` is the plan's list price, not a settled transaction.
+ * actually charged, so `amount` is the plan's list price, not a settled transaction.
  */
 export async function getLedger(limit = 100): Promise<LedgerEntry[]> {
+  const plans = await getAllPlans();
   const rows = await db
     .select({
       id: memberships.id,
@@ -45,7 +47,8 @@ export async function getLedger(limit = 100): Promise<LedgerEntry[]> {
     .orderBy(desc(memberships.createdAt))
     .limit(limit);
 
-  return rows.map((r) => ({ ...r, amountUsd: r.status === "trialing" ? 0 : billingPlans[r.plan].priceUsd }));
+  const price = (id: string) => plans.find((p) => p.id === id)?.price ?? 0;
+  return rows.map((r) => ({ ...r, amount: r.status === "trialing" ? 0 : price(r.plan) }));
 }
 
 export type RevenueMonth = { month: string; started: number; active: number; mrr: number };
@@ -55,6 +58,7 @@ export type RevenueMonth = { month: string; started: number; active: number; mrr
  * began on or before the month's end and its paid-through date had not passed.
  */
 export async function getRevenueSeries(months = 12): Promise<RevenueMonth[]> {
+  const plans = await getAllPlans();
   const rows = await db
     .select({
       plan: memberships.plan,
@@ -78,7 +82,7 @@ export async function getRevenueSeries(months = 12): Promise<RevenueMonth[]> {
       if (r.createdAt >= start && r.createdAt < end) started++;
       if (r.createdAt < end && r.currentPeriodEnd >= start) {
         active++;
-        if (r.status !== "trialing") mrr += billingPlans[r.plan].monthlyEquivalentUsd;
+        if (r.status !== "trialing") mrr += planMonthlyValue(plans, r.plan);
       }
     }
     series.push({ month: start.toISOString().slice(0, 7), started, active, mrr: Math.round(mrr * 100) / 100 });

@@ -25,7 +25,12 @@ export const testCards = {
 
 const DAY = 24 * 60 * 60 * 1000;
 
-export async function applyMembershipPreset(userId: string, preset: MembershipPreset, trialDays: number) {
+export async function applyMembershipPreset(
+  userId: string,
+  preset: MembershipPreset,
+  plan: { id: string; trialDays: number },
+) {
+  const trialDays = plan.trialDays || 14;
   assertTestMode();
   if (preset === "none") {
     await db.delete(memberships).where(eq(memberships.userId, userId));
@@ -42,7 +47,7 @@ export async function applyMembershipPreset(userId: string, preset: MembershipPr
   }[preset];
 
   const row = {
-    plan: "monthly" as const,
+    plan: plan.id,
     status: values.status as "trialing" | "active" | "past_due" | "canceled",
     provider: paymentProvider.id,
     providerSubscriptionId: `mock_${userId}`,

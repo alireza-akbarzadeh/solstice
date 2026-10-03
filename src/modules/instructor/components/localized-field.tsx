@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Localized } from "@/lib/localized";
@@ -21,6 +21,7 @@ export function LocalizedField({
   rows = 3,
   maxLength,
   disabled,
+  error,
 }: {
   label: string;
   description?: string;
@@ -30,12 +31,14 @@ export function LocalizedField({
   rows?: number;
   maxLength?: number;
   disabled?: boolean;
+  /** Validation message; marks both languages invalid. */
+  error?: string;
 }) {
   const t = useTranslations("Studio.locale");
   const Control = multiline ? Textarea : Input;
 
   return (
-    <Field>
+    <Field data-invalid={error ? true : undefined}>
       <FieldLabel>{label}</FieldLabel>
       <div className="gap-space-sm grid grid-cols-1 md:grid-cols-2">
         {(["en", "fa"] as const).map((locale) => (
@@ -49,6 +52,7 @@ export function LocalizedField({
               value={value[locale]}
               maxLength={maxLength}
               disabled={disabled}
+              aria-invalid={error ? true : undefined}
               rows={multiline ? rows : undefined}
               onChange={(
                 e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -58,6 +62,7 @@ export function LocalizedField({
         ))}
       </div>
       {description && <FieldDescription>{description}</FieldDescription>}
+      {error && <FieldError>{error}</FieldError>}
     </Field>
   );
 }

@@ -27,7 +27,9 @@ const initials = (name: string) =>
     .join("");
 
 /** The tier badge reads from the membership, because a row may have no membership at all. */
-function TierBadge({ member }: { member: MemberRow }) {
+export type StudioPlanOption = { id: string; name: string; active: boolean };
+
+function TierBadge({ member, plans }: { member: MemberRow; plans: StudioPlanOption[] }) {
   const t = useTranslations("Studio.members");
   if (member.role === "instructor")
     return (
@@ -40,11 +42,7 @@ function TierBadge({ member }: { member: MemberRow }) {
     return <Badge variant="destructive">{t("tiers.pastDue")}</Badge>;
   if (member.status === "canceled")
     return <Badge variant="outline">{t("tiers.canceled")}</Badge>;
-  return (
-    <Badge>
-      {t(member.plan === "annual" ? "tiers.annual" : "tiers.monthly")}
-    </Badge>
-  );
+  return <Badge>{plans.find((plan) => plan.id === member.plan)?.name ?? member.plan}</Badge>;
 }
 
 /**
@@ -54,9 +52,11 @@ function TierBadge({ member }: { member: MemberRow }) {
 export function MemberDirectory({
   members,
   selected,
+  plans,
 }: {
   members: MemberRow[];
   selected: string | null;
+  plans: StudioPlanOption[];
 }) {
   const t = useTranslations("Studio.members");
   const format = useFormatter();
@@ -103,7 +103,7 @@ export function MemberDirectory({
                     {member.email}
                   </p>
                 </div>
-                <TierBadge member={member} />
+                <TierBadge member={member} plans={plans} />
               </div>
 
               <dl className="mt-space-sm border-hairline pt-space-sm font-label-sm text-label-sm grid grid-cols-2 gap-x-3 gap-y-1 border-t">
@@ -208,7 +208,7 @@ export function MemberDirectory({
 
                   <TableCell>
                     <div className="flex flex-col items-start gap-1">
-                      <TierBadge member={member} />
+                      <TierBadge member={member} plans={plans} />
                       {member.cancelAtPeriodEnd && (
                         <span className="font-label-sm text-label-sm text-outline">
                           {t("table.leaving")}

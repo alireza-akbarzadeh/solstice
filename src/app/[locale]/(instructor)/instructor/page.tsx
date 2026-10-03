@@ -14,6 +14,8 @@ import { StudioPageHeader } from "@/modules/instructor/components/studio-page-he
 import { getLibrarySummary } from "@/modules/instructor/server/content";
 import { getRevenueSeries } from "@/modules/instructor/server/revenue";
 import { getStudioOverview } from "@/modules/instructor/server/studio";
+import { formatMoney } from "@/modules/memberships/plans";
+import { getBillingSettings } from "@/modules/memberships/server/plans";
 import { requireInstructor } from "@/modules/memberships/server/viewer";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/instructor">): Promise<Metadata> {
@@ -30,16 +32,17 @@ export default async function StudioOverviewPage({ params }: PageProps<"/[locale
   setRequestLocale(locale);
 
   const viewer = await requireInstructor(locale, "/instructor");
-  const [t, format, overview, library, series] = await Promise.all([
+  const [t, format, overview, library, series, { currency }] = await Promise.all([
     getTranslations("Studio.overview"),
     getFormatter(),
     getStudioOverview(),
     getLibrarySummary(),
     getRevenueSeries(6),
+    getBillingSettings(),
   ]);
 
-  const money = (n: number) => format.number(n, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-  const paying = overview.counts.monthly + overview.counts.annual;
+  const money = (n: number) => formatMoney(format, Math.round(n), currency, locale);
+  const paying = overview.counts.paying;
   const firstName = viewer.user.name.split(" ")[0] ?? viewer.user.name;
 
   return (

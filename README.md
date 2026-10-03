@@ -19,6 +19,7 @@ The instructor can:
 - Create, edit, publish and delete programs with weeks and practice days
 - Edit website copy and photos in English and Persian from the Pages editor
 - Create and publish landing pages for workshops, retreats and offers
+- Create and manage membership plans (price, billing period, free trial, features, currency)
 - Manage members
 - Publish announcements/posts
 - Moderate community content

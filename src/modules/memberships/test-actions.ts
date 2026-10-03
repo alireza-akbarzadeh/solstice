@@ -12,7 +12,7 @@ import { paymentProvider } from "@/infrastructure/payment";
 import { formText } from "@/lib/form-data";
 import { auth } from "@/server/better-auth";
 
-import { isBillingPlan, sanctuaryPlan } from "./plans";
+import { getPlanCatalog } from "./server/plans";
 import { startMembership } from "./server/memberships";
 import {
   applyMembershipPreset,
@@ -29,26 +29,28 @@ import { membershipPresets, type MembershipPreset } from "./test-presets";
 export async function completeTestCheckout(formData: FormData) {
   assertTestMode();
   const locale = await getLocale();
-  const plan = formData.get("plan");
+  const planId = formData.get("plan");
+  const plan = (await getPlanCatalog()).plans.find((p) => p.id === planId);
   const success = sameSiteUrl(formData.get("success"));
   const cancel = sameSiteUrl(formData.get("cancel"));
   const card = formText(formData, "card").replace(/\D/g, "");
 
   const viewer = await getViewer();
   if (!viewer.user) return redirect({ href: "/sign-in", locale });
-  if (!isBillingPlan(plan) || !success || !cancel) return redirect({ href: "/membership", locale });
+  if (!plan || !success || !cancel) return redirect({ href: "/membership", locale });
 
   const back = (error: string) =>
-    redirect({ href: { pathname: "/checkout/test", query: { plan, success, cancel, error } }, locale });
+    redirect({ href: { pathname: "/checkout/test", query: { plan: plan.id, success, cancel, error } }, locale });
   if (card === testCards.declined) return back("declined");
   if (card !== testCards.approved) return back("unknownCard");
 
   await startMembership({
     userId: viewer.user.id,
-    plan,
+    planId: plan.id,
+    intervalMonths: plan.intervalMonths,
     provider: paymentProvider.id,
     providerSubscriptionId: `mock_${viewer.user.id}_${Date.now()}`,
-    trialDays: sanctuaryPlan.trialDays,
+    trialDays: plan.trialDays,
   });
   return redirectExternal(success);
 }
@@ -58,7 +60,11 @@ export async function setTestMembership(preset: MembershipPreset) {
   if (!membershipPresets.includes(preset)) return;
   const viewer = await getViewer();
   if (!viewer.user) return;
-  await applyMembershipPreset(viewer.user.id, preset, sanctuaryPlan.trialDays);
+  const { featured, plans } = await getPlanCatalog();
+  const plan = featured ?? plans[0];
+  // Presets need a plan to sit on; with none on sale there's nothing to simulate.
+  if (!plan && preset !== "none") return;
+  await applyMembershipPreset(viewer.user.id, preset, plan ?? { id: "", trialDays: 0 });
   revalidatePath("/", "layout");
 }
 

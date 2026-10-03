@@ -1,8 +1,10 @@
-import { and, count, desc, eq, gte, ilike, isNull, notExists, or, sql, sum } from "drizzle-orm";
+import { and, count, desc, eq, gte, ilike, isNull, ne, notExists, or, sql, sum } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
-import { billingPlans } from "@/modules/memberships/plans";
+import type { MembershipPlan } from "@/modules/memberships/plans";
+import { getAllPlans, planMonthlyValue } from "@/modules/memberships/server/plans";
 import { db } from "@/server/db";
+import { countPendingReflections } from "@/modules/community/server/reflections";
 import { comments, memberships, practiceCompletions, practices, user } from "@/server/db/schema";
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -17,6 +19,7 @@ const asker = alias(user, "asker");
 
 const awaitingReply = and(
   isNull(comments.parentId),
+  ne(comments.status, "rejected"),
   or(eq(comments.visibility, "private"), eq(comments.tag, "inquiry")),
   notExists(
     db
@@ -45,11 +48,13 @@ export async function getAwaitingReplyIds(limit = 50) {
 
 /** Counts the sidebar shows beside sections, so waiting work is visible without opening a page. */
 export async function getStudioBadges() {
-  const [[drafts], awaiting] = await Promise.all([
+  const [[drafts], awaiting, review] = await Promise.all([
     db.select({ n: count() }).from(practices).where(eq(practices.status, "draft")),
     getAwaitingReplyIds(),
+    countPendingReflections(),
   ]);
-  return { drafts: drafts?.n ?? 0, awaiting: awaiting.length };
+  // Community work: reflections to approve plus questions to answer.
+  return { drafts: drafts?.n ?? 0, awaiting: awaiting.length, review, community: review + awaiting.length };
 }
 
 /** Memberships that grant access now, split by plan and state. */
@@ -60,26 +65,27 @@ export async function getMembershipCounts() {
     .where(gte(memberships.currentPeriodEnd, new Date()))
     .groupBy(memberships.plan, memberships.status, memberships.cancelAtPeriodEnd);
 
-  const tally = { trialing: 0, monthly: 0, annual: 0, canceling: 0, pastDue: 0 };
+  const tally = { trialing: 0, paying: 0, canceling: 0, pastDue: 0, byPlan: {} as Record<string, number> };
   for (const r of rows) {
     if (r.status === "past_due") tally.pastDue += r.n;
     else if (r.status === "trialing") tally.trialing += r.n;
     else if (r.status === "active") {
-      tally[r.plan] += r.n;
+      tally.paying += r.n;
+      tally.byPlan[r.plan] = (tally.byPlan[r.plan] ?? 0) + r.n;
       if (r.cancelAtPeriodEnd) tally.canceling += r.n;
     }
   }
   return tally;
 }
 
-/** Recurring revenue projected from paying memberships (trials excluded), in USD. */
-export function projectRevenue(counts: Awaited<ReturnType<typeof getMembershipCounts>>) {
-  const mrr = counts.monthly * billingPlans.monthly.priceUsd + (counts.annual * billingPlans.annual.priceUsd) / 12;
+/** Recurring revenue projected from paying memberships (trials excluded), in the site currency. */
+export function projectRevenue(counts: Awaited<ReturnType<typeof getMembershipCounts>>, plans: MembershipPlan[]) {
+  const mrr = Object.entries(counts.byPlan).reduce((sum, [id, n]) => sum + n * planMonthlyValue(plans, id), 0);
   return { mrr, arr: mrr * 12 };
 }
 
 export async function getStudioOverview() {
-  const [[members], [newMembers], [sessions], [reflections], awaiting, counts, recent] = await Promise.all([
+  const [[members], [newMembers], [sessions], [reflections], awaiting, counts, recent, plans] = await Promise.all([
     db.select({ n: count() }).from(user),
     db.select({ n: count() }).from(user).where(gte(user.createdAt, since(30))),
     db
@@ -90,6 +96,7 @@ export async function getStudioOverview() {
     getAwaitingReplyIds(),
     getMembershipCounts(),
     db.select({ id: user.id, name: user.name, email: user.email, createdAt: user.createdAt }).from(user).orderBy(desc(user.createdAt)).limit(6),
+    getAllPlans(),
   ]);
 
   return {
@@ -100,7 +107,7 @@ export async function getStudioOverview() {
     reflections7d: reflections?.n ?? 0,
     awaiting: awaiting.length,
     counts,
-    revenue: projectRevenue(counts),
+    revenue: projectRevenue(counts, plans),
     recent,
   };
 }

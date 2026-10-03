@@ -10,7 +10,10 @@ import { routing } from "@/i18n/routing";
 import { paymentProvider } from "@/infrastructure/payment";
 import { cn } from "@/lib/utils";
 import { cancelMembership, changePlan, resumeMembership } from "@/modules/memberships/actions";
-import { billingPlans } from "@/modules/memberships/plans";
+import { localize } from "@/lib/localized";
+import { monthlyEquivalent } from "@/modules/memberships/plans";
+import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
+import { getAllPlans } from "@/modules/memberships/server/plans";
 import { requireUser } from "@/modules/memberships/server/viewer";
 import { getCompletions } from "@/modules/progress/server/completions";
 import { DeleteAccount, PasswordForm, ProfileForm } from "@/modules/users/components/account-forms";
@@ -38,18 +41,23 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   const query = await searchParams;
   const tab: Tab = tabs.includes(query.tab as Tab) ? (query.tab as Tab) : "membership";
 
-  const [t, tMembership, tAuth, format, session, completions] = await Promise.all([
+  const [t, tMembership, tAuth, format, session, completions, display, allPlans] = await Promise.all([
     getTranslations("Profile"),
     getTranslations("Membership"),
     getTranslations("Auth.signUp"),
     getFormatter(),
     getSession(),
     getCompletions(viewer.user.id),
+    getPlanDisplay(locale),
+    getAllPlans(),
   ]);
   const user = session!.user;
   const rhythm: PracticeRhythm = practiceRhythms.includes(user.practiceRhythm as PracticeRhythm) ? (user.practiceRhythm as PracticeRhythm) : "morning";
   const membership = viewer.membership;
-  const money = (usd: number) => format.number(usd, { style: "currency", currency: "USD", maximumFractionDigits: usd % 1 ? 2 : 0 });
+  const { money, per, catalog } = display;
+  // The member's own plan may since have been hidden from sale; it still describes what they pay.
+  const plan = membership ? allPlans.find((p) => p.id === membership.plan) : undefined;
+  const otherPlans = catalog.plans.filter((p) => p.id !== membership?.plan);
   const minutes = completions.reduce((sum, c) => sum + c.minutes, 0);
 
   const stats = [
@@ -128,26 +136,34 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
               <div className="grid grid-cols-1 items-start gap-space-lg lg:grid-cols-12">
                 <div className="space-y-space-md lg:col-span-7">
                   <span className="font-label-sm text-label-sm font-semibold tracking-widest text-clay uppercase">
-                    {t(membership.plan === "annual" ? "plan.billedYearly" : "plan.billedMonthly")}
+                    {plan ? tMembership("billedEvery", { months: plan.intervalMonths }) : membership.plan}
                   </span>
                   <div>
                     <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-headline-lg md:text-headline-lg">
-                      {tMembership(`plans.${membership.plan}.name`)}
+                      {plan ? localize(plan.name, locale) : membership.plan}
                     </h2>
-                    <p className="mt-1 font-body-md text-body-md text-on-surface-variant">
-                      {membership.plan === "annual"
-                        ? t("plan.priceAnnual", { perMonth: money(billingPlans.annual.monthlyEquivalentUsd), total: money(billingPlans.annual.priceUsd) })
-                        : t("plan.priceMonthly", { price: money(billingPlans.monthly.priceUsd) })}
-                    </p>
+                    {plan && (
+                      <p className="mt-1 font-body-md text-body-md text-on-surface-variant">
+                        {plan.intervalMonths > 1
+                          ? t("plan.priceEquivalent", {
+                              price: money(plan.price),
+                              per: per(plan.intervalMonths),
+                              perMonth: money(monthlyEquivalent(plan)),
+                            })
+                          : t("plan.price", { price: money(plan.price), per: per(plan.intervalMonths) })}
+                      </p>
+                    )}
                   </div>
-                  <ul className="grid grid-cols-1 gap-x-4 gap-y-2 pt-2 sm:grid-cols-2">
-                    {(["f1", "f2", "f3", "f4"] as const).map((key) => (
-                      <li key={key} className="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
-                        <CircleCheckIcon className="size-4 shrink-0 text-primary" />
-                        {tMembership(`features.${key}`)}
-                      </li>
-                    ))}
-                  </ul>
+                  {plan && plan.features.length > 0 && (
+                    <ul className="grid grid-cols-1 gap-x-4 gap-y-2 pt-2 sm:grid-cols-2">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+                          <CircleCheckIcon className="size-4 shrink-0 text-primary" />
+                          {localize(feature, locale)}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
                 <div className="space-y-space-md rounded-xl bg-surface-container-low p-space-md lg:col-span-5">
                   <span className="block font-label-md text-label-md tracking-wider text-clay uppercase">{t("ledger.title")}</span>
@@ -165,7 +181,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
                     </div>
                     <div className="flex items-center justify-between gap-3">
                       <dt className="text-on-surface-variant">{t("ledger.amount")}</dt>
-                      <dd className="font-medium text-primary">{membership.cancelAtPeriodEnd ? "—" : money(billingPlans[membership.plan].priceUsd)}</dd>
+                      <dd className="font-medium text-primary">{membership.cancelAtPeriodEnd || !plan ? "—" : money(plan.price)}</dd>
                     </div>
                     <div className="flex items-center justify-between gap-3">
                       <dt className="text-on-surface-variant">{t("ledger.receipts")}</dt>
@@ -182,17 +198,26 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
                       {t("plan.renew")}
                     </Link>
                   ) : (
-                    <form action={changePlan}>
-                      <input type="hidden" name="plan" value={membership.plan === "annual" ? "monthly" : "annual"} />
-                      <button
-                        type="submit"
-                        className="w-full rounded-lg bg-surface-container-high px-4 py-2.5 font-label-lg text-label-lg text-primary transition-colors hover:bg-surface-container-highest"
-                      >
-                        {membership.plan === "annual"
-                          ? t("plan.switchMonthly", { price: money(billingPlans.monthly.priceUsd) })
-                          : t("plan.switchAnnual", { price: money(billingPlans.annual.priceUsd) })}
-                      </button>
-                    </form>
+                    otherPlans.length > 0 && (
+                      <div className="space-y-2">
+                        <span className="block font-label-sm text-label-sm tracking-wider text-outline uppercase">{t("plan.otherPlans")}</span>
+                        {otherPlans.map((other) => (
+                          <form key={other.id} action={changePlan}>
+                            <input type="hidden" name="plan" value={other.id} />
+                            <button
+                              type="submit"
+                              className="w-full rounded-lg bg-surface-container-high px-4 py-2.5 font-label-lg text-label-lg text-primary transition-colors hover:bg-surface-container-highest"
+                            >
+                              {t("plan.switchTo", {
+                                name: localize(other.name, locale),
+                                price: money(other.price),
+                                per: per(other.intervalMonths),
+                              })}
+                            </button>
+                          </form>
+                        ))}
+                      </div>
+                    )
                   )}
                 </div>
               </div>

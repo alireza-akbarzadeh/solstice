@@ -27,6 +27,7 @@ export async function toReflectionViews(
     private: r.visibility === "private",
     pinned: r.pinned,
     hidden: r.hidden,
+    status: r.status,
     ago: format.relativeTime(r.createdAt, now),
     likes: r.likes,
     liked: r.likedByViewer,
