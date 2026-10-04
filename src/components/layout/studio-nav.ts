@@ -1,5 +1,6 @@
 import {
   BookOpenIcon,
+  ChartColumnIcon,
   CreditCardIcon,
   FileTextIcon,
   Flower2Icon,
@@ -38,6 +39,7 @@ export const studioNavGroups: readonly { label: StudioNavLabel; items: readonly 
     label: "studio",
     items: [
       { href: "/instructor", label: "overview", icon: LayoutGridIcon, exact: true },
+      { href: "/instructor/insights", label: "insights", icon: ChartColumnIcon },
       { href: "/instructor/settings", label: "settings", icon: SettingsIcon },
     ],
   },

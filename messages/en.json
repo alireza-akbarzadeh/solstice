@@ -1196,7 +1196,8 @@
       "programs": "Programs",
       "pages": "Pages",
       "subscribers": "Subscribers",
-      "settings": "Settings"
+      "settings": "Settings",
+      "insights": "Insights"
     },
     "overview": {
       "metaTitle": "Studio overview",
@@ -2567,6 +2568,104 @@
           "failed": "Couldn't save. Please try again."
         }
       }
+    },
+    "insights": {
+      "metaTitle": "Insights",
+      "eyebrow": "Studio",
+      "title": "Insights",
+      "lede": "How the studio is doing over the last {weeks, number} weeks: who joins, who practises, what they choose, and who could use a personal note.",
+      "range": "{weeks, number} weeks",
+      "kpiLabel": "Key numbers for the period",
+      "kpi": {
+        "signups": "New accounts",
+        "active": "Active members",
+        "sessions": "Sessions",
+        "minutes": "Minutes practised",
+        "reflections": "Reflections",
+        "subscribers": "New subscribers"
+      },
+      "change": {
+        "percent": "{value, number}%",
+        "new": "new",
+        "same": "no change",
+        "vs": "{change} vs previous {weeks, number} weeks",
+        "none": "nothing in either period"
+      },
+      "units": {
+        "sessions": "{count, plural, one {# session} other {# sessions}}",
+        "minutes": "{count, plural, one {# minute} other {# minutes}}",
+        "accounts": "{count, plural, one {# new account} other {# new accounts}}",
+        "members": "{count, plural, one {# member} other {# members}}"
+      },
+      "sessions": {
+        "eyebrow": "Practice",
+        "title": "Sessions per week",
+        "note": "Every completed practice. Hover or focus a week for its minutes."
+      },
+      "signups": {
+        "eyebrow": "Growth",
+        "title": "New accounts per week"
+      },
+      "active": {
+        "eyebrow": "Engagement",
+        "title": "Active members per week",
+        "note": "Members who completed at least one practice that week."
+      },
+      "membership": {
+        "eyebrow": "Right now",
+        "title": "Memberships",
+        "paying": "Paying",
+        "trialing": "On a trial",
+        "canceling": "Canceling",
+        "pastDue": "Past due",
+        "trialsEnding": "{count, plural, one {# trial ends} other {# trials end}} in the next 7 days — a good moment for a welcome message.",
+        "revenue": "See revenue"
+      },
+      "heatmap": {
+        "eyebrow": "Rhythm",
+        "title": "When members practise",
+        "note": "Sessions by weekday and hour, in your local time. Useful for timing live classes and announcements.",
+        "cell": "{day} {hour} · {count, plural, one {# session} other {# sessions}}",
+        "less": "Less",
+        "more": "More"
+      },
+      "top": {
+        "eyebrow": "Content",
+        "title": "Most practised",
+        "practice": "Practice",
+        "sessions": "Sessions",
+        "members": "Members",
+        "minutes": "Minutes",
+        "saves": "Saves"
+      },
+      "categories": {
+        "eyebrow": "Styles",
+        "title": "Minutes by category"
+      },
+      "programs": {
+        "eyebrow": "Journeys",
+        "title": "Program progress",
+        "note": "How far enrolled members have got. Counts are for all time.",
+        "enrolled": "Enrolled",
+        "started": "Started",
+        "halfway": "Halfway",
+        "finished": "Finished",
+        "joined": "{count, plural, one {# joined} other {# joined}} in {weeks, number} weeks",
+        "days": "{count, plural, one {# day} other {# days}}"
+      },
+      "quiet": {
+        "eyebrow": "Care",
+        "title": "Members to check in with",
+        "note": "{count, plural, one {# member has} other {# members have}} access but no practice in the last 14 days. Trials first.",
+        "noteMany": "50 or more members have access but no practice in the last 14 days. Trials first.",
+        "none": "Everyone with access has practised in the last two weeks.",
+        "trial": "Trial",
+        "member": "Member",
+        "last": "Last practice {date}",
+        "never": "No practice yet · joined {date}",
+        "trialEnds": "trial ends {date}"
+      },
+      "empty": "Nothing in this period yet."
     }
   },
   "Legal": {
