@@ -78,7 +78,8 @@ Studio settings that behave like switches, with no code needed:
 | Email verification, forgot / reset password | 🟡 | Built end to end; emails land in the outbox until a real email provider exists |
 | Roles: member / instructor | ✅ | Studio hidden from members (404). First instructor: `pnpm role <email>` |
 | Membership states | ✅ | Free, trial, active, canceled (access until period end), past due, expired |
-| Checkout | 🟡 | Real flow (plan choice, sign-up first, back to the practice). Payment is **mocked**: test cards `4242…` succeed, `4000…0002` decline |
+| Checkout | 🟡 | Real flow: plan choice, sign-up first, redirect to the provider's page, confirmation by signed webhook or verify-on-return, welcome page waits for it. Only the **test provider** exists so far: test cards `4242…` succeed, `4000…0002` decline. Zarinpal and Stripe are next |
+| Payments & receipts | ✅ | Every charge is recorded (kept even if the account is deleted); members see their payments and print receipts from the profile |
 | Switch plan / cancel / resume | ✅ | From `/profile` and `/membership` |
 | Comped passes | ✅ | Instructor gives 1/3/6/12 months free from the member dossier |
 | Delete account | ✅ | From `/profile` |
@@ -115,7 +116,7 @@ Studio settings that behave like switches, with no code needed:
 | Announcements | ✅ | Post to the circle as the studio, pin as weekly intention, optionally push to every device |
 | Subscribers | ✅ | Newsletter list, search, remove, **CSV export** for any mailing tool |
 | Plans | ✅ | Any number of plans: price, period (1/3/6/12 months), trial, features, badge, recommended, hide; site currency |
-| Revenue | 🟡 | MRR/ARR, subscribers, retention, ledger. **Projected** from memberships, because nothing is charged yet |
+| Revenue | ✅ | Money received per month (net of refunds), totals, latest payments with receipts and **refunds** (optionally ending access), plus MRR/ARR projected from memberships |
 | Search & shortcuts | ✅ | **Ctrl/⌘ K**: jump anywhere, create content, search practices, programs, essays, pages, plans, members, reflections, subscribers |
 | Works on a phone | ✅ | Tables become card lists, editors open first, selects become sheets |
 

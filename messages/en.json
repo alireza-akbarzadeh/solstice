@@ -1569,8 +1569,8 @@
       "eyebrow": "Transactions & revenue",
       "title": "What the sanctuary sustains",
       "lede": "{mrr} a month from {paying, number} paying memberships.",
-      "mockTitle": "Projected, not collected",
-      "mockBody": "Payments run through the mock provider, so nothing has been charged. Every figure here is the list price of the memberships on record — real settlement, payouts and tax arrive with a payment provider and its webhooks.",
+      "mockTitle": "Test payments",
+      "mockBody": "The test provider is active: \"Money received\" shows simulated payments from the test checkout and test panel, and no money moves. The figures further down are projected from the memberships on record.",
       "stats": {
         "mrr": "Monthly recurring",
         "mrrNote": "Annual plans counted monthly",

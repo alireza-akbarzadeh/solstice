@@ -5,7 +5,6 @@ import { randomBytes } from "node:crypto";
 import { getLocale } from "next-intl/server";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { redirect as redirectExternal } from "next/navigation";
 
 import { getPathname, redirect } from "@/i18n/navigation";
 import type { PaymentEvent } from "@/infrastructure/payment";
@@ -31,7 +30,7 @@ import { membershipPresets, type MembershipPreset } from "./test-presets";
 export async function completeTestCheckout(formData: FormData) {
   await assertTestMode();
   const locale = await getLocale();
-  const card = formText(formData, "card").replace(/D/g, "");
+  const card = formText(formData, "card").replace(/\D/g, "");
   const viewer = await getViewer();
   if (!viewer.user) return redirect({ href: "/sign-in", locale });
   const checkout = await getCheckout(formText(formData, "checkout"));
@@ -53,7 +52,9 @@ export async function completeTestCheckout(formData: FormData) {
     },
   ];
   await deliverMockEvents(events);
-  return redirectExternal(`/api/payments/mock/return?checkout=${checkout.id}`);
+  // Straight to the welcome page: a server action can't redirect into a route handler (the
+  // client router would try to render it), and for the mock the return route adds nothing.
+  return redirect({ href: { pathname: "/membership/welcome", query: { checkout: checkout.id } }, locale });
 }
 
 /** Signs and delivers mock events exactly as the webhook route would receive them. */
