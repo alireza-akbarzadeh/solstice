@@ -464,7 +464,19 @@
       "body": "Your {days, number}-day free trial is active. Every practice is now open to you.",
       "bodyPaid": "Your membership is active. Every practice is now open to you.",
       "continue": "Continue to your practice",
-      "browse": "Browse the library"
+      "browse": "Browse the library",
+      "pending": {
+        "title": "Confirming your payment…",
+        "body": "This usually takes a few seconds. Please keep this page open.",
+        "slowTitle": "Still waiting for confirmation",
+        "slowBody": "Your payment provider hasn't confirmed yet. Your membership starts automatically as soon as it does; you can check your profile in a minute.",
+        "profile": "Go to my profile"
+      },
+      "failed": {
+        "title": "The payment didn't go through",
+        "body": "Nothing was charged and no membership was started. You can try again, perhaps with another card.",
+        "retry": "Try again"
+      }
     },
     "per": "/ {months, plural, =1 {month} =12 {year} other {# months}}",
     "billedEvery": "{months, plural, =1 {Billed monthly} =12 {Billed yearly} other {Billed every # months}}",
@@ -565,7 +577,14 @@
       "accountCreated": "Test account created and signed in",
       "signedOut": "Signed out",
       "failed": "That didn’t work — try again",
-      "mailbox": "Test mailbox (emails)"
+      "mailbox": "Test mailbox (emails)",
+      "billingTitle": "Billing (test provider)",
+      "simulateRenewal": "Simulate a renewal payment",
+      "simulateRenewalHint": "Charges the next period, or ends a trial with a payment",
+      "simulateFailure": "Simulate a failed payment",
+      "simulateFailureHint": "The next charge is declined: past due",
+      "renewed": "Renewal recorded",
+      "paymentFailed": "Payment marked as failed"
     },
     "mailbox": {
       "eyebrow": "Test mode",
@@ -1145,6 +1164,46 @@
       "deleted": "Your account has been deleted",
       "wrongPassword": "That password isn’t right.",
       "error": "Couldn’t delete the account. Please try again."
+    },
+    "billing": {
+      "title": "Payments & receipts",
+      "kind": {
+        "first": "First payment",
+        "renewal": "Renewal"
+      },
+      "status": {
+        "paid": "Paid",
+        "partially_refunded": "Partly refunded",
+        "refunded": "Refunded"
+      },
+      "receipt": "Receipt"
+    },
+    "receipt": {
+      "metaTitle": "Receipt",
+      "title": "Receipt",
+      "back": "Back to profile",
+      "print": "Print or save as PDF",
+      "number": "Receipt number",
+      "date": "Date",
+      "billedTo": "Billed to",
+      "item": "Membership",
+      "period": "Period",
+      "periodRange": "{start} – {end}",
+      "reference": "Payment reference",
+      "amount": "Amount",
+      "refunded": "Refunded",
+      "total": "Total paid",
+      "footer": "Thank you for practising with us. Keep this receipt for your records.",
+      "testNote": "Test payment: no money was charged.",
+      "kind": {
+        "first": "First payment",
+        "renewal": "Renewal"
+      },
+      "status": {
+        "paid": "Paid",
+        "partially_refunded": "Partly refunded",
+        "refunded": "Refunded"
+      }
     }
   },
   "Community": {
@@ -1560,6 +1619,47 @@
           "active": "Active",
           "past_due": "Past due",
           "canceled": "Canceled"
+        }
+      },
+      "payments": {
+        "eyebrow": "Collected",
+        "title": "Money received per month",
+        "note": "Real payments confirmed by the payment provider, after refunds. The projected figures below are what memberships are worth.",
+        "chartDetail": "{count, plural, one {# payment} other {# payments}} · {refunded} refunded",
+        "totals": {
+          "thisMonth": "This month",
+          "year": "Last 12 months",
+          "refunds": "Refunded (12 months)"
+        },
+        "recent": "Latest payments",
+        "empty": "No payments yet. They appear here as soon as a member pays.",
+        "kind": {
+          "first": "First payment",
+          "renewal": "Renewal"
+        },
+        "status": {
+          "paid": "Paid",
+          "partially_refunded": "Partly refunded",
+          "refunded": "Refunded"
+        },
+        "receiptFor": "Receipt for {email}",
+        "refund": {
+          "action": "Refund",
+          "title": "Refund {amount}?",
+          "body": "The money goes back to {email} through the payment provider. This can't be undone.",
+          "endAccess": "Also end their access now",
+          "endAccessHint": "Otherwise they keep access until the end of the period they paid for.",
+          "keep": "Keep payment",
+          "confirm": "Refund",
+          "done": "{amount} refunded",
+          "errors": {
+            "notFound": "That payment no longer exists.",
+            "alreadyRefunded": "This payment is already fully refunded.",
+            "unsupported": "This payment's provider is no longer available, so it can't be refunded here.",
+            "forbidden": "Only the instructor can refund payments.",
+            "invalid": "Something was wrong with the request.",
+            "failed": "The refund didn't go through. Please try again."
+          }
         }
       }
     },

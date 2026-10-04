@@ -8,7 +8,7 @@ foundation work changes status.
 Every page is localized (`en`, `fa` RTL) under `src/app/[locale]/…`.
 English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
-> **Next up:** Roadmap item **3 — editable email templates** (see *Handover roadmap* below). When a session says “continue”, start at the first ⬜/🟡 item in that list.
+> **Next up:** Roadmap item **13a — payment flow core**, then **13b** payments settings & routing, **13c** Zarinpal, **13d** Stripe (see *Handover roadmap* below). Agreed build order: **13** payments → **14** live classes → **15** member notes & onboarding → **16** coupons, gifts & referrals → **3, 4, 5** email templates, sitemap, Home sections → the rest. When a session says “continue”, take the first row that is not ✅ or ⛔.
 > **Testing:** payments are mocked, so a floating **Test** pill (bottom corner) switches your own
 > account: guest, free, trial, member, canceled, past due, expired, instructor. Checkout goes through
 > `/checkout/test` with test cards (4242… succeeds, 4000…0002 is declined).
@@ -16,7 +16,7 @@ English lives at `/`, Persian at `/fa/…`. How to build a page: `GUIDE.md`.
 
 ## Handover roadmap
 
-Goal: the customer runs the whole site from `/instructor` without code. Work top to bottom.
+Goal: the customer runs the whole site from `/instructor` without code. **Rows are in build order** (numbers are IDs, not order). Work top to bottom.
 **To resume:** read this list, take the first item that is not ✅ (and not blocked), build it,
 verify it (typecheck, lint, browser check in `en` + `fa`, disposable fixtures removed), then mark
 it ✅ here, move **Next up**, and add a log line. Blocked items wait on a customer decision.
@@ -25,17 +25,23 @@ it ✅ here, move **Next up**, and add a log line. Blocked items wait on a custo
 | - | ---- | ------ | --------- |
 | 1 | Editable practice & journal categories | ✅ | `/instructor/categories` (practice / journal tabs): bilingual name, order, show in filters, delete only when unused. `solstice_category` (`pnpm db:seed:categories`); names merged into `Practice.categories` / `Journal.categories` per request; filters, cards, editors and actions read it |
 | 2 | Social links & contact details | ✅ | `/instructor/settings`: email, phone, bilingual address and up to 20 ordered social links (Instagram, Telegram, WhatsApp, YouTube, Aparat, X, Facebook, TikTok, LinkedIn, Pinterest, Threads, website). Stored as the `contact` row of `solstice_setting` (no seed needed); handles and WhatsApp numbers become full links. Footer and About (`#contact`) show only what is set |
+| 12 | Studio insights | ✅ | `/instructor/insights`: period filter, KPI tiles with change vs the previous period, weekly charts (sessions, new accounts, active members), when members practise (local-time heatmap), top practices, minutes by category, program progress, members to check in with |
+| 13a | Payment flow — core ★★★★★ | ⬜ | Built against the test provider (see `ROADMAP.md` phase C): checkout records + redirect to the provider's page; two confirmation styles feed one event handler — signed webhooks (`/api/payments/[provider]/webhook`, Stripe-style) and confirm-on-return (`/api/payments/[provider]/return`, Zarinpal-style verify); events are idempotent and drive membership start/renew/past due/cancel/refund; `solstice_payment` ledger; welcome page waits for confirmation; receipts in the profile; Revenue from real charges with refunds from the studio; test panel simulates renewal, failed payment and refund |
+| 13b | Payments settings & routing by country ★★★★★ | ⬜ | `/instructor/settings` → Payments, all from the dashboard: enable providers, sandbox/live, keys (encrypted at rest with a key derived from the server secret, write-only, shown as •••• last 4; env vars override), default provider + provider for visitors from Iran (country from `x-vercel-ip-country`, simulated in test mode). Country only preselects; checkout offers "Iranian card / international card" when both apply (VPNs). Plans get a price per currency (toman for Zarinpal, USD/EUR for Stripe); a provider is offered only where the plan has a price in its currency |
+| 13c | Zarinpal provider | ⬜ | Payment request → StartPay redirect → return with Authority → server-side verify (amount checked) → payment recorded. One-time periods (no auto-renew): renewal reminder before expiry and a "Renew" button that extends the period. Tested end to end on Zarinpal's sandbox |
+| 13d | Stripe provider | ⬜ | Checkout Session (subscription mode, trial), signed webhooks (`checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `charge.refunded`), customer portal for card changes, cancel/resume/change plan. Built on the REST API; final test needs Stripe test keys |
+| 14 | Live classes | ⬜ | `/instructor/classes`: repeating weekly sessions and one-offs (bilingual title, time in the studio time zone, duration, join link for Google Meet/Zoom/Jitsi, members-only or open, capacity). Members see a schedule in their own time zone, RSVP/cancel, "add to calendar" (.ics), push reminder 1 hour before; the join link appears only to members shortly before start; afterwards the instructor can attach the replay practice. Insights gets attendance |
+| 15 | Member notes & onboarding | ⬜ | Private instructor notes on the member dossier (dated, instructor-only). Short onboarding after sign-up (level, goals, time available, injuries/limits, all optional and editable in the profile) shown in the dossier and used for "Start here" suggestions on Today; insights shows the answers in aggregate |
+| 16 | Coupons, gift memberships & referrals | ⬜ | Studio coupons (percent or fixed, first period or every period, expiry, max uses, per-plan) applied at checkout; gift memberships (buy 1/3/6/12 months for someone, code by email or printable card, redeem flow); referral link per member with a reward (free month for both, via comped passes) and a referrals view in the studio. All through the #13 payment flow |
 | 3 | Editable email templates | ⬜ | Verification / reset / welcome email subject and body editable in both languages from the studio, with the required `{url}`/`{name}` variables protected |
 | 4 | `sitemap.xml` + `robots.txt` | ⬜ | Generated from published practices, programs, essays and custom pages in both locales; private areas disallowed |
 | 5 | Home sections: show/hide & order | ⬜ | The instructor can hide and reorder Home sections (hero, featured practices/programs, instructor, testimonials, membership) |
 | 6 | Page editor cleanup | ⬜ | “Website content” shows only marketing copy with friendly labels; app microcopy (errors, buttons) sits under an “Advanced” toggle; ICU variables shown as protected chips |
 | 7 | Fixed images become editable | ⬜ | Logo, sign-in/sign-up photos and instructor avatar are page assets (paths/URLs now; uploads once #8 exists); favicon/PWA icons regenerate from the logo |
+| 11 | Pre-launch checklist | ⬜ | OAuth keys, legal review, reconcile the drizzle migration journal (`0003` + plans/settings/comment status tables), fix the studio header Radix hydration warning, production 404 for unknown paths, env vars on Vercel |
 | 8 | Image upload & media library | ⛔ blocked | Needs the customer's storage choice (Vercel Blob / ArvanCloud / Neon storage). Then: `StorageProvider`, upload button on every image field, a media library page |
 | 9 | Real payment provider | ⛔ blocked | Needs the gateway (likely Stripe/PayPal after moving abroad). Adds one provider file + env keys on top of #13 |
 | 10 | Real email delivery | ⛔ blocked | Needs a provider (SMTP/Resend/…); `EmailProvider` replaces the outbox; newsletter sending |
-| 11 | Pre-launch checklist | ⬜ | OAuth keys, legal review, reconcile the drizzle migration journal (`0003` + plans/settings/comment status tables), fix the studio header Radix hydration warning, production 404 for unknown paths, env vars on Vercel |
-| 12 | Studio insights | ✅ | `/instructor/insights`: period filter, KPI tiles with change vs the previous period, weekly charts (sessions, new accounts, active members), when members practise (local-time heatmap), top practices, minutes by category, program progress, members to check in with |
-| 13 | Payment flow, provider-agnostic ★★★★★ | ⬜ | Built against the test provider (see `ROADMAP.md` phase C): hosted-checkout redirect, signed webhook events drive membership (start/renew/past due/cancel/refund), `solstice_payment` ledger, receipts in the profile, revenue from real charges, active provider chosen in Studio settings among env-configured ones (keys stay in env) |
 
 Optional idea, not scheduled: a drag-and-drop page builder (Puck) for marketing pages — would replace #5/#6 for those pages.
 

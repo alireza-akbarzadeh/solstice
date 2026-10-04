@@ -34,7 +34,8 @@ import {
 } from "@/components/ui/table";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { paymentProvider } from "@/infrastructure/payment";
+import { getCheckoutProvider } from "@/infrastructure/payment";
+import { PaymentsLedger } from "@/modules/instructor/components/payments-ledger";
 import { RevenueChart } from "@/modules/instructor/components/revenue-chart";
 import { StatCard, StatMeter } from "@/modules/instructor/components/stat-card";
 import { StudioPageHeader } from "@/modules/instructor/components/studio-page-header";
@@ -72,6 +73,7 @@ export default async function StudioRevenuePage({
   setRequestLocale(locale);
 
   await requireInstructor(locale, "/instructor/revenue");
+  const testMode = (await getCheckoutProvider()).testMode;
   const [t, format, counts, series, ledger, churn, plans, display] = await Promise.all([
     getTranslations("Studio.revenue"),
     getFormatter(),
@@ -108,7 +110,7 @@ export default async function StudioRevenuePage({
         lede={t("lede", { mrr: money(revenue.mrr), paying })}
       />
 
-      {paymentProvider.id === "mock" && (
+      {testMode && (
         <Alert>
           <AlertTitle>{t("mockTitle")}</AlertTitle>
           <AlertDescription>{t("mockBody")}</AlertDescription>
@@ -164,6 +166,8 @@ export default async function StudioRevenuePage({
           icon={HeartCrackIcon}
         />
       </div>
+
+      <PaymentsLedger plans={plans} currency={display.catalog.currency} />
 
       <RevenueChart series={series} />
 

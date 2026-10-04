@@ -29,16 +29,20 @@ runs the site. Aparat support exists in the code, but this plan does not rely on
 
 ## Your next steps (in order)
 
-| # | Step | Cost | Size | Why now |
-| - | ---- | ---- | ---- | ------- |
-| 1 | Finish handover items **3–7** in `PROGRESS.md` (email templates, sitemap, Home sections, page editor cleanup, editable logo/photos) | Free | S–M each | Already planned; makes the studio fully self-managed |
-| 2 | **Video upgrade, stage 1** (below): YouTube player API, plus video sources stored as a list so a second version can be added later | Free | M | Video is the product: chapters, timestamps and auto-complete for YouTube videos |
-| 3 | **Live classes**: schedule, join link, RSVP, reminders | Free | M | The strongest reason people pay a yoga studio monthly |
-| 4 | **Onboarding + "Start here" path + practice reminders** | Free | M | New members who don't practise in week one cancel |
-| 5 | **Workshops & retreats registration** (capacity, waitlist, "pay directly" for now) | Free | M | Events are the highest-value sales for one instructor |
-| 6 | **Payment gateway**: a decision for you, see phase C | Per sale only | L | Turns everything above into revenue |
+Agreed build order (2026-10-04). The same list drives "continue" in `PROGRESS.md` → *Handover roadmap*.
 
-If you only do one thing this month, do **#2**: it's free and it improves every practice page.
+| # | Step | `PROGRESS.md` | Cost | Size | Why |
+| - | ---- | -------------- | ---- | ---- | --- |
+| 1 | **Payment flow**, provider-agnostic (phase C below): redirect checkout, webhook-driven membership, payment records, receipts, real revenue page, provider chosen in Settings | #13 ★★★★★ | Free to build | L | Everything that sells depends on it; Stripe/PayPal later is one file + keys |
+| 2 | **Live classes**: schedule, join link, RSVP, push reminder, add to calendar, replay | #14 | Free | M | The strongest reason people pay a yoga studio monthly; Insights' heatmap shows the best times |
+| 3 | **Private notes on members + onboarding questions** | #15 | Free | S–M | Pairs with Insights' "members to check in with": you know who to contact and what to say |
+| 4 | **Coupons, gift memberships, referral programme** | #16 | Free to build | M | Launch offers, holiday gifts and word of mouth; runs on the payment flow |
+| 5 | **Planned free items**: editable email templates, sitemap/robots, show/hide Home sections | #3, #4, #5 | Free | S each | Self-management and free search traffic |
+| 6 | The rest of the handover list: page editor cleanup, editable logo/photos, pre-launch checklist | #6, #7, #11 | Free | S–M | Polish before launch |
+
+Later, from the phases below: video upgrade stage 1 (YouTube player API), workshops & retreats
+registration, practice reminders and "we miss you" nudges, content insights, then email and media
+providers when the studio earns.
 
 ---
 

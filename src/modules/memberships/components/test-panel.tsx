@@ -10,7 +10,7 @@ const DAY = 24 * 60 * 60 * 1000;
 // Floating switcher for trying the app as a guest, a free account, a member or the
 // instructor. Only rendered while payments are mocked.
 export async function TestPanel() {
-  if (!testModeEnabled()) return null;
+  if (!(await testModeEnabled())) return null;
   const [viewer, format] = await Promise.all([getViewer(), getFormatter()]);
   const m = viewer.membership;
 
@@ -30,6 +30,7 @@ export async function TestPanel() {
       periodEnd={m ? format.dateTime(m.currentPeriodEnd, { dateStyle: "medium" }) : null}
       daysLeft={m ? Math.ceil((m.currentPeriodEnd.getTime() - Date.now()) / DAY) : null}
       password={TEST_PASSWORD}
+      canSimulate={m?.provider === "mock" && !!m.providerSubscriptionId?.startsWith("mock_sub_")}
     />
   );
 }

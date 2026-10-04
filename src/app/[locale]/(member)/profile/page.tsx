@@ -7,7 +7,9 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { paymentProvider } from "@/infrastructure/payment";
+import { providerFor } from "@/infrastructure/payment";
+import { BillingHistory } from "@/modules/memberships/components/billing-history";
+import { getMemberPayments } from "@/modules/memberships/server/billing";
 import { cn } from "@/lib/utils";
 import { cancelMembership, changePlan, resumeMembership } from "@/modules/memberships/actions";
 import { localize } from "@/lib/localized";
@@ -41,7 +43,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   const query = await searchParams;
   const tab: Tab = tabs.includes(query.tab as Tab) ? (query.tab as Tab) : "membership";
 
-  const [t, tMembership, tAuth, format, session, completions, display, allPlans] = await Promise.all([
+  const [t, tMembership, tAuth, format, session, completions, display, allPlans, payments] = await Promise.all([
     getTranslations("Profile"),
     getTranslations("Membership"),
     getTranslations("Auth.signUp"),
@@ -50,6 +52,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
     getCompletions(viewer.user.id),
     getPlanDisplay(locale),
     getAllPlans(),
+    getMemberPayments(viewer.user.id).catch(() => []),
   ]);
   const user = session!.user;
   const rhythm: PracticeRhythm = practiceRhythms.includes(user.practiceRhythm as PracticeRhythm) ? (user.practiceRhythm as PracticeRhythm) : "morning";
@@ -172,7 +175,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
                       <dt className="text-on-surface-variant">{t("ledger.method")}</dt>
                       <dd className="flex items-center gap-1.5 font-medium text-primary">
                         <CreditCardIcon className="size-4" />
-                        {paymentProvider.testMode ? t("ledger.testCard") : t("ledger.onFile")}
+                        {providerFor(membership?.provider)?.testMode ? t("ledger.testCard") : t("ledger.onFile")}
                       </dd>
                     </div>
                     <div className="flex items-center justify-between gap-3">
@@ -255,6 +258,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
               </form>
             </div>
           )}
+          <BillingHistory payments={payments} plans={allPlans} />
         </section>
       )}
 

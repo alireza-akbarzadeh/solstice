@@ -32,7 +32,8 @@
     "db:seed:moderation": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-moderation.ts",
     "db:seed:categories": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-categories.ts",
     "test:pages": "node --env-file=.env --experimental-strip-types --no-warnings scripts/check-pages.mjs",
-    "test:pages:preview": "node --experimental-strip-types --test tests/page-preview.test.mjs"
+    "test:pages:preview": "node --experimental-strip-types --test tests/page-preview.test.mjs",
+    "db:seed:payments": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-payments.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.2",

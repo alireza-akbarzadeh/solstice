@@ -27,14 +27,12 @@ function PayButton({ label }: { label: string }) {
 }
 
 export function TestCheckoutForm({
-  plan,
-  success,
+  checkout,
   cancel,
   cards,
   payLabel,
 }: {
-  plan: string;
-  success: string;
+  checkout: string;
   cancel: string;
   cards: { approved: string; declined: string };
   payLabel: string;
@@ -49,9 +47,7 @@ export function TestCheckoutForm({
 
   return (
     <form action={completeTestCheckout} className="flex flex-col gap-5">
-      <input type="hidden" name="plan" value={plan} />
-      <input type="hidden" name="success" value={success} />
-      <input type="hidden" name="cancel" value={cancel} />
+      <input type="hidden" name="checkout" value={checkout} />
 
       <div className="space-y-2">
         <p className="font-label-md text-label-md tracking-widest text-clay uppercase">{t("cardsTitle")}</p>

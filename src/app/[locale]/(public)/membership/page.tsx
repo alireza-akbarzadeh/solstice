@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { routing } from "@/i18n/routing";
-import { paymentProvider } from "@/infrastructure/payment";
+import { getCheckoutProvider } from "@/infrastructure/payment";
 import { safeNextPath } from "@/lib/safe-next";
 import { Checkout } from "@/modules/memberships/components/checkout";
 import { MembershipStatus } from "@/modules/memberships/components/membership-status";
@@ -27,7 +27,7 @@ export default async function MembershipPage({ params, searchParams }: PageProps
 
   const query = await searchParams;
   const next = safeNextPath(query.next, "/practices");
-  const [t, tBrand, viewer] = await Promise.all([getTranslations("Membership"), getTranslations("Brand"), getViewer()]);
+  const [t, tBrand, viewer, provider] = await Promise.all([getTranslations("Membership"), getTranslations("Brand"), getViewer(), getCheckoutProvider()]);
 
   if (viewer.hasAccess) {
     return (
@@ -80,7 +80,7 @@ export default async function MembershipPage({ params, searchParams }: PageProps
           next={next}
           zero={money(0)}
           signedIn={!!viewer.user}
-          testMode={paymentProvider.testMode}
+          testMode={provider.testMode}
           instructorName={tBrand("instructor")}
         />
       </Container>

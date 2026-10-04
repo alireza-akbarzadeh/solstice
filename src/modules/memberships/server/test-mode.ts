@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { env } from "@/env";
-import { paymentProvider } from "@/infrastructure/payment";
+import { getCheckoutProvider } from "@/infrastructure/payment";
 import { db } from "@/server/db";
 import { memberships, user } from "@/server/db/schema";
 
@@ -9,10 +9,10 @@ import type { MembershipPreset } from "../test-presets";
 
 // Test mode exists only while payments are mocked: it lets anyone reshape their *own*
 // account to try every state of the app. It disappears once a real provider is set.
-export const testModeEnabled = () => paymentProvider.testMode;
+export const testModeEnabled = async () => (await getCheckoutProvider()).testMode;
 
-export function assertTestMode() {
-  if (!testModeEnabled()) throw new Error("Test mode is off: a real payment provider is configured.");
+export async function assertTestMode() {
+  if (!(await testModeEnabled())) throw new Error("Test mode is off: a real payment provider is configured.");
 }
 
 /** Every one-click test account uses this password, so you can sign back in to it. */
@@ -31,7 +31,7 @@ export async function applyMembershipPreset(
   plan: { id: string; trialDays: number },
 ) {
   const trialDays = plan.trialDays || 14;
-  assertTestMode();
+  await assertTestMode();
   if (preset === "none") {
     await db.delete(memberships).where(eq(memberships.userId, userId));
     return;
@@ -49,7 +49,7 @@ export async function applyMembershipPreset(
   const row = {
     plan: plan.id,
     status: values.status as "trialing" | "active" | "past_due" | "canceled",
-    provider: paymentProvider.id,
+    provider: "mock",
     providerSubscriptionId: `mock_${userId}`,
     trialEndsAt: preset === "trial" ? new Date(values.end) : null,
     currentPeriodEnd: new Date(values.end),
@@ -62,7 +62,7 @@ export async function applyMembershipPreset(
 }
 
 export async function setUserRole(userId: string, role: "member" | "instructor") {
-  assertTestMode();
+  await assertTestMode();
   await db.update(user).set({ role }).where(eq(user.id, userId));
 }
 

@@ -19,7 +19,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { withNext } from "@/lib/safe-next";
 import { authClient } from "@/server/better-auth/client";
 
-import { createTestAccount, setTestMembership, setTestRole } from "../test-actions";
+import { createTestAccount, setTestMembership, setTestRole, simulateFailedPayment, simulateRenewal } from "../test-actions";
 import { membershipPresets, type MembershipPreset } from "../test-presets";
 
 type Props = {
@@ -29,9 +29,11 @@ type Props = {
   periodEnd: string | null;
   daysLeft: number | null;
   password: string;
+  /** The membership came through the test checkout, so the provider can "charge" it. */
+  canSimulate: boolean;
 };
 
-export function TestPanelMenu({ user, hasAccess, preset, periodEnd, daysLeft, password }: Props) {
+export function TestPanelMenu({ user, hasAccess, preset, periodEnd, daysLeft, password, canSimulate }: Props) {
   const t = useTranslations("TestMode.panel");
   const router = useRouter();
   const pathname = usePathname();
@@ -126,6 +128,24 @@ export function TestPanelMenu({ user, hasAccess, preset, periodEnd, daysLeft, pa
               <p className="px-2 pb-1 font-body-sm text-[12px] text-on-surface-variant">
                 {daysLeft > 0 ? t("periodEnds", { date: periodEnd, days: daysLeft }) : t("periodEnded", { date: periodEnd })}
               </p>
+            )}
+            {canSimulate && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="font-label-sm text-label-sm tracking-widest text-clay uppercase">{t("billingTitle")}</DropdownMenuLabel>
+                <DropdownMenuItem disabled={pending} onSelect={() => run(simulateRenewal, t("renewed"))}>
+                  <span className="flex flex-col">
+                    <span>{t("simulateRenewal")}</span>
+                    <span className="font-body-sm text-[12px] text-outline">{t("simulateRenewalHint")}</span>
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={pending} onSelect={() => run(simulateFailedPayment, t("paymentFailed"))}>
+                  <span className="flex flex-col">
+                    <span>{t("simulateFailure")}</span>
+                    <span className="font-body-sm text-[12px] text-outline">{t("simulateFailureHint")}</span>
+                  </span>
+                </DropdownMenuItem>
+              </>
             )}
             <DropdownMenuSeparator />
 

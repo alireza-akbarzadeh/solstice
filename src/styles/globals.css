@@ -376,3 +376,10 @@ html:lang(fa) {
 :root {
   --bottom-nav-height: 4rem;
 }
+
+/* A printable document (receipts) prints alone: the site's own header, nav and footer step aside. */
+@media print {
+  body:has([data-print-root]) :is(header, nav, footer):not([data-print-root] *) {
+    display: none !important;
+  }
+}

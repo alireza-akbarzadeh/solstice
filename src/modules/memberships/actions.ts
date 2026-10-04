@@ -5,11 +5,12 @@ import { redirect as redirectExternal } from "next/navigation";
 
 import { env } from "@/env";
 import { getPathname, redirect } from "@/i18n/navigation";
-import { paymentProvider } from "@/infrastructure/payment";
+import { getCheckoutProvider, providerFor } from "@/infrastructure/payment";
 import { safeNextPath, withNext } from "@/lib/safe-next";
 
 import { getPlanCatalog } from "./server/plans";
-import { setCancelAtPeriodEnd, setPlan, startMembership } from "./server/memberships";
+import { createCheckout, setCheckoutReference } from "./server/billing";
+import { setCancelAtPeriodEnd, setPlan } from "./server/memberships";
 import { getViewer } from "./server/viewer";
 
 /** Only plans currently on sale can be bought or switched to. */
@@ -34,28 +35,21 @@ export async function startCheckout(formData: FormData) {
   if (!chosen) return redirect({ href: withNext("/membership", next), locale });
   const { plan, currency } = chosen;
 
-  const absolute = (path: string) => new URL(getPathname({ href: path, locale }), env.BETTER_AUTH_URL).toString();
-  const result = await paymentProvider.startCheckout({
-    userId: viewer.user.id,
+  // A checkout record first: the provider's confirmation (webhook or return) completes it.
+  const provider = await getCheckoutProvider();
+  const checkout = await createCheckout({ userId: viewer.user.id, plan, currency, provider: provider.id, locale, nextPath: next });
+  const absolute = (path: string) => new URL(path, env.BETTER_AUTH_URL).toString();
+  const { url, reference } = await provider.createCheckout({
+    checkoutId: checkout.id,
     email: viewer.user.email,
     plan: { id: plan.id, price: plan.price, currency, intervalMonths: plan.intervalMonths },
     trialDays: plan.trialDays,
     locale,
-    successUrl: absolute(withNext("/membership/welcome", next)),
-    cancelUrl: absolute(withNext(`/membership?plan=${plan.id}`, next)),
+    returnUrl: absolute(`/api/payments/${provider.id}/return?checkout=${checkout.id}`),
+    cancelUrl: absolute(getPathname({ href: withNext(`/membership?plan=${plan.id}`, next), locale })),
   });
-
-  if (result.kind === "redirect") return redirectExternal(result.url);
-
-  await startMembership({
-    userId: viewer.user.id,
-    planId: plan.id,
-    intervalMonths: plan.intervalMonths,
-    provider: paymentProvider.id,
-    providerSubscriptionId: result.providerSubscriptionId,
-    trialDays: plan.trialDays,
-  });
-  return redirect({ href: withNext("/membership/welcome", next), locale });
+  if (reference) await setCheckoutReference(checkout.id, reference);
+  return redirectExternal(url);
 }
 
 export async function cancelMembership(formData?: FormData) {
@@ -65,7 +59,7 @@ export async function cancelMembership(formData?: FormData) {
   if (!viewer.user || !viewer.membership) return redirect({ href: back, locale });
 
   if (viewer.membership.providerSubscriptionId) {
-    await paymentProvider.cancelSubscription(viewer.membership.providerSubscriptionId);
+    await providerFor(viewer.membership.provider)?.cancelSubscription(viewer.membership.providerSubscriptionId);
   }
   await setCancelAtPeriodEnd(viewer.user.id, true);
   return redirect({ href: back, locale });
@@ -78,7 +72,7 @@ export async function resumeMembership(formData?: FormData) {
   if (!viewer.user || !viewer.membership) return redirect({ href: back, locale });
 
   if (viewer.membership.providerSubscriptionId) {
-    await paymentProvider.resumeSubscription(viewer.membership.providerSubscriptionId);
+    await providerFor(viewer.membership.provider)?.resumeSubscription(viewer.membership.providerSubscriptionId);
   }
   await setCancelAtPeriodEnd(viewer.user.id, false);
   return redirect({ href: back, locale });
@@ -92,7 +86,7 @@ export async function changePlan(formData: FormData) {
   const { plan, currency } = chosen;
 
   if (viewer.membership.providerSubscriptionId) {
-    await paymentProvider.changePlan(viewer.membership.providerSubscriptionId, {
+    await providerFor(viewer.membership.provider)?.changePlan(viewer.membership.providerSubscriptionId, {
       id: plan.id,
       price: plan.price,
       currency,
