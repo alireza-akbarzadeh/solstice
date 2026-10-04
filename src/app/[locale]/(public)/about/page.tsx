@@ -6,7 +6,9 @@ import {
   HourglassIcon,
   LeafIcon,
   MailIcon,
+  MapPinIcon,
   PersonStandingIcon,
+  PhoneIcon,
   QuoteIcon,
   SproutIcon,
   SunIcon,
@@ -23,6 +25,9 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { SocialLinks } from "@/modules/contact/components/social-links";
+import { getStudioContact } from "@/modules/contact/server/contact";
+import { telHref } from "@/modules/contact/types";
 import { getPlanCatalog } from "@/modules/memberships/server/plans";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { getPageAssets } from "@/modules/pages/server/request";
@@ -52,14 +57,21 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  const [t, tBrand, format, viewer, assets, { trialDays }] = await Promise.all([
+  const [t, tBrand, format, viewer, assets, { trialDays }, contact] = await Promise.all([
     getTranslations("About"),
     getTranslations("Brand"),
     getFormatter(),
     getViewer(),
     getPageAssets("about"),
     getPlanCatalog(),
+    getStudioContact(),
   ]);
+  const address = contact.address[locale];
+  const contactRows = [
+    contact.email && { key: "email", Icon: MailIcon, label: t("contact.email"), value: contact.email, href: `mailto:${contact.email}` },
+    contact.phone && { key: "phone", Icon: PhoneIcon, label: t("contact.phone"), value: contact.phone, href: telHref(contact.phone) },
+    address && { key: "address", Icon: MapPinIcon, label: t("contact.address"), value: address, href: null },
+  ].filter((row) => !!row);
   const stats = t.raw("hero.stats") as Stat[];
   const credentials = t.raw("lineage.credentials") as string[];
   const story = t.raw("lineage.story") as string[];
@@ -325,6 +337,55 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
           </div>
         </div>
       </section>
+
+      {/* Contact — only what the studio has filled in at /instructor/settings */}
+      {(contactRows.length > 0 || contact.socials.length > 0) && (
+        <section id="contact" className="scroll-mt-20 bg-surface pt-space-2xl">
+          <Container>
+            <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
+              <div className="space-y-space-sm lg:col-span-5">
+                <span className="block font-label-sm text-label-sm font-semibold tracking-widest text-clay uppercase">{t("contact.eyebrow")}</span>
+                <h2 className="font-headline-lg-mobile text-headline-lg-mobile tracking-tight text-primary md:font-headline-lg md:text-headline-lg">
+                  {t("contact.title")}
+                </h2>
+                <p className="max-w-md font-body-md text-body-md text-on-surface-variant">{t("contact.body")}</p>
+                {contact.socials.length > 0 && (
+                  <div className="pt-space-sm">
+                    <p className="mb-3 font-label-md text-label-md tracking-wider text-on-surface-variant uppercase">{t("contact.follow")}</p>
+                    <SocialLinks links={contact.socials} />
+                  </div>
+                )}
+              </div>
+              {contactRows.length > 0 && (
+                <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-7">
+                  {contactRows.map(({ key, Icon, label, value, href }) => (
+                    <li key={key} className={key === "address" ? "sm:col-span-2" : undefined}>
+                      <div className="flex h-full items-start gap-4 rounded-xl bg-surface-container-low p-space-md">
+                        <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-surface text-primary">
+                          <Icon aria-hidden className="size-5" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="font-label-sm text-label-sm tracking-wider text-clay uppercase">{label}</p>
+                          {href ? (
+                            <a
+                              href={href}
+                              className="mt-1 block font-body-md text-body-md break-all text-on-surface transition-colors hover:text-primary focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                            >
+                              {key === "phone" ? <bdi dir="ltr">{value}</bdi> : value}
+                            </a>
+                          ) : (
+                            <address className="mt-1 font-body-md text-body-md whitespace-pre-line text-on-surface not-italic">{value}</address>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* Invitation */}
       <Container className="py-space-2xl">

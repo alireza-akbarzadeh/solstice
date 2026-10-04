@@ -97,9 +97,12 @@ delete previousSettings.copy.en.Footer.statement;
 delete previousSettings.copy.fa.Footer.statement;
 previousSettings.copy.en.Footer.retiredField = "Old copy";
 previousSettings.copy.fa.Footer.retiredField = "متن قبلی";
+// Social links moved to studio settings; saved pages still carry the old asset keys.
+previousSettings.assets.instagram = "https://instagram.com";
 const inherited = editableContentFor("site-settings", previousSettings);
 assert.ok(inherited.copy.en.Footer.statement);
 assert.equal(inherited.copy.en.Footer.retiredField, undefined);
+assert.deepEqual(inherited.assets, {});
 assert.ok(
   validation.validBuiltinContent(inherited, defaultContentFor("site-settings")),
   "older content inherits new editable fields",

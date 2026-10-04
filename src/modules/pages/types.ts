@@ -26,4 +26,6 @@ export type PageDefinition = {
   namespaces: string[];
   assets: Record<string, string>;
   manage?: string;
+  /** Studio page for related settings this page shows (contact details, social links). */
+  settings?: string;
 };

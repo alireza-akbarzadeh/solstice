@@ -900,6 +900,15 @@
       "member": "Continue your practice",
       "explore": "Explore the practice library",
       "note": "No long-term commitment. Cancel any time."
+    },
+    "contact": {
+      "eyebrow": "Get in touch",
+      "title": "Write, call, or come and practise in person.",
+      "body": "Questions about a practice, a program or your membership — we read every message and reply ourselves.",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Visit the studio",
+      "follow": "Follow along"
     }
   },
   "Journal": {
@@ -1186,7 +1195,8 @@
       "site": "Public sanctuary",
       "programs": "Programs",
       "pages": "Pages",
-      "subscribers": "Subscribers"
+      "subscribers": "Subscribers",
+      "settings": "Settings"
     },
     "overview": {
       "metaTitle": "Studio overview",
@@ -1894,7 +1904,7 @@
       "edit": "Edit",
       "urlHint": "Use a short address such as retreats. The address stays fixed after creation. Existing website routes are reserved.",
       "seoHint": "Optional search result title. Leave blank to use the page title.",
-      "imageHint": "Use a local /images/… path or a public HTTPS image URL. Social links use HTTPS URLs.",
+      "imageHint": "Use a local /images/… path or a public HTTPS image URL.",
       "linkHint": "Use a website path such as /membership, or an HTTPS URL. Leave blank to hide the button.",
       "assetsTitle": "Images and links",
       "keepVariables": "Keep text inside braces and formatting tags unchanged. The website fills in these values.",
@@ -1939,10 +1949,7 @@
         "portrait": "Instructor portrait",
         "hall": "Practice hall image",
         "linen": "Linen image",
-        "tea": "Tea image",
-        "instagram": "Instagram profile URL",
-        "youtube": "YouTube channel URL",
-        "socialX": "X profile URL"
+        "tea": "Tea image"
       },
       "namespaceLabels": {
         "About": "About your studio",
@@ -2232,7 +2239,9 @@
         "image": "Use an /images/… path or an https:// address.",
         "video": "Paste a YouTube link (youtube.com or youtu.be).",
         "link": "Use a site path like /membership or an https:// address."
-      }
+      },
+      "settingsHint": "Social links and contact details are edited in Studio settings.",
+      "openSettings": "Open settings"
     },
     "subscribers": {
       "metaTitle": "Newsletter subscribers · Studio",
@@ -2493,6 +2502,71 @@
         "forbidden": "Only the instructor can change categories.",
         "failed": "Something went wrong. Please try again."
       }
+    },
+    "settings": {
+      "metaTitle": "Studio settings",
+      "eyebrow": "Studio",
+      "title": "Studio settings",
+      "lede": "How visitors reach you: contact details and social profiles, shown in the footer and on the About page.",
+      "where": {
+        "title": "Where these appear",
+        "footer": "Footer",
+        "footerBody": "Social icons, email, phone and address at the bottom of every public page.",
+        "about": "About page",
+        "aboutBody": "A “Get in touch” section above the closing invitation.",
+        "empty": "Anything left blank is simply not shown. With nothing filled in, the footer column and the About section are hidden."
+      },
+      "editor": {
+        "title": "Contact & social links",
+        "lede": "Changes go live as soon as you save.",
+        "save": "Save changes",
+        "saved": "Contact details saved",
+        "contactTitle": "Contact details",
+        "socialTitle": "Social links",
+        "socialHint": "Add as many as you like; they appear in this order.",
+        "addLink": "Add link",
+        "noLinks": "No social links yet. Add Instagram, Telegram, WhatsApp, YouTube or any other profile.",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "removeLink": "Remove link",
+        "fields": {
+          "email": "Email",
+          "phone": "Phone",
+          "address": "Address",
+          "addressHint": "Shown in the visitor's language, so fill in both or leave both empty. Line breaks are kept.",
+          "network": "Network",
+          "url": "{network} link",
+          "urlHint": "Paste the profile link, or just the username (@arteyoga).",
+          "whatsappHint": "Your number with country code (+98 912 345 6789), or a wa.me link.",
+          "websiteHint": "A full address, such as https://example.com."
+        },
+        "placeholders": {
+          "instagram": "@arteyoga or https://instagram.com/arteyoga",
+          "telegram": "@arteyoga or https://t.me/arteyoga",
+          "whatsapp": "+98 912 345 6789",
+          "youtube": "@arteyoga or a channel link",
+          "aparat": "arteyoga or https://www.aparat.com/arteyoga",
+          "x": "@arteyoga or https://x.com/arteyoga",
+          "facebook": "arteyoga or https://facebook.com/arteyoga",
+          "tiktok": "@arteyoga or https://tiktok.com/@arteyoga",
+          "linkedin": "username or https://linkedin.com/in/…",
+          "pinterest": "arteyoga or https://pinterest.com/arteyoga",
+          "threads": "@arteyoga or https://threads.net/@arteyoga",
+          "website": "https://example.com"
+        },
+        "validation": {
+          "email": "Enter a valid email address, or leave it empty.",
+          "phone": "Use digits, spaces and an optional leading +.",
+          "address": "Fill in the address in both languages, or leave both empty.",
+          "url": "Enter a link (https://…) or a username.",
+          "whatsapp": "Enter the number with its country code (no leading 0), or a wa.me link."
+        },
+        "errors": {
+          "forbidden": "Only the instructor can change studio settings.",
+          "invalid": "Some fields need attention.",
+          "failed": "Couldn't save. Please try again."
+        }
+      }
     }
   },
   "Legal": {
@@ -2710,5 +2784,24 @@
     "home": "Home",
     "practices": "Practices",
     "journal": "Journal"
+  },
+  "Contact": {
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "networks": {
+      "instagram": "Instagram",
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp",
+      "youtube": "YouTube",
+      "aparat": "Aparat",
+      "x": "X",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "linkedin": "LinkedIn",
+      "pinterest": "Pinterest",
+      "threads": "Threads",
+      "website": "Website"
+    }
   }
 }

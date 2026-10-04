@@ -60,6 +60,12 @@ export function editableContentFor(
       en: editableTree(template.copy.en, saved.copy.en) as CopyRecord,
       fa: editableTree(template.copy.fa, saved.copy.fa) as CopyRecord,
     },
-    assets: { ...template.assets, ...saved.assets },
+    // Only the template's keys, so assets a template retired (the old social links) drop out.
+    assets: Object.fromEntries(
+      Object.entries(template.assets).map(([key, value]) => [
+        key,
+        saved.assets[key] ?? value,
+      ]),
+    ),
   };
 }

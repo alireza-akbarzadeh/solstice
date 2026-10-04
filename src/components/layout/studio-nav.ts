@@ -8,6 +8,7 @@ import {
   MegaphoneIcon,
   MessagesSquareIcon,
   NotebookPenIcon,
+  SettingsIcon,
   ShapesIcon,
   TagIcon,
   UsersIcon,
@@ -35,7 +36,10 @@ export type StudioNavItem = {
 export const studioNavGroups: readonly { label: StudioNavLabel; items: readonly StudioNavItem[] }[] = [
   {
     label: "studio",
-    items: [{ href: "/instructor", label: "overview", icon: LayoutGridIcon, exact: true }],
+    items: [
+      { href: "/instructor", label: "overview", icon: LayoutGridIcon, exact: true },
+      { href: "/instructor/settings", label: "settings", icon: SettingsIcon },
+    ],
   },
   {
     label: "content",

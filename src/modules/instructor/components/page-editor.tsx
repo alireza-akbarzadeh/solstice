@@ -279,6 +279,14 @@ export function PageEditor({
               </Link>
             </p>
           )}
+          {definition.settings && (
+            <p className="text-on-surface-variant text-sm">
+              {t("settingsHint")}{" "}
+              <Link className="text-primary underline" href={definition.settings}>
+                {t("openSettings")}
+              </Link>
+            </p>
+          )}
           {Object.keys(definition.assets).length > 0 && (
             <Controller
               control={form.control}

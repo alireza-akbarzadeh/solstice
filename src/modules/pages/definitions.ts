@@ -143,11 +143,8 @@ export const pageDefinitions: PageDefinition[] = [
       "Pwa",
       "LocaleSwitcher",
     ],
-    assets: {
-      instagram: "https://instagram.com",
-      youtube: "https://youtube.com",
-      socialX: "https://x.com",
-    },
+    assets: {},
+    settings: "/instructor/settings",
   },
 ];
 
