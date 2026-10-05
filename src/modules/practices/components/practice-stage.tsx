@@ -108,7 +108,7 @@ export function PracticeColumns({ main, aside }: { main: React.ReactNode; aside:
   return (
     <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
       <section className={cn("flex flex-col gap-space-lg", theater ? "lg:col-span-12" : "lg:col-span-8")}>{main}</section>
-      <aside className={cn("flex flex-col gap-space-lg", theater ? "lg:col-span-12 lg:grid lg:grid-cols-2 lg:items-start" : "lg:col-span-4")}>
+      <aside className={cn("flex flex-col gap-space-lg", theater ? "lg:col-span-12" : "lg:col-span-4")}>
         {aside}
       </aside>
     </div>
