@@ -51,6 +51,7 @@ export default async function StudioInboxPage({ params, searchParams }: PageProp
     getChatSettings(),
   ]);
 
+  const now = new Date();
   const requested = Number(one("c"));
   const conversation = Number.isInteger(requested) && requested > 0 ? await getConversation(requested) : rows[0] ? await getConversation(rows[0].id) : null;
   let selected: { thread: Awaited<ReturnType<typeof getThread>>; who: InboxRow["who"]; userId: string | null } | null = null;
@@ -156,7 +157,7 @@ export default async function StudioInboxPage({ params, searchParams }: PageProp
                         <span className="truncate">{row.who.name || (row.who.member ? t("thread.member") : t("thread.visitor"))}</span>
                       </span>
                       <time className="shrink-0 font-label-sm text-label-sm text-outline" dateTime={row.lastMessageAt}>
-                        {format.relativeTime(new Date(row.lastMessageAt))}
+                        {format.relativeTime(new Date(row.lastMessageAt), now)}
                       </time>
                     </span>
                     <span className="truncate font-body-sm text-body-sm font-semibold text-on-surface">{row.subject || t("thread.untitled")}</span>
@@ -172,7 +173,7 @@ export default async function StudioInboxPage({ params, searchParams }: PageProp
                         )}
                       >
                         {row.status === "waiting" && row.waitingSince
-                          ? t("waitingFor", { time: format.relativeTime(new Date(row.waitingSince)) })
+                          ? t("waitingFor", { time: format.relativeTime(new Date(row.waitingSince), now) })
                           : t(`status.${row.status}`)}
                       </span>
                       {row.escalated && <span className="rounded bg-primary-fixed px-1.5 py-0.5 font-label-sm text-label-sm text-on-primary-fixed">{t("askedForPerson")}</span>}

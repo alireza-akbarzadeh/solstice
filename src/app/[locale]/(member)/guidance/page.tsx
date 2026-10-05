@@ -183,6 +183,7 @@ export default async function GuidancePage({ params, searchParams }: PageProps<"
     replyHours: settings.replyHours,
   };
   const format = await getFormatter();
+  const now = new Date();
 
   return (
     <Container className="flex flex-col gap-space-xl py-space-lg md:py-space-xl">
@@ -224,7 +225,7 @@ export default async function GuidancePage({ params, searchParams }: PageProps<"
                           {t(`threads.status.${item.status}`)}
                         </span>
                         <time className="font-label-sm text-label-sm text-outline" dateTime={item.lastMessageAt}>
-                          {format.relativeTime(new Date(item.lastMessageAt))}
+                          {format.relativeTime(new Date(item.lastMessageAt), now)}
                         </time>
                       </span>
                       <span className="truncate font-headline-sm text-[1.0625rem] leading-snug text-on-surface">{item.subject}</span>

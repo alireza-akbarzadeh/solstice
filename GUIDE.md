@@ -202,11 +202,15 @@ Zarinpal (`providers/zarinpal.ts`) confirms on return and never renews by itself
 
 Mail goes through `sendEmail()` (`infrastructure/email`). Until SMTP is configured at `/instructor/email` it lands in the test mailbox (`/test/mailbox`). Any mailbox with SMTP works (Gmail needs an app password); `SMTP_*` and `EMAIL_FROM` env vars override the studio. Newsletters are written and sent from `/instructor/subscribers`; unsubscribe links are signed (`modules/newsletter/server/unsubscribe.ts`). On a new database run `pnpm db:seed:newsletter`.
 
+### Messages: guidance and the AI assistant
+
+Two kinds of conversation share `modules/conversations`: **guidance** (`/guidance`, members on a plan with “1:1 guidance” switched on in the plan editor; places limit how many members the plan takes) and **quick help** (the corner widget, `AssistantDock` in the public and member layouts). Every message records its author — `member`, `instructor` or `ai` — and `MessageBubble` always labels AI; never show an AI message as the instructor. The studio answers at `/instructor/inbox`; the assistant is set up at `/instructor/inbox/settings` (off / test replies / Gemini). The assistant's instructions are built in `server/assistant.ts` from live plans, prices, trials, payment methods and guidance places, plus the studio's own notes — add new facts there, not in the prompt box. Another AI provider is one file in `infrastructure/ai/providers` plus a mode. Gemini's free tier may use prompts for training, so AI on guidance needs a paid key. A computer in Iran can't reach Gemini without a VPN (`NODE_USE_ENV_PROXY=1` + `HTTPS_PROXY`), so use test replies locally.
+
 ### Database schema
 
 Migrations in `drizzle/` are the complete history: on a new database run `pnpm db:migrate`, then the `db:seed:*` scripts for content. A database built before 2026-10-05 (with push and the seed scripts) needs `pnpm db:baseline` once (`--dry-run` first) so migrate knows where it stands. After a schema change, `pnpm db:generate` and commit the new migration.
 
-Tables live in `src/server/db/schema/`, one file per area (`auth`, `content`, `community`, `activity`, `messaging`, `memberships`, `payments`), re-exported from `index.ts`; import them from `@/server/db/schema`. Inside the folder, import siblings as `./auth.ts` (with the extension) and keep `@/…` imports type-only — the seed scripts load the schema straight from Node.
+Tables live in `src/server/db/schema/`, one file per area (`auth`, `content`, `community`, `activity`, `messaging`, `memberships`, `payments`, `conversations`), re-exported from `index.ts`; import them from `@/server/db/schema`. Inside the folder, import siblings as `./auth.ts` (with the extension) and keep `@/…` imports type-only — the seed scripts load the schema straight from Node.
 
 ### Membership plans
 

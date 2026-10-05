@@ -46,7 +46,7 @@ export function MessageBubble({
   const clock = useMomentClock();
   const mine = side === "member" ? message.author === "member" : message.author === "instructor";
   const time = format.dateTime(new Date(message.createdAt), { hour: "numeric", minute: "2-digit" });
-  const day = format.relativeTime(new Date(message.createdAt));
+  const full = format.dateTime(new Date(message.createdAt), { dateStyle: "medium", timeStyle: "short" });
 
   const label =
     message.author === "ai"
@@ -85,7 +85,8 @@ export function MessageBubble({
               {t("aiBadge")}
             </span>
           )}
-          <time dateTime={message.createdAt} title={day}>
+          {/* Server and browser may sit in different time zones; the browser's reading wins. */}
+          <time dateTime={message.createdAt} title={full} suppressHydrationWarning>
             {time}
           </time>
         </p>
