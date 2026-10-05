@@ -19,7 +19,7 @@ CREATE TABLE "solstice_journal_article" (
 	"updatedAt" timestamp with time zone NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "solstice_program" (
+CREATE TABLE IF NOT EXISTS "solstice_program" (
 	"slug" text PRIMARY KEY NOT NULL,
 	"status" text DEFAULT 'draft' NOT NULL,
 	"featured" boolean DEFAULT false NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE "solstice_program" (
 	"updatedAt" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "solstice_site_page" (
+CREATE TABLE IF NOT EXISTS "solstice_site_page" (
 	"slug" text PRIMARY KEY NOT NULL,
 	"builtin" boolean DEFAULT false NOT NULL,
 	"draftContent" jsonb NOT NULL,
@@ -53,5 +53,5 @@ CREATE TABLE "solstice_site_page" (
 --> statement-breakpoint
 ALTER TABLE "solstice_comment" ADD COLUMN "hidden" boolean DEFAULT false NOT NULL;--> statement-breakpoint
 CREATE INDEX "journal_status_idx" ON "solstice_journal_article" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "program_status_idx" ON "solstice_program" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "site_page_builtin_idx" ON "solstice_site_page" USING btree ("builtin");
+CREATE INDEX IF NOT EXISTS "program_status_idx" ON "solstice_program" USING btree ("status");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "site_page_builtin_idx" ON "solstice_site_page" USING btree ("builtin");

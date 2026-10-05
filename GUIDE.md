@@ -139,6 +139,7 @@ Self-hosted; no paid push or PWA service.
   existing subscriptions.
 - **iPhone:** web push only works after the member adds Arte Yoga Studio to the Home Screen
   (iOS 16.4+).
+- **Browser checks:** Chromium (Playwright, Chrome DevTools MCP) crashes on this site's stylesheet. Block or stub stylesheets (`route('**/*', r => r.request().resourceType() === 'stylesheet' ? r.fulfill({ status: 200, contentType: 'text/css', body: '' }) : r.continue())`) and the app runs normally for console, DOM and flow checks; check visuals in Firefox.
 - **Testing:** headless Playwright Chromium can subscribe, but never receives real pushes.
   Test delivery in a real browser, or inject one via DevTools → Application → Service
   Workers → Push.
@@ -202,6 +203,8 @@ Zarinpal (`providers/zarinpal.ts`) confirms on return and never renews by itself
 Mail goes through `sendEmail()` (`infrastructure/email`). Until SMTP is configured at `/instructor/email` it lands in the test mailbox (`/test/mailbox`). Any mailbox with SMTP works (Gmail needs an app password); `SMTP_*` and `EMAIL_FROM` env vars override the studio. Newsletters are written and sent from `/instructor/subscribers`; unsubscribe links are signed (`modules/newsletter/server/unsubscribe.ts`). On a new database run `pnpm db:seed:newsletter`.
 
 ### Database schema
+
+Migrations in `drizzle/` are the complete history: on a new database run `pnpm db:migrate`, then the `db:seed:*` scripts for content. A database built before 2026-10-05 (with push and the seed scripts) needs `pnpm db:baseline` once (`--dry-run` first) so migrate knows where it stands. After a schema change, `pnpm db:generate` and commit the new migration.
 
 Tables live in `src/server/db/schema/`, one file per area (`auth`, `content`, `community`, `activity`, `messaging`, `memberships`, `payments`), re-exported from `index.ts`; import them from `@/server/db/schema`. Inside the folder, import siblings as `./auth.ts` (with the extension) and keep `@/…` imports type-only — the seed scripts load the schema straight from Node.
 

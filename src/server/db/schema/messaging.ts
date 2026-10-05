@@ -56,10 +56,7 @@ export const newsletterIssues = createTable("newsletter_issue", (d) => ({
   recipients: d.integer().notNull().default(0),
   failed: d.integer().notNull().default(0),
   sentAt: d.timestamp({ withTimezone: true }),
-  createdAt: d
-    .timestamp({ withTimezone: true })
-    .$defaultFn(() => new Date())
-    .notNull(),
+  createdAt: d.timestamp({ withTimezone: true }).notNull().defaultNow(),
 }));
 
 // Messages sent by the "outbox" EmailProvider (no real delivery): read them in /test/mailbox.

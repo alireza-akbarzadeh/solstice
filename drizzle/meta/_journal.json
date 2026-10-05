@@ -29,6 +29,20 @@
       "when": 1791008430651,
       "tag": "0003_steep_chronomancer",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791195718602,
+      "tag": "0004_launch_baseline",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791198209658,
+      "tag": "0005_conversations",
+      "breakpoints": true
     }
   ]
 }

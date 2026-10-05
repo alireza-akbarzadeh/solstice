@@ -72,6 +72,10 @@ export const membershipPlans = createTable(
     prices: d.jsonb().$type<Partial<Record<string, number>>>().notNull().default({}),
     intervalMonths: d.integer().notNull(),
     trialDays: d.integer().notNull().default(0),
+    /** Members on this plan can ask the instructor 1:1 (/guidance). */
+    guidance: d.boolean().notNull().default(false),
+    /** How many members the plan takes while guidance is on; 0 = no limit. Full plans aren't sold. */
+    guidancePlaces: d.integer().notNull().default(0),
     createdAt: d.timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: d
       .timestamp({ withTimezone: true })

@@ -8,3 +8,4 @@ export * from "./activity.ts";
 export * from "./messaging.ts";
 export * from "./memberships.ts";
 export * from "./payments.ts";
+export * from "./conversations.ts";

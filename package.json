@@ -35,7 +35,8 @@
     "test:pages:preview": "node --experimental-strip-types --test tests/page-preview.test.mjs",
     "db:seed:payments": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-payments.ts",
     "db:seed:likes": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-likes.ts",
-    "db:seed:newsletter": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-newsletter.ts"
+    "db:seed:newsletter": "node --env-file=.env --experimental-strip-types --no-warnings scripts/seed-newsletter.ts",
+    "db:baseline": "node --env-file=.env --experimental-strip-types --no-warnings scripts/baseline-migrations.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.2",

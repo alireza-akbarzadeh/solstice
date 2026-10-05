@@ -34,10 +34,7 @@ export const practiceLikes = createTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     practiceSlug: d.text().notNull(),
-    createdAt: d
-      .timestamp({ withTimezone: true })
-      .$defaultFn(() => new Date())
-      .notNull(),
+    createdAt: d.timestamp({ withTimezone: true }).notNull().defaultNow(),
   }),
   (t) => [primaryKey({ columns: [t.userId, t.practiceSlug] }), index("practice_like_slug_idx").on(t.practiceSlug)],
 );

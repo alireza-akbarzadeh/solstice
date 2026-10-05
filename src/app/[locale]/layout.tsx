@@ -3,7 +3,6 @@ import "@/styles/globals.css";
 import { type Metadata, type Viewport } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Cormorant_Garamond, Manrope, Vazirmatn } from "next/font/google";
 import { notFound } from "next/navigation";
 
 import { PwaUpdatePrompt } from "@/components/pwa/pwa-update-prompt";
@@ -14,25 +13,7 @@ import { env } from "@/env";
 import { getDirection, routing } from "@/i18n/routing";
 import { PagePreviewBanner } from "@/modules/pages/components/page-preview-banner";
 import { getBuiltinPagePreview } from "@/modules/pages/server/request";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-cormorant",
-});
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-manrope",
-});
-
-const vazirmatn = Vazirmatn({
-  subsets: ["arabic", "latin"],
-  variable: "--font-vazirmatn",
-});
+import { fontVariables } from "@/styles/fonts";
 
 type Props = Readonly<{
   children: React.ReactNode;
@@ -80,7 +61,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html
       lang={locale}
       dir={dir}
-      className={`${cormorant.variable} ${manrope.variable} ${vazirmatn.variable}`}
+      className={fontVariables}
       suppressHydrationWarning
     >
       <body className="flex min-h-svh flex-col">
