@@ -9,10 +9,9 @@ import { settings } from "@/server/db/schema";
 // (/instructor/inbox/settings, key sealed with lib/secret-box), with GEMINI_API_KEY and
 // GEMINI_MODEL winning when set.
 
-export const aiModes = ["off", "test", "gemini"] as const;
-export type AiMode = (typeof aiModes)[number];
+import { aiModes, DEFAULT_GEMINI_MODEL, type AiMode } from "./types";
 
-export const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
+export { aiModes, DEFAULT_GEMINI_MODEL, type AiMode };
 
 /** The settings row as modules/conversations stores it. */
 export type StoredAssistantSettings = {
@@ -32,7 +31,7 @@ export type StoredAssistantSettings = {
 export async function readStoredAssistantSettings(): Promise<StoredAssistantSettings> {
   try {
     const [row] = await db.select({ value: settings.value }).from(settings).where(eq(settings.key, "assistant")).limit(1);
-    return (row?.value ?? {}) as StoredAssistantSettings;
+    return (row?.value ?? {});
   } catch {
     return {};
   }
@@ -43,13 +42,16 @@ export const aiEnv = () => ({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODE
 
 export type AiConfig = { mode: AiMode; model: string; apiKey?: string };
 
+/** A blank value counts as unset. */
+const filled = (value: string | undefined) => (value?.trim() ? value.trim() : undefined);
+
 export async function loadAiConfig(stored?: StoredAssistantSettings): Promise<AiConfig> {
   const row = stored ?? (await readStoredAssistantSettings());
   const fromEnv = aiEnv();
   const sealed = row.apiKey?.sealed;
   return {
     mode: aiModes.find((mode) => mode === row.mode) ?? "off",
-    model: fromEnv.model || row.model || DEFAULT_GEMINI_MODEL,
-    apiKey: fromEnv.apiKey || (sealed ? (open(sealed) ?? undefined) : undefined),
+    model: filled(fromEnv.model) ?? filled(row.model) ?? DEFAULT_GEMINI_MODEL,
+    apiKey: filled(fromEnv.apiKey) ?? (sealed ? (open(sealed) ?? undefined) : undefined),
   };
 }

@@ -5,10 +5,9 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { env } from "@/env";
 import { getPathname } from "@/i18n/navigation";
-import type { Locale } from "@/i18n/routing";
+import { routing } from "@/i18n/routing";
 import { sendEmail } from "@/infrastructure/email";
 import { isPushConfigured } from "@/infrastructure/push/web-push";
-import { routing } from "@/i18n/routing";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { notifyUser, type Notification } from "@/modules/notifications/server/send";
 import { db } from "@/server/db";
@@ -34,7 +33,7 @@ export async function openInboxThread(conversationId: number): Promise<ThreadVie
   const row = await getConversation(conversationId);
   if (!row) return null;
   await markRead(row.id, "staff");
-  return getThread(row, (await getLocale()) as Locale, "staff");
+  return getThread(row, (await getLocale()), "staff");
 }
 
 export type StaffReplyResult = { ok: true; messages: MessageView[]; status: ConversationStatus } | { ok: false; error: "forbidden" | "invalid" | "notFound" };
@@ -50,7 +49,7 @@ export async function replyAsStaff(input: { conversationId: number; body: string
   const message = await addMessage({ conversationId: row.id, author: "instructor", authorId: me.id, body: parsed.data.body });
   await setStatus(row, "answered");
   await notifyMemberReply(row, parsed.data.body, me.name);
-  return { ok: true, messages: await messagesAfter(row.id, message.id - 1, (await getLocale()) as Locale), status: "answered" };
+  return { ok: true, messages: await messagesAfter(row.id, message.id - 1, (await getLocale())), status: "answered" };
 }
 
 export async function setInboxStatus(input: { conversationId: number; status: "closed" | "answered" | "waiting" }) {
@@ -65,7 +64,7 @@ export async function pollInboxThread(input: { conversationId: number; afterId: 
   if (!(await instructor())) return { ok: false as const };
   const row = await getConversation(input.conversationId);
   if (!row) return { ok: false as const };
-  const messages = await messagesAfter(row.id, input.afterId, (await getLocale()) as Locale);
+  const messages = await messagesAfter(row.id, input.afterId, (await getLocale()));
   if (messages.some((m) => m.author === "member")) await markRead(row.id, "staff");
   return { ok: true as const, messages, status: row.status };
 }
@@ -93,7 +92,7 @@ export async function tryAssistant(question: string): Promise<TryAssistantResult
   if (!(await instructor())) return { ok: false, reason: "forbidden" };
   const text = question.trim().slice(0, 1000);
   if (!text) return { ok: false, reason: "unavailable" };
-  return previewAssistant(text, (await getLocale()) as Locale);
+  return previewAssistant(text, (await getLocale()));
 }
 
 // ——— Waitlist ———

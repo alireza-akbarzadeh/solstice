@@ -23,7 +23,18 @@ const suggestions = ["plans", "trial", "payment", "guidance"] as const;
  * assistant (labeled as such on every reply). "Talk to a person" hands the chat to the studio's
  * inbox; their reply shows up here and by email or push.
  */
-export function AssistantWidget({ instructorName, signedIn, unread }: { instructorName: string; signedIn: boolean; unread: boolean }) {
+export function AssistantWidget({
+  instructorName,
+  signedIn,
+  unread,
+  raised,
+}: {
+  instructorName: string;
+  signedIn: boolean;
+  unread: boolean;
+  /** Sit above the test-mode panel, which takes the same corner. */
+  raised: boolean;
+}) {
   const t = useTranslations("Conversations.widget");
   const params = useSearchParams();
   const [open, setOpen] = useState(false);
@@ -144,15 +155,18 @@ export function AssistantWidget({ instructorName, signedIn, unread }: { instruct
 
   const canHandOff = !!conversationId && status === "open" && messages.some((m) => m.author === "member");
 
+  const lift = { "--dock-lift": raised ? "3.25rem" : "0rem" } as React.CSSProperties;
+
   return (
     <>
       <button
+        style={lift}
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-controls="assistant-panel"
         className={cn(
-          "fixed end-4 bottom-[calc(var(--bottom-tabs,4.5rem)+1rem)] z-40 flex items-center gap-2 rounded-full border border-hairline bg-surface-container-lowest/95 py-2.5 ps-3 pe-4 font-label-lg text-label-lg text-on-surface shadow-ambient backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97] lg:end-6 lg:bottom-6",
+          "fixed end-4 bottom-[calc(var(--bottom-nav-height)+env(safe-area-inset-bottom,0px)+0.75rem+var(--dock-lift))] z-40 flex items-center gap-2 rounded-full border border-hairline bg-surface-container-lowest/95 py-2.5 ps-3 pe-4 font-label-lg text-label-lg text-on-surface shadow-ambient backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97] lg:end-6 lg:bottom-[calc(1.5rem+var(--dock-lift))]",
           open && "pointer-events-none translate-y-2 opacity-0",
         )}
       >
@@ -164,13 +178,14 @@ export function AssistantWidget({ instructorName, signedIn, unread }: { instruct
       </button>
 
       <section
+        style={lift}
         id="assistant-panel"
         role="dialog"
         aria-label={t("title")}
         aria-hidden={!open}
         inert={!open}
         className={cn(
-          "fixed end-4 bottom-[calc(var(--bottom-tabs,4.5rem)+1rem)] z-50 flex h-[min(38rem,calc(100svh-9rem))] w-[min(24rem,calc(100vw-2rem))] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-hairline bg-surface shadow-ambient transition-[opacity,transform] duration-200 ease-out rtl:origin-bottom-left lg:end-6 lg:bottom-6",
+          "fixed end-4 bottom-[calc(var(--bottom-nav-height)+env(safe-area-inset-bottom,0px)+0.75rem+var(--dock-lift))] z-50 flex h-[min(38rem,calc(100svh-9rem))] w-[min(24rem,calc(100vw-2rem))] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-hairline bg-surface shadow-ambient transition-[opacity,transform] duration-200 ease-out rtl:origin-bottom-left lg:end-6 lg:bottom-[calc(1.5rem+var(--dock-lift))]",
           open ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0",
         )}
       >

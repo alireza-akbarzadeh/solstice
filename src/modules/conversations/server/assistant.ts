@@ -38,7 +38,7 @@ async function siteFacts(): Promise<string> {
     .filter((plan) => plan.status === "active")
     .map((plan) => {
       const prices = Object.entries(plan.prices)
-        .map(([currency, amount]) => money(amount!, currency as Currency))
+        .map(([currency, amount]) => money(amount, currency as Currency))
         .join(" or ");
       const period = plan.intervalMonths === 1 ? "month" : `${plan.intervalMonths} months`;
       const parts = [
@@ -123,7 +123,7 @@ export async function replyAsAssistant(row: Conversation): Promise<AssistantResu
   if (!turns.length) return { ok: false, reason: "unavailable" };
 
   try {
-    const reply = await provider.reply({ system: await systemPrompt(row.kind, settings.instructions), turns, locale: row.locale as Locale });
+    const reply = await provider.reply({ system: await systemPrompt(row.kind, settings.instructions), turns, locale: row.locale });
     const message = await addMessage({ conversationId: row.id, author: "ai", body: reply.text, model: reply.model });
     return { ok: true, message };
   } catch (error) {

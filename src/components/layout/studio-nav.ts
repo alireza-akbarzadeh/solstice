@@ -3,6 +3,7 @@ import {
   ChartColumnIcon,
   CreditCardIcon,
   FileTextIcon,
+  InboxIcon,
   Flower2Icon,
   LayoutGridIcon,
   MailIcon,
@@ -19,7 +20,7 @@ import {
 } from "lucide-react";
 
 /** Unread-style counts the sidebar surfaces, so the instructor sees work without opening pages. */
-export type StudioBadges = { drafts: number; awaiting: number; review: number; community: number };
+export type StudioBadges = { drafts: number; awaiting: number; review: number; community: number; inbox: number };
 
 /** A key in the `Studio.nav` messages. */
 export type StudioNavLabel = keyof Messages["Studio"]["nav"];
@@ -59,6 +60,7 @@ export const studioNavGroups: readonly { label: StudioNavLabel; items: readonly 
   {
     label: "people",
     items: [
+      { href: "/instructor/inbox", label: "inbox", icon: InboxIcon, badge: "inbox" },
       { href: "/instructor/members", label: "members", icon: UsersIcon },
       { href: "/instructor/community", label: "community", icon: MessagesSquareIcon, badge: "community" },
       { href: "/instructor/posts", label: "announcements", icon: MegaphoneIcon },

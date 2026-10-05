@@ -58,7 +58,7 @@ export async function loadAssistant(): Promise<AssistantState> {
   const [viewer, locale, settings] = await Promise.all([getViewer(), getLocale(), getChatSettings()]);
   const { owner } = await chatOwner(viewer);
   const row = owner ? await latestAssistantConversation(owner) : null;
-  return { enabled: settings.assistantOn, thread: row ? await getThread(row, locale as Locale, "member") : null };
+  return { enabled: settings.assistantOn, thread: row ? await getThread(row, locale, "member") : null };
 }
 
 export type SendResult =
@@ -78,7 +78,7 @@ export async function sendAssistantMessage(input: { conversationId: number | nul
   if (!settings.assistantOn && (!row || row.status === "open")) return { ok: false, error: "off" };
   if (!(await withinRate(owner, clientKey))) return { ok: false, error: "rate" };
 
-  row ??= await createConversation({ kind: "assistant", owner, clientKey, status: "open", locale: locale as Locale, subject: parsed.data.body.slice(0, 80) });
+  row ??= await createConversation({ kind: "assistant", owner, clientKey, status: "open", locale: locale, subject: parsed.data.body.slice(0, 80) });
   const message = await addMessage({ conversationId: row.id, author: "member", authorId: viewer.user?.id, body: parsed.data.body });
   const created: MessageView[] = [];
   let failure: AiFailure | null = null;
@@ -94,7 +94,7 @@ export async function sendAssistantMessage(input: { conversationId: number | nul
     status = "waiting";
     await notifyStaffWaiting(row, parsed.data.body, await senderName(viewer.user?.name ?? row.guestName ?? undefined));
   }
-  created.push(...(await messagesAfter(row.id, message.id - 1, locale as Locale)));
+  created.push(...(await messagesAfter(row.id, message.id - 1, locale)));
   return { ok: true, conversationId: row.id, status, messages: created, failure };
 }
 
@@ -107,7 +107,7 @@ export async function escalateAssistant(input: { conversationId: number; name: s
   const viewer = await getViewer();
   const { owner } = await chatOwner(viewer);
   const row = owner ? await getOwnedConversation(input.conversationId, owner) : null;
-  if (!row || row.kind !== "assistant") return { ok: false, error: "notFound" };
+  if (row?.kind !== "assistant") return { ok: false, error: "notFound" };
   if (!viewer.user) {
     if (!parsed.data.email) return { ok: false, error: "email" };
     await setGuestContact(row.id, parsed.data);
@@ -125,7 +125,7 @@ export async function startAssistantOver(conversationId: number) {
   const viewer = await getViewer();
   const { owner } = await chatOwner(viewer);
   const row = owner ? await getOwnedConversation(conversationId, owner) : null;
-  if (row && row.kind === "assistant" && row.status !== "waiting") await setStatus(row, "closed");
+  if (row?.kind === "assistant" && row.status !== "waiting") await setStatus(row, "closed");
 }
 
 // ——— Shared: polling and read marks ———
@@ -138,7 +138,7 @@ export async function pollConversation(input: { conversationId: number; afterId:
   const { owner } = await chatOwner(viewer);
   const row = owner ? await getOwnedConversation(input.conversationId, owner) : null;
   if (!row) return { ok: false };
-  const messages = await messagesAfter(row.id, input.afterId, locale as Locale);
+  const messages = await messagesAfter(row.id, input.afterId, locale);
   if (messages.length) await markRead(row.id, "member");
   return { ok: true, messages, status: row.status, queuePosition: await queuePosition(row) };
 }
@@ -186,7 +186,7 @@ export async function startGuidanceThread(input: unknown): Promise<GuidanceResul
   if (!parsed.success) return { ok: false, error: "invalid" };
   const viewer = await guidanceAccess();
   if (!viewer) return { ok: false, error: "forbidden" };
-  const locale = (await getLocale()) as Locale;
+  const locale = (await getLocale());
   const owner = { userId: viewer.user.id };
   if (!(await withinRate(owner, null))) return { ok: false, error: "rate" };
   if ((await countOpenGuidance(viewer.user.id)) >= OPEN_THREADS) return { ok: false, error: "tooMany" };
@@ -203,10 +203,10 @@ export async function sendGuidanceMessage(input: { conversationId: number } & Re
   if (!parsed.success) return { ok: false, error: "invalid" };
   const viewer = await guidanceAccess();
   if (!viewer) return { ok: false, error: "forbidden" };
-  const locale = (await getLocale()) as Locale;
+  const locale = (await getLocale());
   const owner = { userId: viewer.user.id };
   const row = await getOwnedConversation(Number(input.conversationId), owner);
-  if (!row || row.kind !== "guidance") return { ok: false, error: "notFound" };
+  if (row?.kind !== "guidance") return { ok: false, error: "notFound" };
   if (!(await withinRate(owner, null))) return { ok: false, error: "rate" };
 
   const message = await addMessage({ conversationId: row.id, author: "member", authorId: viewer.user.id, ...parsed.data });
@@ -231,7 +231,8 @@ export async function closeGuidanceThread(conversationId: number) {
 export async function joinGuidanceWaitlist(formData: FormData) {
   const locale = await getLocale();
   const viewer = await getViewer();
-  const planId = String(formData.get("plan") ?? "");
+  const asked = formData.get("plan");
+  const planId = typeof asked === "string" ? asked : "";
   if (!viewer.user) return redirect({ href: `/sign-in?next=${encodeURIComponent("/guidance")}`, locale });
   const plan = (await getAllPlans()).find((p) => p.id === planId && p.guidance && p.status === "active");
   if (plan && (await getFullPlanIds()).has(plan.id)) await joinWaitlist(plan.id, viewer.user.id);

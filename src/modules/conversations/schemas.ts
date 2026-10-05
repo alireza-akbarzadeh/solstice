@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { aiModes } from "@/infrastructure/ai/config";
+import { aiModes } from "@/infrastructure/ai/types";
 
 // Shared by the chat forms and their server actions.
 

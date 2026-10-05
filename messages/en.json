@@ -544,6 +544,12 @@
       "body": "Payments through Zarinpal don't renew automatically. Renew now and the new period starts when this one ends — you lose nothing by paying early.",
       "renew": "Renew now",
       "payNow": "Pay to continue"
+    },
+    "guidance": {
+      "unlimited": "Includes 1:1 guidance with the instructor",
+      "full": "1:1 guidance · all {places, plural, one {# place is} other {# places are}} taken",
+      "left": "1:1 guidance · {left} of {places} places left",
+      "fullNotice": "Every 1:1 guidance place on that plan is taken right now. Choose another plan, or join its waitlist from the guidance page."
     }
   },
   "Account": {
@@ -1393,7 +1399,8 @@
       "settings": "Settings",
       "insights": "Insights",
       "payments": "Payments",
-      "email": "Email"
+      "email": "Email",
+      "inbox": "Inbox"
     },
     "overview": {
       "metaTitle": "Studio overview",
@@ -2638,7 +2645,11 @@
           "featuredHint": "Preselected at checkout. Its trial is the one mentioned across the site.",
           "otherPrices": "Prices in other currencies",
           "otherPricesHint": "Leave a box empty to not sell this plan in that currency. Zarinpal charges in toman, Stripe in its chosen currency.",
-          "notSold": "Not sold"
+          "notSold": "Not sold",
+          "guidance": "1:1 guidance with you",
+          "guidanceHint": "Members on this plan can write to you privately at /guidance. Their questions wait in your inbox.",
+          "guidancePlaces": "Places",
+          "guidancePlacesHint": "How many members you can take on this plan. When every place is taken the plan isn't sold and people can join a waitlist. 0 = no limit."
         },
         "errors": {
           "invalid": "Check the plan: a name in both languages, a valid price, and a trial of 0–90 days.",
@@ -2656,7 +2667,8 @@
           "price": "Enter a price of 0 or more, with at most two decimals.",
           "trial": "Enter whole days from 0 to 90.",
           "badge": "Keep the badge under 40 characters.",
-          "feature": "Fill in this feature in both languages, or remove it."
+          "feature": "Fill in this feature in both languages, or remove it.",
+          "guidancePlaces": "Enter a whole number (0 for no limit)."
         }
       },
       "alsoIn": "Also {prices}"
@@ -3126,6 +3138,179 @@
         "subject": "Test email from your studio",
         "body": "Hello {name},\n\nThis is a test message from your studio's email settings. If you're reading it, mail is being delivered.\n\nWith care,\nThe studio"
       }
+    },
+    "inbox": {
+      "metaTitle": "Inbox · Studio",
+      "eyebrow": "People",
+      "title": "Inbox",
+      "lede": "Guidance questions from members and quick-help chats handed to you, the longest waiting first. Members get a notification and an email when you reply.",
+      "settingsLink": "Assistant settings",
+      "assistantState": {
+        "off": "AI assistant is off",
+        "test": "AI assistant: test replies",
+        "gemini": "AI assistant is answering quick help",
+        "guidanceAi": "also answers guidance first"
+      },
+      "places": {
+        "unlimited": "{used, plural, one {# member} other {# members}} · no limit",
+        "used": "{used} of {places} places taken",
+        "full": "Full · {used} of {places} places taken",
+        "notify": "Tell waitlist ({count})",
+        "notified": "{count, plural, =0 {No one was waiting} one {# person told a place is open} other {# people told a place is open}}"
+      },
+      "filters": {
+        "guidance": "Guidance",
+        "assistant": "Quick help",
+        "closed": "Closed"
+      },
+      "empty": {
+        "guidance": {
+          "title": "No guidance questions",
+          "body": "When members on a plan with 1:1 guidance write to you, their questions appear here."
+        },
+        "assistant": {
+          "title": "No quick-help chats",
+          "body": "Chats with the AI assistant appear here; the ones where someone asked for a person come first."
+        },
+        "closed": {
+          "title": "Nothing closed yet",
+          "body": "Conversations you or the member close move here."
+        }
+      },
+      "unread": "New message",
+      "aiPrefix": "AI:",
+      "youPrefix": "You:",
+      "waitingFor": "Waiting since {time}",
+      "status": {
+        "open": "AI only",
+        "waiting": "Waiting",
+        "answered": "Answered",
+        "closed": "Closed"
+      },
+      "askedForPerson": "Asked for a person",
+      "aiOnly": "Answered by AI",
+      "back": "← All conversations",
+      "thread": {
+        "guidance": "1:1 guidance",
+        "assistant": "Quick help",
+        "topics": {
+          "path": "Before joining",
+          "practice": "During practice"
+        },
+        "untitled": "Untitled",
+        "member": "Member",
+        "visitor": "Visitor",
+        "noContact": "Left no email — they'll only see a reply if they come back",
+        "reopen": "Reopen",
+        "close": "Close",
+        "assistantNote": "Messages marked AI were written by the assistant, not by you. The visitor sees the same labels.",
+        "replyLabel": "Your reply",
+        "replyPlaceholder": "Write your answer…",
+        "replyHint": "Ctrl/⌘ + Enter sends. The member is notified by push and email.",
+        "send": "Send reply",
+        "sent": "Reply sent",
+        "sentNotified": "Reply sent — they've been notified",
+        "errors": {
+          "forbidden": "Only the instructor can reply.",
+          "invalid": "Write a reply first (up to 4,000 characters).",
+          "notFound": "This conversation no longer exists."
+        }
+      }
+    },
+    "assistant": {
+      "metaTitle": "Assistant settings · Studio",
+      "crumb": "Assistant settings",
+      "eyebrow": "Inbox",
+      "title": "AI assistant",
+      "lede": "The assistant answers quick questions about plans and membership in the corner of the site. Every reply is labeled AI, and anyone can ask for a person instead.",
+      "guide": {
+        "title": "What it already knows",
+        "body": "You don't need to type these in — the assistant reads them from the site each time:",
+        "knows": {
+          "plans": "Plans on sale, prices in each currency, billing periods and free trials",
+          "payments": "Ways to pay (Iranian cards, international cards) and how renewal works",
+          "places": "Which plans include 1:1 guidance and how many places are left",
+          "pages": "Where things are on the site (membership, practices, programs, profile)"
+        },
+        "freeTitle": "About Gemini's free tier",
+        "free": "Free keys allow about 15 replies a minute and 1,500 a day. Google may use free-tier messages to improve its products, so keep personal or health details out of quick help, and use a paid key before letting the AI answer guidance.",
+        "iranTitle": "Iran",
+        "iran": "Google blocks requests from Iran, but the assistant runs on the server (Vercel, outside Iran), so visitors in Iran can use it. A computer in Iran can't reach Gemini without a VPN — use test replies when trying the site locally."
+      },
+      "editor": {
+        "title": "Assistant",
+        "lede": "Choose who answers, add your own notes, and try it before switching it on.",
+        "save": "Save",
+        "saved": "Assistant settings saved",
+        "saveFirst": "Save your changes first",
+        "status": {
+          "off": "Off",
+          "missingKey": "Needs a key",
+          "test": "Test replies",
+          "gemini": "On · Gemini"
+        },
+        "fields": {
+          "mode": "Answers by",
+          "apiKey": "Gemini API key",
+          "model": "Model",
+          "instructions": "Instructions for the assistant",
+          "replyHours": "You usually reply within (hours)",
+          "dailyLimit": "Assistant replies per day",
+          "guidanceAi": "AI answers guidance questions first"
+        },
+        "modes": {
+          "off": "Off",
+          "test": "Test replies",
+          "gemini": "Gemini"
+        },
+        "modeHints": {
+          "off": "No quick-help chat on the site. Chats already handed to you keep working.",
+          "test": "A canned reply that repeats the question — try the chat, labels and notifications without a key.",
+          "gemini": "Google's Gemini writes the replies, using your key."
+        },
+        "notSet": "Not set",
+        "fromEnv": "Set on the server (environment variable)",
+        "keySaved": "A key is saved.",
+        "willRemove": "The key will be removed on save.",
+        "keep": "Keep it",
+        "remove": "Remove",
+        "hints": {
+          "apiKey": "Create a free key in <link>Google AI Studio</link> and paste it here. It's stored encrypted and never shown again.",
+          "model": "gemini-2.5-flash is free and good; gemini-2.5-flash-lite is faster with a larger free quota.",
+          "instructions": "Write what visitors often ask and how you'd answer, your tone, and anything it must not promise. Any language — it replies in the visitor's.",
+          "replyHours": "Shown on the guidance page: “usually replies within … hours”.",
+          "dailyLimit": "After this many AI replies in 24 hours, visitors are offered a person instead. Keeps you inside the free quota.",
+          "guidanceAi": "Members get a labeled AI answer straight away; the question still waits for you."
+        },
+        "instructionsPlaceholder": "e.g. Classes are gentle and suit beginners. Members can pause by cancelling and rejoining. Don't promise refunds — say Elena will reply.",
+        "guidanceAiWarning": "Guidance often includes health details. On Gemini's free tier Google may use them — use a paid key for this.",
+        "validation": {
+          "instructions": "Keep instructions under 6,000 characters.",
+          "replyHours": "Enter hours between 1 and 720.",
+          "dailyLimit": "Enter a whole number of at least 1."
+        },
+        "errors": {
+          "forbidden": "Only the instructor can change this.",
+          "invalid": "Check the highlighted fields.",
+          "failed": "Couldn't save. Try again."
+        },
+        "try": {
+          "title": "Try it",
+          "lede": "Ask what a visitor might ask. Uses the saved settings; nothing is stored.",
+          "placeholder": "Is there a free trial?",
+          "ask": "Ask",
+          "answerLabel": "AI assistant · {model}"
+        },
+        "tryErrors": {
+          "off": "The assistant is off, or Gemini has no key.",
+          "quota": "Gemini's quota is used up for now. {detail}",
+          "auth": "Gemini refused the key. Check it in AI Studio. {detail}",
+          "blocked": "Gemini declined to answer that. {detail}",
+          "unavailable": "Couldn't reach Gemini. {detail}",
+          "limit": "Today's reply limit is reached.",
+          "forbidden": "Only the instructor can try this."
+        }
+      }
     }
   },
   "Legal": {
@@ -3361,6 +3546,190 @@
       "pinterest": "Pinterest",
       "threads": "Threads",
       "website": "Website"
+    }
+  },
+  "Conversations": {
+    "headerLink": "Messages",
+    "headerLinkCount": "Messages ({count} new)",
+    "authors": {
+      "ai": "AI assistant",
+      "aiBadge": "AI",
+      "you": "You",
+      "member": "Member"
+    },
+    "notify": {
+      "visitor": "A visitor",
+      "staff": {
+        "guidanceTitle": "New guidance question from {name}",
+        "assistantTitle": "{name} asked to talk to a person",
+        "email": "{name} wrote:\n\n“{body}”\n\nOpen it in your inbox: {url}"
+      },
+      "member": {
+        "title": "{name} replied to you",
+        "friend": "there",
+        "email": "Hi {name},\n\n{instructor} replied:\n\n“{body}”\n\nRead the whole conversation and reply: {url}"
+      },
+      "waitlist": {
+        "title": "A guidance place just opened",
+        "body": "A place on the plan you were waiting for is free. It's first come, first served.",
+        "email": "Hi {name},\n\nA 1:1 guidance place you were waiting for has opened. Places go first come, first served:\n\n{url}"
+      }
+    },
+    "widget": {
+      "launcher": "Questions? Ask",
+      "title": "AI assistant",
+      "subtitle": "Answers about plans and membership · AI can make mistakes",
+      "subtitlePerson": "Handed to {name} · replies come here and by email",
+      "newChat": "New chat",
+      "close": "Close",
+      "intro": "Hi! I'm the studio's AI assistant. Ask me about plans, prices, trials or how the site works. For anything personal, you can talk to a person.",
+      "suggestions": {
+        "plans": "Which plan is right for me?",
+        "trial": "Is there a free trial?",
+        "payment": "Can I pay with an Iranian card?",
+        "guidance": "Can I ask the instructor questions?"
+      },
+      "thinking": "Writing…",
+      "notices": {
+        "off": "The assistant isn't available right now. You can still reach the studio from the contact details on the About page.",
+        "quota": "The assistant is resting for a moment (too many questions). Try again shortly, or talk to a person.",
+        "auth": "The assistant can't answer right now. Talk to a person instead.",
+        "blocked": "The assistant can't answer that one. Talk to a person instead.",
+        "unavailable": "The assistant couldn't answer just now. Try again, or talk to a person.",
+        "limit": "The assistant has answered all it can today. Talk to a person and the studio will reply.",
+        "rate": "That's a lot of messages in a short time — please wait a few minutes.",
+        "invalid": "Write a question first (up to 1,000 characters)."
+      },
+      "handedOffMember": "Sent to {name}. You'll get a notification and an email when they reply.",
+      "handedOffVisitor": "Sent to {name}. The reply will appear here and in your email.",
+      "handOffConfirm": "Send this chat to {name}? They'll read it and reply personally.",
+      "handOffAsk": "Leave your email so {name}'s reply can reach you.",
+      "namePlaceholder": "Your name (optional)",
+      "emailPlaceholder": "you@example.com",
+      "emailRequired": "Enter your email so the reply can reach you.",
+      "handOffSend": "Send to the studio",
+      "cancel": "Cancel",
+      "handOff": "Talk to a person",
+      "inputLabel": "Your question",
+      "placeholder": "Ask about plans, prices, trials…",
+      "placeholderPerson": "Add to your message…",
+      "send": "Send",
+      "disclaimer": "Replies marked AI are written by an AI, not the instructor."
+    },
+    "guidance": {
+      "metaTitle": "1:1 guidance",
+      "eyebrow": "Direct 1:1 connection",
+      "title": "Private guidance with {name}",
+      "lede": "Ask before you begin, or when something doesn't feel right in a practice. Every question waits for {name}'s personal reply.",
+      "replyTime": "Usually replies within {hours, plural, one {an hour} other {# hours}}",
+      "privacy": "Private · read only by {name}",
+      "principles": {
+        "eyebrow": "How guidance works",
+        "title": "Unhurried, personal and honest",
+        "lede": "Write whenever you like; {name} answers in turn, thoughtfully, never in a rush.",
+        "personal": {
+          "title": "Personal replies",
+          "body": "Your questions wait in {name}'s queue and are answered by {name}, in their own words."
+        },
+        "moments": {
+          "title": "Practice moments",
+          "body": "Link the exact moment of a practice (“Solar Flow at 14:22”) so {name} sees what you mean."
+        },
+        "honest": {
+          "title": "AI is always labeled",
+          "body": "If the studio lets an AI answer first, its replies say AI — they never pretend to be {name}."
+        }
+      },
+      "locked": {
+        "title": "1:1 guidance is part of selected plans",
+        "body": "Choose a plan with guidance to write to {name} directly.",
+        "noPlans": "{name} isn't taking guidance members right now.",
+        "open": "Open for new members",
+        "full": "All {places} places are taken",
+        "left": "{left} of {places} places left",
+        "onWaitlist": "You're on the waitlist",
+        "joinWaitlist": "Join the waitlist",
+        "switch": "Switch plan",
+        "join": "Choose this plan",
+        "quickHelp": "Quick questions about plans? The assistant in the corner of the page can help."
+      },
+      "threads": {
+        "title": "Your dialogues",
+        "count": "{count, plural, =0 {none yet} one {# thread} other {# threads}}",
+        "new": "Ask a new question",
+        "unread": "New reply",
+        "aiPrefix": "AI:",
+        "status": {
+          "open": "Open",
+          "waiting": "Waiting for reply",
+          "answered": "Answered",
+          "closed": "Closed"
+        }
+      },
+      "common": {
+        "eyebrow": "Often asked",
+        "title": "Start from a question",
+        "beginners": "Can I begin if I'm very stiff?",
+        "props": "Which props do I need at home?",
+        "pain": "Something hurts in a pose — what should I change?",
+        "pause": "Can I pause while travelling?"
+      },
+      "instructor": {
+        "role": "Lead guide",
+        "bio": "Answers every guidance question personally, between classes.",
+        "ethosTitle": "Every question gets a person",
+        "ethos": "{name} reads and answers each question. Nothing here is written by AI.",
+        "ethosAi": "An AI may reply first, always labeled AI, so you're not left waiting — {name} still reads and answers every question."
+      },
+      "topics": {
+        "path": {
+          "title": "Before joining & your path",
+          "hint": "Plans, programs, where to begin"
+        },
+        "practice": {
+          "title": "During practice",
+          "hint": "Alignment, sensations, a moment in a class"
+        }
+      },
+      "topicLabel": "What's it about?",
+      "subject": "Subject",
+      "subjectPlaceholder": "e.g. Lower back in forward folds",
+      "subjectRequired": "Give your question a short subject.",
+      "threadId": "Thread #{id}",
+      "close": "Mark as resolved",
+      "aiNote": "Replies marked AI were written by the studio's assistant. {name} will still reply personally.",
+      "status": {
+        "waiting": "Waiting for {name} · usually within {hours, plural, one {an hour} other {# hours}}",
+        "waitingPosition": "Your question is #{position} in line · {name} usually replies within {hours, plural, one {an hour} other {# hours}}",
+        "answered": "{name} replied. Write again any time to continue.",
+        "closed": "Resolved. Writing again reopens it."
+      },
+      "errors": {
+        "forbidden": "Guidance is part of selected plans — check your membership.",
+        "invalid": "Write your question first (up to 4,000 characters).",
+        "rate": "That's a lot of messages in a short time — please wait a little.",
+        "tooMany": "You have 5 open questions. Mark one as resolved to start another.",
+        "notFound": "This conversation no longer exists."
+      },
+      "composer": {
+        "heading": "Writing to {name}",
+        "personal": "{name} reads every message personally",
+        "tags": {
+          "joints": "Wrist or joint tension",
+          "props": "Prop placement",
+          "breath": "Breath & pacing",
+          "recovery": "Recovery & rest"
+        },
+        "label": "Your message",
+        "placeholder": "Write your question with whatever detail feels comfortable…",
+        "practice": "Practice",
+        "choosePractice": "Choose a practice",
+        "moment": "At (mm:ss)",
+        "removePractice": "Remove practice link",
+        "momentError": "Write the moment as minutes:seconds, e.g. 14:22.",
+        "linkPractice": "Link a practice moment",
+        "send": "Send question"
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ import { BottomTabs } from "@/components/layout/bottom-tabs";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { routing } from "@/i18n/routing";
+import { AssistantDock } from "@/modules/conversations/components/assistant-dock";
 import { TestPanel } from "@/modules/memberships/components/test-panel";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
@@ -25,6 +26,7 @@ export default async function PublicLayout({ children, params }: LayoutProps<"/[
       <SiteFooter className="pb-safe-nav lg:pb-0" />
       <BottomTabs signedIn={!!user} />
       <TestPanel />
+      <AssistantDock />
     </>
   );
 }

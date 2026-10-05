@@ -3,6 +3,7 @@ import { alias } from "drizzle-orm/pg-core";
 
 import type { MembershipPlan } from "@/modules/memberships/plans";
 import { getAllPlans, planMonthlyValue } from "@/modules/memberships/server/plans";
+import { countWaiting } from "@/modules/conversations/server/conversations";
 import { db } from "@/server/db";
 import { countPendingReflections } from "@/modules/community/server/reflections";
 import { comments, memberships, practiceCompletions, practices, user } from "@/server/db/schema";
@@ -48,13 +49,14 @@ export async function getAwaitingReplyIds(limit = 50) {
 
 /** Counts the sidebar shows beside sections, so waiting work is visible without opening a page. */
 export async function getStudioBadges() {
-  const [[drafts], awaiting, review] = await Promise.all([
+  const [[drafts], awaiting, review, inbox] = await Promise.all([
     db.select({ n: count() }).from(practices).where(eq(practices.status, "draft")),
     getAwaitingReplyIds(),
     countPendingReflections(),
+    countWaiting(),
   ]);
-  // Community work: reflections to approve plus questions to answer.
-  return { drafts: drafts?.n ?? 0, awaiting: awaiting.length, review, community: review + awaiting.length };
+  // Community work: reflections to approve plus questions to answer. Inbox: conversations waiting for a person.
+  return { drafts: drafts?.n ?? 0, awaiting: awaiting.length, review, community: review + awaiting.length, inbox };
 }
 
 /** Memberships that grant access now, split by plan and state. */

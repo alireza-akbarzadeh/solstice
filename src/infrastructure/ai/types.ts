@@ -1,5 +1,9 @@
 // The boundary between the app and whichever AI writes the assistant's replies. Callers build
 // the instructions and the conversation; a provider turns them into one reply.
+export const aiModes = ["off", "test", "gemini"] as const;
+export type AiMode = (typeof aiModes)[number];
+
+export const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
 
 export type AiTurn = { role: "user" | "assistant"; text: string };
 

@@ -57,7 +57,7 @@ export function MessageBubble({
           : instructorName
         : side === "member"
           ? t("you")
-          : memberName || t("member");
+          : memberName?.trim() ? memberName : t("member");
 
   return (
     <div className={cn("flex w-full gap-3", mine ? "justify-end" : "justify-start")}>
@@ -71,7 +71,7 @@ export function MessageBubble({
             </span>
           ) : (
             <span className="flex size-9 items-center justify-center rounded-full bg-surface-container-high font-label-lg text-label-lg text-on-surface-variant">
-              {(memberName || "·").charAt(0).toUpperCase()}
+              {(memberName?.trim() ? memberName : "·").charAt(0).toUpperCase()}
             </span>
           )}
         </span>

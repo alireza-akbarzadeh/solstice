@@ -15,7 +15,8 @@ const YEAR = 60 * 60 * 24 * 365;
 
 async function clientKey() {
   const list = await headers();
-  const address = list.get("x-forwarded-for")?.split(",")[0]?.trim() || list.get("x-real-ip") || "";
+  const forwarded = list.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const address = forwarded?.length ? forwarded : (list.get("x-real-ip") ?? "");
   return address ? createHash("sha256").update(`${env.BETTER_AUTH_SECRET}:${address}`).digest("hex").slice(0, 32) : null;
 }
 

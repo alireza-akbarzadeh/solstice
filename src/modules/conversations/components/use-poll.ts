@@ -15,14 +15,12 @@ export function usePoll(tick: () => Promise<void>, ms: number, enabled = true) {
   useEffect(() => {
     if (!enabled) return;
     let busy = false;
-    const run = async () => {
+    const run = () => {
       if (busy || document.visibilityState !== "visible") return;
       busy = true;
-      try {
-        await latest.current();
-      } finally {
+      void latest.current().finally(() => {
         busy = false;
-      }
+      });
     };
     const timer = window.setInterval(run, ms);
     document.addEventListener("visibilitychange", run);

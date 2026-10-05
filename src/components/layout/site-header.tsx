@@ -4,6 +4,9 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { isPushConfigured } from "@/infrastructure/push/web-push";
 import { getViewer } from "@/modules/memberships/server/viewer";
+import { MessagesLink } from "@/modules/conversations/components/messages-link";
+import { countUnreadForMember, countWaiting } from "@/modules/conversations/server/conversations";
+import { hasGuidanceAccess } from "@/modules/conversations/server/guidance";
 import { PushToggle } from "@/modules/notifications/components/push-toggle";
 
 import { AccountMenu, type AccountStatus } from "./account-menu";
@@ -22,6 +25,16 @@ export async function SiteHeader() {
     getNavigationPages(locale).catch(() => []),
   ]);
   const { user } = viewer;
+  // Conversations: the instructor's queue, or a guidance member's unread replies.
+  const messages = await (async () => {
+    try {
+      if (user?.role === "instructor") return { href: "/instructor/inbox", count: await countWaiting() };
+      if (user && (await hasGuidanceAccess(viewer))) return { href: "/guidance", count: await countUnreadForMember(user.id, "guidance") };
+    } catch {
+      // Conversations not migrated yet: no link.
+    }
+    return null;
+  })();
 
   let status: AccountStatus = "none";
   if (user?.role === "instructor") status = "instructor";
@@ -48,6 +61,7 @@ export async function SiteHeader() {
         <div className="flex shrink-0 items-center gap-1 sm:gap-space-xs md:gap-space-md">
           <LocaleSwitcher />
           {user && isPushConfigured() && <PushToggle />}
+          {messages && <MessagesLink href={messages.href} count={messages.count} />}
           {!user && (
             <Link
               href="/sign-in"

@@ -215,7 +215,7 @@ export async function addMessage(input: {
       author: input.author,
       authorId: input.authorId ?? null,
       body: input.body,
-      practiceSlug: input.practiceSlug || null,
+      practiceSlug: input.practiceSlug?.trim() ? input.practiceSlug : null,
       practiceAt: input.practiceSlug ? (input.practiceAt ?? null) : null,
       model: input.model ?? null,
     })
@@ -272,9 +272,12 @@ export async function countUnreadForMember(userId: string, kind?: ConversationKi
 }
 
 /** The studio's queue: conversations waiting for a person (the sidebar badge). */
-export async function countWaiting() {
+export async function countWaiting(kind?: ConversationKind) {
   try {
-    const [row] = await db.select({ n: count() }).from(conversations).where(eq(conversations.status, "waiting"));
+    const [row] = await db
+      .select({ n: count() })
+      .from(conversations)
+      .where(and(eq(conversations.status, "waiting"), kind ? eq(conversations.kind, kind) : undefined));
     return row?.n ?? 0;
   } catch {
     return 0;
