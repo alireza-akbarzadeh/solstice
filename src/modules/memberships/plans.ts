@@ -25,10 +25,19 @@ export type MembershipPlan = {
   description: Localized;
   badge: Localized;
   features: Localized[];
+  /** Price per billing period in the site currency. */
   price: number;
+  /** Price per period in each currency it is sold in, the site currency included. */
+  prices: PlanPrices;
   intervalMonths: number;
   trialDays: number;
 };
+
+export type PlanPrices = Partial<Record<Currency, number>>;
+
+/** The plan's price in a currency, or null when it isn't sold in that currency. */
+export const priceIn = (plan: Pick<MembershipPlan, "prices">, currency: Currency) =>
+  plan.prices[currency] ?? null;
 
 /** What a plan costs per month, used to compare plans and to project revenue. */
 export const monthlyEquivalent = (

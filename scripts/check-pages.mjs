@@ -37,7 +37,7 @@ const { db } = await import(
   new URL("../src/server/db/index.ts", import.meta.url).href
 );
 const { sitePages } = await import(
-  new URL("../src/server/db/schema.ts", import.meta.url).href
+  new URL("../src/server/db/schema/index.ts", import.meta.url).href
 );
 const { defaultContentFor, editableContentFor } = await import(
   new URL("../src/modules/pages/defaults.ts", import.meta.url).href

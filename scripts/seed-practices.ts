@@ -6,7 +6,7 @@ import postgres from "postgres";
 
 import { samplePractices } from "../src/modules/practices/sample-data.ts";
 import { samplePracticeDetails } from "../src/modules/practices/sample-details.ts";
-import { practices } from "../src/server/db/schema.ts";
+import { practices } from "../src/server/db/schema/index.ts";
 
 const url = process.env.DATABASE_URL;
 if (!url) throw new Error("DATABASE_URL is not set (run with --env-file=.env)");

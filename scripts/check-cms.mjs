@@ -38,7 +38,7 @@ const { db } = await import(
   new URL("../src/server/db/index.ts", import.meta.url).href
 );
 const { practices, programs, programEnrollments, practiceCompletions, user } =
-  await import(new URL("../src/server/db/schema.ts", import.meta.url).href);
+  await import(new URL("../src/server/db/schema/index.ts", import.meta.url).href);
 const practiceService = await import(
   new URL("../src/modules/instructor/server/publish.ts", import.meta.url).href
 );

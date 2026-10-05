@@ -3,12 +3,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 
-import { getPlanDisplay } from "../server/plan-display";
+import { getVisitorPlanDisplay } from "../server/plan-display";
 
 // Membership invitation at the foot of the practice library (hidden for members by the page).
 export async function LibraryUpsell({ openCount }: { openCount: number }) {
   const locale = await getLocale();
-  const [t, { catalog, money, per }] = await Promise.all([getTranslations("Practices.banner"), getPlanDisplay(locale)]);
+  const [t, { catalog, money, per }] = await Promise.all([getTranslations("Practices.banner"), getVisitorPlanDisplay(locale)]);
   const { entry, trialDays } = catalog;
   const benefits = [t("benefit1"), t("benefit2"), t("benefit3")];
 

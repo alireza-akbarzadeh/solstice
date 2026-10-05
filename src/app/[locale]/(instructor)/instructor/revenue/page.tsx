@@ -34,7 +34,6 @@ import {
 } from "@/components/ui/table";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { getCheckoutProvider } from "@/infrastructure/payment";
 import { PaymentsLedger } from "@/modules/instructor/components/payments-ledger";
 import { RevenueChart } from "@/modules/instructor/components/revenue-chart";
 import { StatCard, StatMeter } from "@/modules/instructor/components/stat-card";
@@ -52,6 +51,7 @@ import { localize } from "@/lib/localized";
 import { formatMoney, monthlyEquivalent } from "@/modules/memberships/plans";
 import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
 import { getAllPlans } from "@/modules/memberships/server/plans";
+import { paymentsTestMode } from "@/modules/payments/server/settings";
 import { requireInstructor } from "@/modules/memberships/server/viewer";
 
 export async function generateMetadata({
@@ -73,7 +73,7 @@ export default async function StudioRevenuePage({
   setRequestLocale(locale);
 
   await requireInstructor(locale, "/instructor/revenue");
-  const testMode = (await getCheckoutProvider()).testMode;
+  const testMode = await paymentsTestMode();
   const [t, format, counts, series, ledger, churn, plans, display] = await Promise.all([
     getTranslations("Studio.revenue"),
     getFormatter(),

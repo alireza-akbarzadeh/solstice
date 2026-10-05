@@ -1,18 +1,18 @@
 import { eq } from "drizzle-orm";
 
 import { env } from "@/env";
-import { getCheckoutProvider } from "@/infrastructure/payment";
 import { db } from "@/server/db";
 import { memberships, user } from "@/server/db/schema";
+import { paymentsTestMode } from "@/modules/payments/server/settings";
 
 import type { MembershipPreset } from "../test-presets";
 
-// Test mode exists only while payments are mocked: it lets anyone reshape their *own*
-// account to try every state of the app. It disappears once a real provider is set.
-export const testModeEnabled = async () => (await getCheckoutProvider()).testMode;
+// Test mode exists until a payment gateway goes live: it lets anyone reshape their *own*
+// account to try every state of the app.
+export const testModeEnabled = paymentsTestMode;
 
 export async function assertTestMode() {
-  if (!(await testModeEnabled())) throw new Error("Test mode is off: a real payment provider is configured.");
+  if (!(await testModeEnabled())) throw new Error("Test mode is off: a payment gateway is live.");
 }
 
 /** Every one-click test account uses this password, so you can sign back in to it. */

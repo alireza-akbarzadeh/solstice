@@ -5,7 +5,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import { samplePrograms } from "../src/modules/programs/sample-data.ts";
-import { programs } from "../src/server/db/schema.ts";
+import { programs } from "../src/server/db/schema/index.ts";
 
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
 const conn = postgres(process.env.DATABASE_URL, { max: 1 });

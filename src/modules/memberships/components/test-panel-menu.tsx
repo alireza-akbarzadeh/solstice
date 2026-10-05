@@ -19,7 +19,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { withNext } from "@/lib/safe-next";
 import { authClient } from "@/server/better-auth/client";
 
-import { createTestAccount, setTestMembership, setTestRole, simulateFailedPayment, simulateRenewal } from "../test-actions";
+import { createTestAccount, setTestCountry, setTestMembership, setTestRole, simulateFailedPayment, simulateRenewal } from "../test-actions";
 import { membershipPresets, type MembershipPreset } from "../test-presets";
 
 type Props = {
@@ -31,9 +31,11 @@ type Props = {
   password: string;
   /** The membership came through the test checkout, so the provider can "charge" it. */
   canSimulate: boolean;
+  /** Where the request comes from, and the country the panel pretends instead (if any). */
+  country: { detected: string | null; simulated: string | null };
 };
 
-export function TestPanelMenu({ user, hasAccess, preset, periodEnd, daysLeft, password, canSimulate }: Props) {
+export function TestPanelMenu({ user, hasAccess, preset, periodEnd, daysLeft, password, canSimulate, country }: Props) {
   const t = useTranslations("TestMode.panel");
   const router = useRouter();
   const pathname = usePathname();
@@ -162,6 +164,22 @@ export function TestPanelMenu({ user, hasAccess, preset, periodEnd, daysLeft, pa
             </DropdownMenuItem>
           </>
         )}
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="space-y-0.5 font-normal whitespace-normal">
+          <span className="block font-label-sm text-label-sm tracking-widest text-clay uppercase">{t("countryTitle")}</span>
+          <span className="block font-body-sm text-[12px] text-outline">{t("countryHint")}</span>
+        </DropdownMenuLabel>
+        <DropdownMenuRadioGroup value={country.simulated ?? ""} onValueChange={(code) => run(() => setTestCountry(code))}>
+          <DropdownMenuRadioItem value="" disabled={pending} onSelect={(e) => e.preventDefault()}>
+            {t("countries.detected", { country: country.detected ?? t("countries.unknown") })}
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="IR" disabled={pending} onSelect={(e) => e.preventDefault()}>
+            {t("countries.iran")}
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="US" disabled={pending} onSelect={(e) => e.preventDefault()}>
+            {t("countries.elsewhere")}
+          </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/test/mailbox">

@@ -7,7 +7,7 @@ import { practiceRhythms } from "@/modules/users/types";
 
 export const PASSWORD_MIN = 8;
 
-export const emailSchema = z.string().trim().min(1, "emailRequired").pipe(z.email("emailInvalid"));
+export const emailSchema = z.string().trim().min(1, "emailRequired").email("emailInvalid");
 export const newPasswordSchema = z.string().min(PASSWORD_MIN, "passwordShort").max(128, "passwordLong");
 export const nameSchema = z.string().trim().min(1, "nameRequired").max(100, "nameLong");
 const newPassword = newPasswordSchema;
@@ -57,5 +57,12 @@ const keys = new Set<string>([
   "termsRequired",
 ]);
 /** Narrows a zod issue message to a translation key (anything unexpected reads as generic). */
-export const validationKey = (message: string | undefined): AuthValidationKey | null =>
-  message && keys.has(message) ? (message as AuthValidationKey) : null;
+export const validationKey = (message: string | undefined): AuthValidationKey | null => {
+  if (!message) return null;
+  if (keys.has(message)) return message as AuthValidationKey;
+  const lower = message.toLowerCase();
+  if (lower.includes("email") || lower.includes("format")) return "emailInvalid";
+  if (lower.includes("required") || lower.includes("small")) return "emailRequired";
+  return null;
+};
+

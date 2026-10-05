@@ -193,6 +193,12 @@ Checkout creates a row in `solstice_checkout` and sends the member to the provid
 
 To add a provider, implement `PaymentProvider` (`infrastructure/payment/types.ts`) in `infrastructure/payment/providers/` and register it in `index.ts`: `createCheckout`, either `parseWebhook` (verify the signature) or `confirmReturn` (verify with the provider, check the amount), the subscription calls and `refund`. With the test provider, the test panel's **Billing** group simulates a renewal or a failed payment. On a new database run `pnpm db:seed:payments`.
 
+Gateways are configured at `/instructor/settings?tab=payments`: switch Zarinpal and Stripe on, pick test / sandbox / live (sandbox and live unlock once the gateway's provider is registered in `infrastructure/payment/index.ts`), paste keys (sealed with `lib/secret-box.ts`; env vars override) and choose the gateway for visitors from Iran and for everyone else. Routing lives in `modules/payments/server/routing.ts` (`getPaymentMethods`, `methodsFor`, `getVisitorCurrency`, `getProviderCurrency`). A gateway is offered for a plan only when the plan has a price in its currency (`plan.prices`). In test mode the test panel's **Visitor country** switch pretends to be in Iran or elsewhere.
+
+### Database schema
+
+Tables live in `src/server/db/schema/`, one file per area (`auth`, `content`, `community`, `activity`, `messaging`, `memberships`, `payments`), re-exported from `index.ts`; import them from `@/server/db/schema`. Inside the folder, import siblings as `./auth.ts` (with the extension) and keep `@/…` imports type-only — the seed scripts load the schema straight from Node.
+
 ### Membership plans
 
 Open `/instructor/plans`. Each plan has an English and Persian name, description, optional badge and feature list, a price per billing period (1, 3, 6 or 12 months) and a free trial in days (0 means members pay straight away). **Recommended** preselects the plan at checkout, and its trial is the one quoted across the site. Hidden plans leave the membership page but members already on them keep them; a plan with members can't be deleted, and at least one plan stays on sale. The currency (USD, EUR, GBP or toman) is site-wide; changing it does not convert prices.

@@ -15,6 +15,7 @@ import { cancelMembership, changePlan, resumeMembership } from "@/modules/member
 import { localize } from "@/lib/localized";
 import { monthlyEquivalent } from "@/modules/memberships/plans";
 import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
+import { getProviderCurrency } from "@/modules/payments/server/routing";
 import { getAllPlans } from "@/modules/memberships/server/plans";
 import { requireUser } from "@/modules/memberships/server/viewer";
 import { getCompletions } from "@/modules/progress/server/completions";
@@ -43,6 +44,8 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   const query = await searchParams;
   const tab: Tab = tabs.includes(query.tab as Tab) ? (query.tab as Tab) : "membership";
 
+  // Prices show in the currency the member pays in (their gateway's), which is what a switch costs.
+  const currency = await getProviderCurrency(viewer.membership?.provider);
   const [t, tMembership, tAuth, format, session, completions, display, allPlans, payments] = await Promise.all([
     getTranslations("Profile"),
     getTranslations("Membership"),
@@ -50,7 +53,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
     getFormatter(),
     getSession(),
     getCompletions(viewer.user.id),
-    getPlanDisplay(locale),
+    getPlanDisplay(locale, currency),
     getAllPlans(),
     getMemberPayments(viewer.user.id).catch(() => []),
   ]);
@@ -59,7 +62,8 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   const membership = viewer.membership;
   const { money, per, catalog } = display;
   // The member's own plan may since have been hidden from sale; it still describes what they pay.
-  const plan = membership ? allPlans.find((p) => p.id === membership.plan) : undefined;
+  const found = membership ? allPlans.find((p) => p.id === membership.plan) : undefined;
+  const plan = found && { ...found, price: found.prices[currency] ?? found.price };
   const otherPlans = catalog.plans.filter((p) => p.id !== membership?.plan);
   const minutes = completions.reduce((sum, c) => sum + c.minutes, 0);
 

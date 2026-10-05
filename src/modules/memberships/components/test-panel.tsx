@@ -1,5 +1,8 @@
 import { getFormatter } from "next-intl/server";
 
+import { providerFor } from "@/infrastructure/payment";
+import { getDetectedCountry, getSimulatedCountry } from "@/modules/payments/server/country";
+
 import { TEST_PASSWORD, testModeEnabled } from "../server/test-mode";
 import { getViewer } from "../server/viewer";
 import type { MembershipPreset } from "../test-presets";
@@ -11,7 +14,7 @@ const DAY = 24 * 60 * 60 * 1000;
 // instructor. Only rendered while payments are mocked.
 export async function TestPanel() {
   if (!(await testModeEnabled())) return null;
-  const [viewer, format] = await Promise.all([getViewer(), getFormatter()]);
+  const [viewer, format, detected, simulated] = await Promise.all([getViewer(), getFormatter(), getDetectedCountry(), getSimulatedCountry()]);
   const m = viewer.membership;
 
   // Which preset the current membership looks like, so the menu can mark it.
@@ -30,7 +33,8 @@ export async function TestPanel() {
       periodEnd={m ? format.dateTime(m.currentPeriodEnd, { dateStyle: "medium" }) : null}
       daysLeft={m ? Math.ceil((m.currentPeriodEnd.getTime() - Date.now()) / DAY) : null}
       password={TEST_PASSWORD}
-      canSimulate={m?.provider === "mock" && !!m.providerSubscriptionId?.startsWith("mock_sub_")}
+      canSimulate={!!providerFor(m?.provider)?.testMode && !!m?.providerSubscriptionId?.startsWith("mock_sub_")}
+      country={{ detected, simulated }}
     />
   );
 }

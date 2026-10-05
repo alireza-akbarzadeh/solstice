@@ -5,15 +5,32 @@ import { db } from "@/server/db";
 import { membershipPlans, memberships, settings } from "@/server/db/schema";
 
 import {
+  currencies,
   DEFAULT_CURRENCY,
   isCurrency,
   monthlyEquivalent,
   type Currency,
   type MembershipPlan,
+  type PlanPrices,
 } from "../plans";
 import type { PlanFields } from "../plan-schemas";
 
-const toPlan = (row: typeof membershipPlans.$inferSelect): MembershipPlan => ({
+/**
+ * `price` is the site-currency price. Older rows have no `prices` yet; their one price counts
+ * as the site currency's (changing the site currency never converted prices).
+ */
+const toPlan = (
+  row: typeof membershipPlans.$inferSelect,
+  currency: Currency,
+): MembershipPlan => {
+  const prices: PlanPrices = {};
+  for (const code of currencies) {
+    const amount = row.prices?.[code];
+    if (typeof amount === "number" && Number.isFinite(amount)) prices[code] = amount;
+  }
+  const price = prices[currency] ?? row.price;
+  prices[currency] = price;
+  return {
   id: row.id,
   status: row.status,
   featured: row.featured,
@@ -22,10 +39,12 @@ const toPlan = (row: typeof membershipPlans.$inferSelect): MembershipPlan => ({
   description: row.description,
   badge: row.badge,
   features: row.features,
-  price: row.price,
+  price,
+  prices,
   intervalMonths: row.intervalMonths,
   trialDays: row.trialDays,
-});
+  };
+};
 
 /**
  * Every plan, in the studio's order. A missing table (a database that hasn't run
@@ -33,11 +52,17 @@ const toPlan = (row: typeof membershipPlans.$inferSelect): MembershipPlan => ({
  */
 export const getAllPlans = cache(async (): Promise<MembershipPlan[]> => {
   try {
-    const rows = await db
-      .select()
-      .from(membershipPlans)
-      .orderBy(asc(membershipPlans.sortOrder), asc(membershipPlans.createdAt));
-    return rows.map(toPlan);
+    const [rows, { currency }] = await Promise.all([
+      db
+        .select()
+        .from(membershipPlans)
+        .orderBy(
+          asc(membershipPlans.sortOrder),
+          asc(membershipPlans.createdAt),
+        ),
+      getBillingSettings(),
+    ]);
+    return rows.map((row) => toPlan(row, currency));
   } catch (error) {
     console.error(
       "Membership plans could not be read — run `pnpm db:seed:plans`.",
@@ -67,19 +92,27 @@ export const getBillingSettings = cache(
   },
 );
 
-export type PlanCatalog = Awaited<ReturnType<typeof getPlanCatalog>>;
+export type PlanCatalog = {
+  plans: MembershipPlan[];
+  currency: Currency;
+  featured: MembershipPlan | null;
+  entry: MembershipPlan | null;
+  trialDays: number;
+};
 
 /**
- * What the public site sells: active plans, the recommended one (preselected at checkout,
- * and whose trial the marketing copy quotes), and the entry plan (shortest period, then
- * cheapest) that "from …" prices quote.
+ * What the public site sells in one currency: active plans priced in it (with `price` in that
+ * currency), the recommended one (preselected at checkout, and whose trial the marketing copy
+ * quotes), and the entry plan (shortest period, then cheapest) that "from …" prices quote.
  */
-export const getPlanCatalog = cache(async () => {
-  const [all, billing] = await Promise.all([
-    getAllPlans(),
-    getBillingSettings(),
-  ]);
-  const plans = all.filter((plan) => plan.status === "active");
+export function catalogIn(
+  active: MembershipPlan[],
+  currency: Currency,
+): PlanCatalog {
+  const plans = active.flatMap((plan) => {
+    const price = plan.prices[currency];
+    return price === undefined ? [] : [{ ...plan, price }];
+  });
   const featured = plans.find((plan) => plan.featured) ?? plans[0] ?? null;
   const entry =
     [...plans].sort(
@@ -87,12 +120,26 @@ export const getPlanCatalog = cache(async () => {
     )[0] ?? null;
   return {
     plans,
-    currency: billing.currency,
+    currency,
     featured,
     entry,
     trialDays: featured?.trialDays ?? 0,
   };
-});
+}
+
+/** Active plans in the site currency (pass another currency for a visitor paying in it). */
+export const getPlanCatalog = cache(
+  async (currency?: Currency): Promise<PlanCatalog> => {
+    const [all, billing] = await Promise.all([
+      getAllPlans(),
+      getBillingSettings(),
+    ]);
+    return catalogIn(
+      all.filter((plan) => plan.status === "active"),
+      currency ?? billing.currency,
+    );
+  },
+);
 
 /** How many memberships (of any state) sit on each plan; a plan with any can't be deleted. */
 export async function getPlanUsage() {
@@ -126,6 +173,12 @@ async function clearFeatured(except: string) {
     .where(ne(membershipPlans.id, except));
 }
 
+/** The row's prices: the other currencies as typed, plus `price` as the site currency's. */
+async function priceColumns(fields: PlanFields) {
+  const { currency } = await getBillingSettings();
+  return { price: fields.price, prices: { ...fields.prices, [currency]: fields.price } };
+}
+
 export async function createPlan(fields: PlanFields): Promise<PlanMutation> {
   const base =
     fields.name.en
@@ -144,7 +197,7 @@ export async function createPlan(fields: PlanFields): Promise<PlanMutation> {
     const id = attempt === 0 ? base : `${base}-${attempt + 1}`;
     const [created] = await db
       .insert(membershipPlans)
-      .values({ id, ...fields, sortOrder })
+      .values({ id, ...fields, ...(await priceColumns(fields)), sortOrder })
       .onConflictDoNothing()
       .returning({ id: membershipPlans.id });
     if (created) {
@@ -163,7 +216,7 @@ export async function updatePlan(
     return { ok: false, error: "lastActive" };
   const [updated] = await db
     .update(membershipPlans)
-    .set(fields)
+    .set({ ...fields, ...(await priceColumns(fields)) })
     .where(eq(membershipPlans.id, id))
     .returning({ id: membershipPlans.id });
   if (!updated) return { ok: false, error: "notFound" };

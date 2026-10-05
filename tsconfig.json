@@ -16,6 +16,8 @@
     /* Bundled projects */
     "lib": ["dom", "dom.iterable", "ES2022"],
     "noEmit": true,
+    // The db schema imports its sibling files as "./x.ts" so the seed scripts can load it in Node.
+    "allowImportingTsExtensions": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "preserve",

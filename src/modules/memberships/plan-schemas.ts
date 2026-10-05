@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { billingIntervals } from "./plans";
+import { billingIntervals, currencies } from "./plans";
 
 const localized = (max: number) =>
   z.object({ en: z.string().trim().max(max), fa: z.string().trim().max(max) });
@@ -21,6 +21,8 @@ const planFieldsObject = z.object({
   badge: localized(40),
   features: z.array(required(160)).max(12),
   price,
+  /** Prices in other currencies; the site currency's is `price`. Absent = not sold in it. */
+  prices: z.partialRecord(z.enum(currencies), price),
   intervalMonths: z
     .number()
     .int()
@@ -46,6 +48,7 @@ export const blankPlanFields = (): PlanFields => ({
   badge: { en: "", fa: "" },
   features: [],
   price: 0,
+  prices: {},
   intervalMonths: 1,
   trialDays: 0,
 });
@@ -64,11 +67,29 @@ const numberText = <T extends z.ZodType<number, number>>(schema: T) =>
     .transform((value) => Number(toLatin(value)))
     .pipe(schema);
 
+/** Other-currency prices as typed: a blank box means the plan isn't sold in that currency. */
+const optionalPrices = z
+  .partialRecord(z.enum(currencies), z.string().trim())
+  .transform((typed, ctx) => {
+    const prices: Partial<Record<(typeof currencies)[number], number>> = {};
+    for (const [code, value] of Object.entries(typed) as [(typeof currencies)[number], string][]) {
+      if (!value) continue;
+      const parsed = price.safeParse(Number(toLatin(value)));
+      if (parsed.success) prices[code] = parsed.data;
+      else ctx.addIssue({ code: "custom", path: [code], message: "price" });
+    }
+    return prices;
+  });
+
 /**
  * The studio editor's form: the same rules, but price and trial are typed as text so a
  * half-typed "24." doesn't jump, and are parsed to numbers on submit.
  */
 export const planFormSchema = planFieldsObject
-  .extend({ price: numberText(price), trialDays: numberText(trialDays) })
+  .extend({
+    price: numberText(price),
+    prices: optionalPrices,
+    trialDays: numberText(trialDays),
+  })
   .transform(hiddenIsNotFeatured);
 export type PlanFormValues = z.input<typeof planFormSchema>;

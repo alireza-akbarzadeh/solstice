@@ -11,7 +11,7 @@ import { routing } from "@/i18n/routing";
 import { safeNextPath, withNext } from "@/lib/safe-next";
 import { SignUpForm } from "@/modules/auth/components/sign-up-form";
 import { SocialButtons } from "@/modules/auth/components/social-buttons";
-import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
+import { getVisitorPlanDisplay } from "@/modules/memberships/server/plan-display";
 import { enabledSocialProviders } from "@/server/better-auth/config";
 import { getSession } from "@/server/better-auth/server";
 import { getBuiltinPagePreview } from "@/modules/pages/server/request";
@@ -33,7 +33,7 @@ export default async function SignUpPage({ params, searchParams }: PageProps<"/[
   const next = safeNextPath((await searchParams).next, "/membership");
   if ((await getSession()) && (await getBuiltinPagePreview())?.slug !== "account-access") redirect({ href: next, locale });
 
-  const [t, tBrand, { catalog, money, per }] = await Promise.all([getTranslations("Auth"), getTranslations("Brand"), getPlanDisplay(locale)]);
+  const [t, tBrand, { catalog, money, per }] = await Promise.all([getTranslations("Auth"), getTranslations("Brand"), getVisitorPlanDisplay(locale)]);
   const { trialDays, entry } = catalog;
   const benefits = [
     { icon: Flower2Icon, text: t("signUp.benefit1") },

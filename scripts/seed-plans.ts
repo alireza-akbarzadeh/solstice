@@ -3,7 +3,7 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import { membershipPlans, settings } from "../src/server/db/schema.ts";
+import { membershipPlans, settings } from "../src/server/db/schema/index.ts";
 
 // The original plans and their copy, as the membership page showed them before plans moved
 // into the database. Edit plans at /instructor/plans, not here.

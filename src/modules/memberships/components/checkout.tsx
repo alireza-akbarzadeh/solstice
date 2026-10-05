@@ -3,6 +3,7 @@
 import {
   CalendarCheckIcon,
   CheckIcon,
+  CreditCardIcon,
   CircleCheckIcon,
   ClockIcon,
   FlaskConicalIcon,
@@ -40,6 +41,18 @@ export type CheckoutPlan = {
   trialDays: number;
 };
 
+/** One way to pay (a gateway), with the plans it can sell priced in its currency. */
+export type CheckoutMethod = {
+  gateway: string;
+  cards: "iranian" | "international";
+  /** Zero in this method's currency, for "due today". */
+  zero: string;
+  /** The plan preselected when switching to this method. */
+  featured: string | null;
+  plans: CheckoutPlan[];
+  testMode: boolean;
+};
+
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
@@ -55,26 +68,31 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 export function Checkout({
-  plans,
+  methods,
+  initialMethod,
   initialPlan,
+  suggestedFromIran,
   next,
-  zero,
   signedIn,
-  testMode,
   instructorName,
 }: {
-  plans: CheckoutPlan[];
+  /** Never empty; the first is the one preselected for the visitor's country. */
+  methods: CheckoutMethod[];
+  initialMethod: string;
   initialPlan: string;
+  /** The method was preselected because the visitor seems to be in Iran. */
+  suggestedFromIran: boolean;
   next: string;
-  /** Zero in the site currency, for "due today". */
-  zero: string;
   signedIn: boolean;
-  testMode: boolean;
   instructorName: string;
 }) {
   const t = useTranslations("Membership");
+  const [methodId, setMethodId] = useState(initialMethod);
   const [planId, setPlanId] = useState(initialPlan);
-  const selected = plans.find((p) => p.id === planId) ?? plans[0]!;
+  const method = methods.find((m) => m.gateway === methodId) ?? methods[0]!;
+  const { plans, zero, testMode } = method;
+  // Switching method keeps the plan when the new method sells it.
+  const selected = plans.find((p) => p.id === planId) ?? plans.find((p) => p.id === method.featured) ?? plans[0]!;
   const trialDays = selected.trialDays;
   const hasTrial = trialDays > 0;
 
@@ -146,6 +164,7 @@ export function Checkout({
   return (
     <form action={startCheckout} className="grid grid-cols-1 gap-gutter lg:grid-cols-12">
       <input type="hidden" name="next" value={next} />
+      <input type="hidden" name="method" value={method.gateway} />
 
       <div className="flex flex-col gap-space-lg lg:col-span-7">
         <div>
@@ -201,6 +220,43 @@ export function Checkout({
               {t("checkout.secure")}
             </span>
           </div>
+
+          {methods.length > 1 && (
+            <fieldset className="flex flex-col gap-2">
+              <legend className="mb-2 font-label-md text-label-md tracking-widest text-clay uppercase">{t("methods.title")}</legend>
+              <div className="grid grid-cols-2 gap-2">
+                {methods.map((m) => {
+                  const active = m.gateway === method.gateway;
+                  return (
+                    <label
+                      key={m.gateway}
+                      className={cn(
+                        "flex cursor-pointer flex-col gap-1 rounded-xl p-3 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary",
+                        active ? "bg-primary-fixed text-on-primary-fixed ring-1 ring-primary" : "bg-surface-container-low hover:bg-surface-container",
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name="method-choice"
+                        value={m.gateway}
+                        checked={active}
+                        onChange={() => setMethodId(m.gateway)}
+                        className="sr-only"
+                      />
+                      <span className="flex items-center gap-2 font-label-lg text-label-lg">
+                        <CreditCardIcon aria-hidden className="size-4 shrink-0" />
+                        {t(`methods.${m.cards}.title`)}
+                      </span>
+                      <span className="font-body-sm text-body-sm text-on-surface-variant">{t(`methods.${m.cards}.body`)}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="font-body-sm text-body-sm text-on-surface-variant">
+                {suggestedFromIran ? t("methods.suggestedIran") : t("methods.hint")}
+              </p>
+            </fieldset>
+          )}
 
           {testMode && (
             <div role="note" className="flex gap-3 rounded-xl bg-secondary-fixed/50 p-4">

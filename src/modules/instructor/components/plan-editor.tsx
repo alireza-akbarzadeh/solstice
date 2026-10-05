@@ -38,7 +38,7 @@ import {
   type PlanFields,
   type PlanFormValues,
 } from "@/modules/memberships/plan-schemas";
-import { billingIntervals } from "@/modules/memberships/plans";
+import { billingIntervals, type Currency } from "@/modules/memberships/plans";
 
 import { DeleteContentButton } from "./delete-content-button";
 import { LocalizedField } from "./localized-field";
@@ -54,10 +54,13 @@ const empty = () => ({ en: "", fa: "" });
 export function PlanEditor({
   plan,
   currencyLabel,
+  otherCurrencies,
   members,
 }: {
   plan: EditablePlan;
   currencyLabel: string;
+  /** Currencies other than the site's, each a gateway may charge in (toman for Zarinpal, …). */
+  otherCurrencies: { code: Currency; label: string }[];
   members: number;
 }) {
   const t = useTranslations("Studio.plans.editor");
@@ -79,6 +82,9 @@ export function PlanEditor({
       features: plan.features,
       // A new plan starts with an empty price rather than a "0" to type over.
       price: isNew ? "" : String(plan.price),
+      prices: Object.fromEntries(
+        otherCurrencies.map(({ code }) => [code, plan.prices[code] === undefined ? "" : String(plan.prices[code])]),
+      ),
       intervalMonths: plan.intervalMonths,
       trialDays: String(plan.trialDays),
     },
@@ -270,6 +276,43 @@ export function PlanEditor({
             )}
           />
         </div>
+
+        <section className="gap-space-sm flex flex-col">
+          <div>
+            <h3 className="font-label-lg text-label-lg text-on-surface">
+              {t("fields.otherPrices")}
+            </h3>
+            <p className="font-body-sm text-body-sm text-on-surface-variant">
+              {t("fields.otherPricesHint")}
+            </p>
+          </div>
+          <div className="gap-space-md grid grid-cols-1 sm:grid-cols-3">
+            {otherCurrencies.map(({ code, label }) => (
+              <Controller
+                key={code}
+                control={form.control}
+                name={`prices.${code}`}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid || undefined}>
+                    <FieldLabel htmlFor={`plan-price-${code}`}>{label}</FieldLabel>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      id={`plan-price-${code}`}
+                      inputMode="decimal"
+                      dir="ltr"
+                      placeholder={t("fields.notSold")}
+                      aria-invalid={fieldState.invalid || undefined}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError>{t("validation.price")}</FieldError>
+                    )}
+                  </Field>
+                )}
+              />
+            ))}
+          </div>
+        </section>
 
         <Controller
           control={form.control}

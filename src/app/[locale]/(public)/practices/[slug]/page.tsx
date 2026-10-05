@@ -15,7 +15,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
-import { ShareButton } from "@/components/share-button";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { LockedPracticeStage } from "@/modules/practices/components/locked-practice-stage";
@@ -26,7 +25,7 @@ import { PracticeStage } from "@/modules/practices/components/practice-stage";
 import { providerFor } from "@/infrastructure/video";
 import { withNext } from "@/lib/safe-next";
 import { PracticeReflections } from "@/modules/community/components/practice-reflections";
-import { CompleteButton, SaveButton } from "@/modules/progress/components/practice-actions";
+import { PracticeHeaderActions } from "@/modules/practices/components/practice-header-actions";
 import { hasCompletedRecently } from "@/modules/progress/server/completions";
 import { isFavorite } from "@/modules/progress/server/favorites";
 import { ProgramContextCard } from "@/modules/programs/components/program-context-card";
@@ -189,37 +188,35 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
               />
             )}
 
-            <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-start">
-              <div className="space-y-2">
-                <h1 className="font-headline-lg-mobile text-headline-lg-mobile tracking-tight text-primary md:font-headline-lg md:text-headline-lg">
-                  {practice.title}
-                </h1>
-                <ul className="flex flex-wrap items-center gap-2 font-label-md text-label-md text-on-surface">
-                  {chips.map((chip) => (
-                    <li key={chip} className="rounded bg-surface-container px-2.5 py-1">
-                      {chip}
+            {/* Practice Title, Metadata Tags & Primary Actions */}
+            <div className="flex flex-col gap-space-md">
+              <div className="flex flex-col gap-4">
+                {/* Title & Metadata Tags Row */}
+                <div className="space-y-2.5">
+                  <h1 className="font-headline-lg text-headline-lg tracking-tight text-primary">
+                    {practice.title}
+                  </h1>
+                  <ul className="flex flex-wrap items-center gap-2 font-label-md text-label-md text-on-surface-variant">
+                    {chips.map((chip) => (
+                      <li key={chip} className="rounded bg-surface-container px-2.5 py-1 text-on-surface">
+                        {chip}
+                      </li>
+                    ))}
+                    <li className="rounded bg-secondary-container px-2.5 py-1 font-semibold text-on-secondary-container">
+                      {t("ledBy", { name: tBrand("instructor") })}
                     </li>
-                  ))}
-                  <li className="rounded bg-secondary-container px-2.5 py-1 font-semibold text-on-secondary-container">
-                    {t("ledBy", { name: tBrand("instructor") })}
-                  </li>
-                </ul>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <SaveButton practiceSlug={practice.slug} saved={saved} signInHref={viewer.user ? undefined : gate.signInHref} />
-                {access.mode === "full" && (
-                  <CompleteButton
-                    practiceSlug={practice.slug}
-                    completed={completed}
-                    signInHref={viewer.user ? undefined : gate.signInHref}
-                    program={programContext}
-                  />
-                )}
-                <ShareButton
-                  title={practice.title}
-                  label={t("shareTitle")}
-                  copiedLabel={t("copied")}
-                  className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-surface-container text-on-surface shadow-sm transition-colors hover:bg-surface-container-high"
+                  </ul>
+                </div>
+
+                {/* Dedicated Action Row: Mark Complete + Elegant Icon Buttons with Tooltips */}
+                <PracticeHeaderActions
+                  practiceSlug={practice.slug}
+                  practiceTitle={practice.title}
+                  completed={completed}
+                  saved={saved}
+                  signInHref={viewer.user ? undefined : gate.signInHref}
+                  programContext={programContext}
+                  accessMode={access.mode}
                 />
               </div>
             </div>

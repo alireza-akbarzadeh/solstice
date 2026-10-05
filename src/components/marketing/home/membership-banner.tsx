@@ -4,11 +4,11 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
 import { localize } from "@/lib/localized";
-import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
+import { getVisitorPlanDisplay } from "@/modules/memberships/server/plan-display";
 
 export async function MembershipBanner() {
   const locale = await getLocale();
-  const [t, { catalog, money, per }] = await Promise.all([getTranslations("Home.membership"), getPlanDisplay(locale)]);
+  const [t, { catalog, money, per }] = await Promise.all([getTranslations("Home.membership"), getVisitorPlanDisplay(locale)]);
   const { entry, featured, trialDays } = catalog;
   const alternative = featured && featured.id !== entry?.id ? featured : null;
   const benefits = [t("benefit1"), t("benefit2"), t("benefit3"), t("benefit4")];

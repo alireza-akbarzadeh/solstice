@@ -5,12 +5,13 @@ import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { routing } from "@/i18n/routing";
-import { getCheckoutProvider } from "@/infrastructure/payment";
 import { safeNextPath } from "@/lib/safe-next";
-import { Checkout } from "@/modules/memberships/components/checkout";
+import { Checkout, type CheckoutMethod } from "@/modules/memberships/components/checkout";
 import { MembershipStatus } from "@/modules/memberships/components/membership-status";
 import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
 import { getViewer } from "@/modules/memberships/server/viewer";
+import { getPaymentMethods } from "@/modules/payments/server/routing";
+import { IRAN } from "@/modules/payments/types";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/membership">): Promise<Metadata> {
   const { locale } = await params;
@@ -27,7 +28,12 @@ export default async function MembershipPage({ params, searchParams }: PageProps
 
   const query = await searchParams;
   const next = safeNextPath(query.next, "/practices");
-  const [t, tBrand, viewer, provider] = await Promise.all([getTranslations("Membership"), getTranslations("Brand"), getViewer(), getCheckoutProvider()]);
+  const [t, tBrand, viewer, { methods, country }] = await Promise.all([
+    getTranslations("Membership"),
+    getTranslations("Brand"),
+    getViewer(),
+    getPaymentMethods(),
+  ]);
 
   if (viewer.hasAccess) {
     return (
@@ -37,8 +43,22 @@ export default async function MembershipPage({ params, searchParams }: PageProps
     );
   }
 
-  const { catalog, money, describe } = await getPlanDisplay(locale);
-  if (!catalog.plans.length) {
+  // Each switched-on gateway with the plans it can sell, priced in its currency. The first is
+  // the one preselected for the visitor's country; the visitor can still switch.
+  const offers: CheckoutMethod[] = [];
+  for (const method of methods) {
+    const { catalog, money, describe } = await getPlanDisplay(locale, method.currency);
+    if (!catalog.plans.length) continue;
+    offers.push({
+      gateway: method.gateway,
+      cards: method.cards,
+      zero: money(0),
+      featured: catalog.featured?.id ?? null,
+      plans: catalog.plans.map(describe),
+      testMode: method.provider.testMode,
+    });
+  }
+  if (!offers.length) {
     return (
       <Container className="py-space-2xl">
         <div className="mx-auto max-w-xl rounded-2xl bg-surface-container-low p-space-lg text-center">
@@ -48,9 +68,15 @@ export default async function MembershipPage({ params, searchParams }: PageProps
       </Container>
     );
   }
-  const requested = catalog.plans.find((plan) => plan.id === query.plan);
-  const initialPlan = (requested ?? catalog.featured ?? catalog.plans[0]!).id;
-  const trialDays = (requested ?? catalog.featured)?.trialDays ?? 0;
+  // A method named in the link (coming back from sign-up or the provider) wins, if it sells the plan.
+  const initial =
+    offers.find((o) => o.gateway === query.method && (!query.plan || o.plans.some((p) => p.id === query.plan))) ??
+    offers.find((o) => o.plans.some((p) => p.id === query.plan)) ??
+    offers[0]!;
+  const requested = initial.plans.find((plan) => plan.id === query.plan);
+  const featured = initial.plans.find((plan) => plan.id === initial.featured);
+  const initialPlan = (requested ?? featured ?? initial.plans[0]!).id;
+  const trialDays = (requested ?? featured)?.trialDays ?? 0;
 
   return (
     <div className="relative overflow-hidden">
@@ -75,12 +101,12 @@ export default async function MembershipPage({ params, searchParams }: PageProps
         </div>
 
         <Checkout
-          plans={catalog.plans.map(describe)}
+          methods={offers}
+          initialMethod={initial.gateway}
           initialPlan={initialPlan}
+          suggestedFromIran={country === IRAN && initial === offers[0]}
           next={next}
-          zero={money(0)}
           signedIn={!!viewer.user}
-          testMode={provider.testMode}
           instructorName={tBrand("instructor")}
         />
       </Container>

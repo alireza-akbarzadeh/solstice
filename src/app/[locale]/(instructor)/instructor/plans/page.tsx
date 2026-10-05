@@ -1,7 +1,7 @@
 import { PlusIcon, TagIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import {
@@ -32,6 +32,7 @@ import {
 } from "@/modules/instructor/components/plan-inventory";
 import { StudioPageHeader } from "@/modules/instructor/components/studio-page-header";
 import { blankPlanFields } from "@/modules/memberships/plan-schemas";
+import { currencies, formatMoney } from "@/modules/memberships/plans";
 import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
 import { getAllPlans, getPlanUsage } from "@/modules/memberships/server/plans";
 import { requireInstructor } from "@/modules/memberships/server/viewer";
@@ -63,14 +64,16 @@ export default async function StudioPlansPage({
   const editId = one("edit");
   const creating = one("new") === "1";
 
-  const [t, tCurrency, plans, usage, display] = await Promise.all([
+  const [t, tCurrency, format, plans, usage, display] = await Promise.all([
     getTranslations("Studio.plans"),
     getTranslations("Studio.plans.currency"),
+    getFormatter(),
     getAllPlans(),
     getPlanUsage(),
     getPlanDisplay(locale),
   ]);
   const { currency } = display.catalog;
+  const others = currencies.filter((code) => code !== currency);
 
   const items: PlanInventoryItem[] = plans.map((plan) => ({
     id: plan.id,
@@ -79,6 +82,13 @@ export default async function StudioPlansPage({
     featured: plan.featured,
     price: `${display.money(plan.price)} ${display.per(plan.intervalMonths)}`,
     billing: display.describe(plan).billing,
+    // Prices for the other gateways' currencies, e.g. "1,200,000 Toman".
+    alsoIn: others
+      .flatMap((code) => {
+        const amount = plan.prices[code];
+        return amount === undefined ? [] : [formatMoney(format, amount, code, locale)];
+      })
+      .join(" · "),
     members: usage[plan.id] ?? 0,
   }));
 
@@ -93,6 +103,7 @@ export default async function StudioPlansPage({
         badge: editRow.badge,
         features: editRow.features,
         price: editRow.price,
+        prices: editRow.prices,
         intervalMonths: editRow.intervalMonths,
         trialDays: editRow.trialDays,
       }
@@ -157,6 +168,7 @@ export default async function StudioPlansPage({
               key={editing.id ?? "new"}
               plan={editing}
               currencyLabel={tCurrency(`short.${currency}`)}
+              otherCurrencies={others.map((code) => ({ code, label: tCurrency(`short.${code}`) }))}
               members={editing.id ? (usage[editing.id] ?? 0) : 0}
             />
           ) : (

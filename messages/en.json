@@ -484,7 +484,20 @@
     "billingNow": "{billed}, starting today",
     "perMonthEquivalent": "{price} / month",
     "noPlansTitle": "Membership opens soon",
-    "noPlansBody": "There are no plans on offer right now. Please check back shortly."
+    "noPlansBody": "There are no plans on offer right now. Please check back shortly.",
+    "methods": {
+      "title": "Pay with",
+      "iranian": {
+        "title": "Iranian card",
+        "body": "Shetab bank cards"
+      },
+      "international": {
+        "title": "International card",
+        "body": "Visa, Mastercard"
+      },
+      "hint": "Prices are shown in the currency of the card you pick.",
+      "suggestedIran": "Iranian card is selected because you seem to be in Iran. Paying with another card? Switch here."
+    }
   },
   "Account": {
     "menu": "Account menu",
@@ -521,7 +534,12 @@
       },
       "afterTrial": "{price} {per} after {days, number} days",
       "noTrial": "{price} {per}",
-      "payNow": "Pay {price}"
+      "payNow": "Pay {price}",
+      "standsIn": "It stands in for {gateway}.",
+      "gateways": {
+        "zarinpal": "Zarinpal",
+        "stripe": "Stripe"
+      }
     },
     "panel": {
       "open": "Open test panel",
@@ -584,7 +602,15 @@
       "simulateFailure": "Simulate a failed payment",
       "simulateFailureHint": "The next charge is declined: past due",
       "renewed": "Renewal recorded",
-      "paymentFailed": "Payment marked as failed"
+      "paymentFailed": "Payment marked as failed",
+      "countryTitle": "Visitor country",
+      "countryHint": "Which gateway checkout preselects.",
+      "countries": {
+        "detected": "Detected ({country})",
+        "unknown": "unknown",
+        "iran": "Iran",
+        "elsewhere": "Elsewhere (United States)"
+      }
     },
     "mailbox": {
       "eyebrow": "Test mode",
@@ -688,6 +714,16 @@
     "completed": "Completed today",
     "autoCompleted": "Practice complete — beautifully done",
     "signInToComplete": "Sign in to track your practice",
+    "heldInHeart": "Held in Heart ({count})",
+    "heldInHeartLabel": "Hold in Heart",
+    "share": "Share",
+    "download": "Download",
+    "downloadTooltip": "Download for Offline Sanctuary Practice",
+    "downloadToast": "Practice cached for offline practice",
+    "audioOnly": "Audio Only",
+    "audioOnlyTooltip": "Audio Only Sanctuary Mode",
+    "audioOnlyToast": "Audio-only mode toggled",
+    "moreOptions": "More Options",
     "errors": {
       "members": "This practice is for members.",
       "generic": "That didn’t go through — please try again."
@@ -2465,7 +2501,10 @@
           "onSale": "On sale",
           "onSaleHint": "Hidden plans disappear from the membership page; members already on them keep them.",
           "featured": "Recommended",
-          "featuredHint": "Preselected at checkout. Its trial is the one mentioned across the site."
+          "featuredHint": "Preselected at checkout. Its trial is the one mentioned across the site.",
+          "otherPrices": "Prices in other currencies",
+          "otherPricesHint": "Leave a box empty to not sell this plan in that currency. Zarinpal charges in toman, Stripe in its chosen currency.",
+          "notSold": "Not sold"
         },
         "errors": {
           "invalid": "Check the plan: a name in both languages, a valid price, and a trial of 0–90 days.",
@@ -2485,7 +2524,8 @@
           "badge": "Keep the badge under 40 characters.",
           "feature": "Fill in this feature in both languages, or remove it."
         }
-      }
+      },
+      "alsoIn": "Also {prices}"
     },
     "command": {
       "open": "Open search",
@@ -2608,7 +2648,7 @@
       "metaTitle": "Studio settings",
       "eyebrow": "Studio",
       "title": "Studio settings",
-      "lede": "How visitors reach you: contact details and social profiles, shown in the footer and on the About page.",
+      "lede": "How visitors reach you and how they pay: contact details, social profiles and payment gateways.",
       "where": {
         "title": "Where these appear",
         "footer": "Footer",
@@ -2666,6 +2706,93 @@
           "forbidden": "Only the instructor can change studio settings.",
           "invalid": "Some fields need attention.",
           "failed": "Couldn't save. Please try again."
+        }
+      },
+      "tabs": {
+        "contact": "Contact",
+        "payments": "Payments"
+      },
+      "paymentsGuide": {
+        "title": "How payments work",
+        "prices": "Give each plan a price in every currency you want to sell in: toman for Zarinpal, dollars, euros or pounds for Stripe. A gateway only appears for plans priced in its currency.",
+        "test": "Test mode runs the whole checkout with test cards and moves no money. Use it until your keys are in.",
+        "keys": "Keys are stored encrypted and never shown again; only their last four characters appear here. Keys set on the server win.",
+        "choice": "The visitor's country only picks the default. When both gateways can sell a plan, checkout lets people switch between an Iranian and an international card, which helps anyone on a VPN or holding a card from elsewhere.",
+        "plansLink": "Set plan prices"
+      },
+      "payments": {
+        "title": "Payment gateways",
+        "lede": "Switch gateways on, choose test, sandbox or live, paste their keys and decide which one each visitor sees first.",
+        "save": "Save payments",
+        "saved": "Payment settings saved",
+        "on": "On",
+        "off": "Off",
+        "enable": "Take payments with {gateway}",
+        "cards": {
+          "iranian": "Iranian cards",
+          "international": "International cards"
+        },
+        "gateways": {
+          "zarinpal": {
+            "name": "Zarinpal",
+            "body": "Shetab bank cards from Iran. Members pay for each period and renew by hand."
+          },
+          "stripe": {
+            "name": "Stripe",
+            "body": "Visa, Mastercard and other international cards, renewing automatically."
+          }
+        },
+        "mode": "Mode",
+        "modes": {
+          "test": "Test",
+          "sandbox": "Sandbox",
+          "live": "Live"
+        },
+        "modeHints": {
+          "test": "The in-app test checkout: test cards, no account needed, no money moves.",
+          "sandbox": "The gateway's own test environment, with your sandbox keys.",
+          "live": "Real payments, with your live keys."
+        },
+        "notConnected": "Sandbox and live open once {gateway} is connected to the site.",
+        "stripeCurrency": "Stripe currency",
+        "stripeCurrencyHint": "Stripe charges in this currency; plans need a price in it to be sold through Stripe.",
+        "zarinpalCurrency": "Zarinpal charges in toman; plans need a toman price to be sold through Zarinpal.",
+        "keys": {
+          "title": "Keys",
+          "notSet": "Not set",
+          "hint": "Paste it from the gateway's dashboard.",
+          "saved": "Saved.",
+          "willRemove": "Will be removed when you save.",
+          "remove": "Remove",
+          "keep": "Keep",
+          "fromEnv": "Set on the server ({name}).",
+          "wrongShape": "That doesn't look like this key. Check you copied the right one.",
+          "zarinpal": {
+            "merchantId": "Merchant ID"
+          },
+          "stripe": {
+            "secretKey": "Secret key",
+            "webhookSecret": "Webhook signing secret"
+          }
+        },
+        "routing": {
+          "title": "Who sees which gateway first",
+          "body": "Chosen from the country the visitor connects from. It only preselects: people can still switch at checkout.",
+          "iranGateway": "Visitors from Iran",
+          "iranGatewayHint": "Usually Zarinpal.",
+          "defaultGateway": "Everyone else",
+          "defaultGatewayHint": "Usually Stripe.",
+          "yourCountry": "Your connection comes from {country}.",
+          "noCountry": "Your country can't be detected here; it is once the site runs on its host."
+        },
+        "errors": {
+          "forbidden": "Only the instructor can change payments.",
+          "invalid": "Some fields need attention.",
+          "unsupported": "That mode isn't available for this gateway yet.",
+          "missingKeys": "Sandbox and live need every key for that gateway.",
+          "failed": "The payment settings couldn't be saved.",
+          "oneEnabled": "Keep at least one gateway on.",
+          "disabled": "Pick a gateway that is switched on."
         }
       }
     },

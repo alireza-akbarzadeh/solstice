@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
+import { Checkbox } from "@/components/shared/checkbox";
 import { FieldError } from "@/components/ui/field";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -20,12 +21,14 @@ export function SignInForm({ next }: { next: string }) {
   const [error, setError] = useState<string | null>(null);
   const form = useForm<SignInValues>({
     resolver: zodResolver(signInSchema),
+    mode: "onTouched",
     defaultValues: { email: "", password: "", remember: true },
   });
   const pending = form.formState.isSubmitting;
   const message = (key: string | undefined) => {
+    if (!key) return undefined;
     const known = validationKey(key);
-    return known ? t(`validation.${known}`) : undefined;
+    return known ? t(`validation.${known}`) : key;
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
@@ -98,15 +101,9 @@ export function SignInForm({ next }: { next: string }) {
         control={form.control}
         name="remember"
         render={({ field }) => (
-          <label className="group flex cursor-pointer items-center gap-3 pt-1 select-none">
-            <input type="checkbox" checked={field.value} onChange={(e) => field.onChange(e.target.checked)} className="peer sr-only" />
-            <span className="flex size-5 items-center justify-center rounded bg-surface-container text-on-primary transition-all group-hover:bg-surface-container-high peer-checked:bg-primary-container peer-focus-visible:ring-2 peer-focus-visible:ring-primary [&>svg]:scale-0 peer-checked:[&>svg]:scale-100">
-              <CheckIcon className="size-3.5 transition-transform" />
-            </span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant transition-colors group-hover:text-on-surface">
-              {t("signIn.remember")}
-            </span>
-          </label>
+          <Checkbox checked={field.value} onChange={field.onChange} containerClassName="pt-1">
+            {t("signIn.remember")}
+          </Checkbox>
         )}
       />
 

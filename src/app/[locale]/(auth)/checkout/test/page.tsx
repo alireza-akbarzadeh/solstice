@@ -1,17 +1,19 @@
 import { CircleAlertIcon, FlaskConicalIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { getPathname, redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { gatewayOf } from "@/infrastructure/payment";
 import { withNext } from "@/lib/safe-next";
 import { TestCheckoutForm } from "@/modules/memberships/components/test-checkout-form";
 import { localize } from "@/lib/localized";
-import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
+import { formatMoney, isCurrency } from "@/modules/memberships/plans";
 import { getCheckout } from "@/modules/memberships/server/billing";
+import { getAllPlans } from "@/modules/memberships/server/plans";
 import { testCards, testModeEnabled } from "@/modules/memberships/server/test-mode";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
@@ -30,18 +32,22 @@ export default async function TestCheckoutPage({ params, searchParams }: PagePro
   if (!(await testModeEnabled())) notFound();
 
   const query = await searchParams;
-  const { catalog, money, per } = await getPlanDisplay(locale);
-  const viewer = await getViewer();
+  const [viewer, plans, format, tPlan] = await Promise.all([getViewer(), getAllPlans(), getFormatter(), getTranslations("Membership")]);
   if (!viewer.user) return redirect({ href: withNext("/sign-in", "/membership"), locale });
-  // The checkout carries the plan and price the member agreed to; only its owner may pay it.
+  // The checkout carries the plan, price and currency the member agreed to; only its owner may pay it.
   const checkout = await getCheckout(typeof query.checkout === "string" ? query.checkout : "");
-  const plan = checkout && catalog.plans.find((p) => p.id === checkout.planId);
-  if (!checkout || !plan || checkout.userId !== viewer.user.id || checkout.status !== "open") return redirect({ href: "/membership", locale });
-  const cancel = getPathname({ href: withNext(`/membership?plan=${plan.id}`, checkout.nextPath), locale });
+  const plan = checkout && plans.find((p) => p.id === checkout.planId);
+  if (!checkout || !plan || checkout.userId !== viewer.user.id || checkout.status !== "open" || !isCurrency(checkout.currency)) {
+    return redirect({ href: "/membership", locale });
+  }
+  const gateway = gatewayOf(checkout.provider);
+  const cancel = getPathname({ href: withNext(`/membership?plan=${plan.id}${gateway ? `&method=${gateway}` : ""}`, checkout.nextPath), locale });
 
   const t = await getTranslations("TestMode.checkout");
+  const currency = checkout.currency;
+  const money = (amount: number) => formatMoney(format, amount, currency, locale);
   const price = money(checkout.amount);
-  const period = per(checkout.intervalMonths);
+  const period = tPlan("per", { months: checkout.intervalMonths });
   const hasTrial = checkout.trialDays > 0;
   const error = query.error === "declined" || query.error === "unknownCard" ? query.error : null;
 
@@ -55,7 +61,9 @@ export default async function TestCheckoutPage({ params, searchParams }: PagePro
             {t("badge")}
           </span>
         </div>
-        <p className="font-body-sm text-body-sm text-on-surface-variant">{t("body")}</p>
+        <p className="font-body-sm text-body-sm text-on-surface-variant">
+          {t("body")} {gateway && t("standsIn", { gateway: t(`gateways.${gateway}`) })}
+        </p>
 
         <dl className="space-y-2 rounded-xl bg-surface-container-low p-4 font-body-sm text-body-sm">
           <div className="flex justify-between gap-4">

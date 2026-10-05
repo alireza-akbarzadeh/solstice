@@ -4,7 +4,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import { defaultCategories } from "../src/modules/categories/types.ts";
-import { categories } from "../src/server/db/schema.ts";
+import { categories } from "../src/server/db/schema/index.ts";
 
 const TABLE = `
 CREATE TABLE IF NOT EXISTS "solstice_category" (

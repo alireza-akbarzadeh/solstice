@@ -2,18 +2,20 @@ import { getFormatter, getTranslations } from "next-intl/server";
 
 import type { Locale } from "@/i18n/routing";
 import { localize } from "@/lib/localized";
+import { getVisitorCurrency } from "@/modules/payments/server/routing";
 
 import type { CheckoutPlan } from "../components/checkout";
-import { formatMoney, monthlyEquivalent, type MembershipPlan } from "../plans";
+import { formatMoney, monthlyEquivalent, type Currency, type MembershipPlan } from "../plans";
 import { getPlanCatalog } from "./plans";
 
 /**
  * The plan catalogue plus the formatting every page needs to show a price: the amount in the
- * site currency, its period ("/ year"), and a plan fully described for the checkout cards.
+ * site currency (or `currency`, for a visitor paying in another), its period ("/ year"), and a
+ * plan fully described for the checkout cards.
  */
-export async function getPlanDisplay(locale: Locale) {
+export async function getPlanDisplay(locale: Locale, currency?: Currency) {
   const [catalog, t, format] = await Promise.all([
-    getPlanCatalog(),
+    getPlanCatalog(currency),
     getTranslations({ locale, namespace: "Membership" }),
     getFormatter({ locale }),
   ]);
@@ -46,4 +48,9 @@ export async function getPlanDisplay(locale: Locale) {
   };
 
   return { catalog, money, per, describe };
+}
+
+/** The same, priced in the currency this visitor's preselected payment method charges. */
+export async function getVisitorPlanDisplay(locale: Locale) {
+  return getPlanDisplay(locale, await getVisitorCurrency());
 }

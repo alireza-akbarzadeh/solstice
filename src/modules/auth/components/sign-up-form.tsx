@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
+import { Checkbox } from "@/components/shared/checkbox";
 import { FieldError } from "@/components/ui/field";
 import { getPathname, Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -23,33 +24,6 @@ const rhythms = [
 const inputClass =
   "h-12 w-full rounded-lg bg-surface-container-high ps-4 pe-11 font-body-md text-body-md text-on-surface transition-all duration-200 placeholder:text-outline focus:bg-surface focus:ring-2 focus:ring-primary focus:outline-none aria-invalid:ring-2 aria-invalid:ring-error/50";
 
-function Checkbox({
-  checked,
-  onChange,
-  invalid,
-  children,
-}: {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  invalid?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="group flex cursor-pointer items-start gap-3">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} aria-invalid={invalid ? true : undefined} className="peer sr-only" />
-      <span
-        className={cn(
-          "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded bg-surface-container-high text-on-primary transition-all peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100",
-          invalid && "ring-2 ring-error/50",
-        )}
-      >
-        <CheckIcon className="size-3.5" />
-      </span>
-      <span className="font-body-sm text-body-sm text-on-surface-variant select-none">{children}</span>
-    </label>
-  );
-}
-
 export function SignUpForm({ next, signInHref }: { next: string; signInHref: string }) {
   const t = useTranslations("Auth");
   const router = useRouter();
@@ -57,12 +31,14 @@ export function SignUpForm({ next, signInHref }: { next: string; signInHref: str
   const [error, setError] = useState<string | null>(null);
   const form = useForm<SignUpValues>({
     resolver: zodResolver(signUpSchema),
+    mode: "onTouched",
     defaultValues: { name: "", email: "", password: "", practiceRhythm: "morning", terms: false, newsletter: true },
   });
   const pending = form.formState.isSubmitting;
   const message = (key: string | undefined) => {
+    if (!key) return undefined;
     const known = validationKey(key);
-    return known ? t(`validation.${known}`) : undefined;
+    return known ? t(`validation.${known}`) : key;
   };
 
   const onSubmit = form.handleSubmit(async (values) => {

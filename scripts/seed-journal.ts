@@ -5,7 +5,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import { sampleArticles, sampleAuthors } from "../src/modules/journal/sample-articles.ts";
-import { journalArticles } from "../src/server/db/schema.ts";
+import { journalArticles } from "../src/server/db/schema/index.ts";
 
 const url = process.env.DATABASE_URL;
 if (!url) throw new Error("DATABASE_URL is not set (run with --env-file=.env)");

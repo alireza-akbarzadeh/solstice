@@ -1,5 +1,6 @@
-// Creates the checkout, payment and payment-event tables used by the payment flow. Additive and
-// safe to re-run; nothing is imported (test-mode memberships never charged anything).
+// Creates the checkout, payment and payment-event tables used by the payment flow, and gives
+// plans a price per currency (13b). Additive and safe to re-run; existing plans get their one
+// price recorded under the site currency.
 import postgres from "postgres";
 
 const TABLES = `
@@ -51,13 +52,21 @@ CREATE TABLE IF NOT EXISTS "solstice_payment_event" (
   "createdAt" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("provider", "eventId")
 );
+
+ALTER TABLE "solstice_membership_plan" ADD COLUMN IF NOT EXISTS "prices" jsonb NOT NULL DEFAULT '{}'::jsonb;
+UPDATE "solstice_membership_plan" p
+SET "prices" = jsonb_build_object(
+  coalesce((SELECT s."value"->>'currency' FROM "solstice_setting" s WHERE s."key" = 'billing'), 'USD'),
+  p."price"
+)
+WHERE p."prices" = '{}'::jsonb;
 `;
 
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
 const conn = postgres(process.env.DATABASE_URL, { max: 1, onnotice: () => {} });
 try {
   await conn.unsafe(TABLES);
-  console.log("Payment tables ready: solstice_checkout, solstice_payment, solstice_payment_event.");
+  console.log("Payment tables ready: solstice_checkout, solstice_payment, solstice_payment_event; plan prices per currency.");
 } finally {
   await conn.end();
 }

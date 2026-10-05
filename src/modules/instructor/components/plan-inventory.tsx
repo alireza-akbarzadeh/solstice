@@ -43,6 +43,8 @@ export type PlanInventoryItem = {
   price: string;
   /** "Billed yearly after a 14-day free trial". */
   billing: string;
+  /** The plan's prices in other currencies, already formatted; empty when it has none. */
+  alsoIn: string;
   members: number;
 };
 
@@ -99,6 +101,11 @@ export function PlanInventory({
             <p className="font-body-sm text-body-sm text-on-surface-variant">
               {item.billing}
             </p>
+            {item.alsoIn && (
+              <p className="font-body-sm text-body-sm text-on-surface-variant">
+                {t("alsoIn", { prices: item.alsoIn })}
+              </p>
+            )}
             <p className="font-label-sm text-label-sm text-outline">
               {t("members", { count: item.members })}
             </p>
