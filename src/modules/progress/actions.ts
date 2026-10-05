@@ -12,6 +12,7 @@ import { getProgramProgress } from "@/modules/programs/server/progress";
 
 import { recordCompletion, undoRecentCompletion } from "./server/completions";
 import { setFavorite } from "./server/favorites";
+import { setLike } from "./server/likes";
 
 type ActionResult = { ok: true } | { ok: false; error: "signIn" | "members" | "invalid" };
 
@@ -34,6 +35,19 @@ export async function savePractice(input: unknown): Promise<ActionResult> {
 
   await setFavorite(viewer.user.id, parsed.data.practiceSlug, parsed.data.on);
   refresh();
+  return { ok: true };
+}
+
+/** "Hold in heart": any signed-in visitor can like a practice they can see, members or not. */
+export async function likePractice(input: unknown): Promise<ActionResult> {
+  const parsed = inputSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "invalid" };
+  const viewer = await getViewer();
+  if (!viewer.user) return { ok: false, error: "signIn" };
+  if (!(await getPractice(await getLocale(), parsed.data.practiceSlug))) return { ok: false, error: "invalid" };
+
+  await setLike(viewer.user.id, parsed.data.practiceSlug, parsed.data.on);
+  revalidatePath("/[locale]/practices/[slug]", "page");
   return { ok: true };
 }
 

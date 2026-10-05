@@ -13,6 +13,7 @@ import {
   ShapesIcon,
   TagIcon,
   UsersIcon,
+  WalletIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -66,6 +67,7 @@ export const studioNavGroups: readonly { label: StudioNavLabel; items: readonly 
     label: "business",
     items: [
       { href: "/instructor/plans", label: "plans", icon: TagIcon },
+      { href: "/instructor/payments", label: "payments", icon: WalletIcon },
       { href: "/instructor/revenue", label: "revenue", icon: CreditCardIcon },
     ],
   },

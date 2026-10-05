@@ -22,6 +22,26 @@ export const favorites = createTable(
   (t) => [primaryKey({ columns: [t.userId, t.practiceSlug] })],
 );
 
+/**
+ * "Held in heart": a member's like of a practice. Unlike favorites (a private list), likes are
+ * counted publicly on the practice page.
+ */
+export const practiceLikes = createTable(
+  "practice_like",
+  (d) => ({
+    userId: d
+      .text()
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    practiceSlug: d.text().notNull(),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  }),
+  (t) => [primaryKey({ columns: [t.userId, t.practiceSlug] }), index("practice_like_slug_idx").on(t.practiceSlug)],
+);
+
 // One row per "Mark complete" — the history behind progress, streaks and minutes practiced.
 export const practiceCompletions = createTable(
   "practice_completion",

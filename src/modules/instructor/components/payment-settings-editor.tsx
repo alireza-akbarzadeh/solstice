@@ -34,7 +34,7 @@ const formValues = ({ settings }: PaymentSettingsView): PaymentSettingsFormValue
  * into the box replaces it.
  */
 export function PaymentSettingsEditor({ initial, country }: { initial: PaymentSettingsView; country: string | null }) {
-  const t = useTranslations("Studio.settings.payments");
+  const t = useTranslations("Studio.payments.editor");
   const router = useRouter();
   const [view, setView] = useState(initial);
 

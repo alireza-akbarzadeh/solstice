@@ -21,13 +21,14 @@ import { LockedPracticeStage } from "@/modules/practices/components/locked-pract
 import { PracticeChapters } from "@/modules/practices/components/practice-chapters";
 import { EmbedPlayer } from "@/modules/practices/components/embed-player";
 import { PracticePlayer } from "@/modules/practices/components/practice-player";
-import { PracticeStage } from "@/modules/practices/components/practice-stage";
+import { PracticeColumns, PracticeStage } from "@/modules/practices/components/practice-stage";
 import { providerFor } from "@/infrastructure/video";
 import { withNext } from "@/lib/safe-next";
 import { PracticeReflections } from "@/modules/community/components/practice-reflections";
 import { PracticeHeaderActions } from "@/modules/practices/components/practice-header-actions";
 import { hasCompletedRecently } from "@/modules/progress/server/completions";
 import { isFavorite } from "@/modules/progress/server/favorites";
+import { getLikeSummary } from "@/modules/progress/server/likes";
 import { ProgramContextCard } from "@/modules/programs/components/program-context-card";
 import { resolveProgramDay } from "@/modules/programs/server/get-program";
 import { getProgramProgress } from "@/modules/programs/server/progress";
@@ -88,6 +89,7 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
       ? { slug: programDay.program.slug, day: programDay.day }
       : undefined;
 
+  const likes = await getLikeSummary(practice.slug, viewer.user?.id ?? null);
   const [saved, completed] = viewer.user
     ? await Promise.all([
         isFavorite(viewer.user.id, practice.slug),
@@ -119,6 +121,8 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
     trialDays: (await getPlanCatalog()).trialDays,
   };
   const categoryLabel = practiceCategory(practice.category);
+  // Only someone who may watch all of a file-backed video can download it (the route checks again).
+  const downloadHref = access.mode === "full" && playback?.kind === "file" ? `/api/practices/${practice.slug}/download` : undefined;
   const durationSeconds = practice.durationMinutes * 60;
 
   const chips = [
@@ -165,178 +169,185 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
       {/* One stage for the player, chapters and reflections: timestamps seek the video. */}
       {/* Only a file-backed player shares its clock, so chapters and timestamps stand down for embeds. */}
       <PracticeStage hasVideo={playback?.kind === "file"} limitSeconds={fileLimit}>
-        <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
-          <section className="flex flex-col gap-space-lg lg:col-span-8">
-            {playback?.kind === "embed" ? (
-              <EmbedPlayer src={playback.src} title={playback.title} />
-            ) : playback ? (
-              <PracticePlayer
-                videoUrl={playback.src}
-                poster={practice.poster}
-                posterAlt={practice.imageAlt}
-                categoryLabel={categoryLabel}
-                durationSeconds={durationSeconds}
-                gate={gate}
-              />
-            ) : (
-              <LockedPracticeStage
-                poster={practice.poster}
-                posterAlt={practice.imageAlt}
-                durationMinutes={practice.durationMinutes}
-                primaryHref={gate.primaryHref}
-                signInHref={viewer.user ? undefined : gate.signInHref}
-              />
-            )}
-
-            {/* Practice Title, Metadata Tags & Primary Actions */}
-            <div className="flex flex-col gap-space-md">
-              <div className="flex flex-col gap-4">
-                {/* Title & Metadata Tags Row */}
-                <div className="space-y-2.5">
-                  <h1 className="font-headline-lg text-headline-lg tracking-tight text-primary">
-                    {practice.title}
-                  </h1>
-                  <ul className="flex flex-wrap items-center gap-2 font-label-md text-label-md text-on-surface-variant">
-                    {chips.map((chip) => (
-                      <li key={chip} className="rounded bg-surface-container px-2.5 py-1 text-on-surface">
-                        {chip}
-                      </li>
-                    ))}
-                    <li className="rounded bg-secondary-container px-2.5 py-1 font-semibold text-on-secondary-container">
-                      {t("ledBy", { name: tBrand("instructor") })}
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Dedicated Action Row: Mark Complete + Elegant Icon Buttons with Tooltips */}
-                <PracticeHeaderActions
-                  practiceSlug={practice.slug}
-                  practiceTitle={practice.title}
-                  completed={completed}
-                  saved={saved}
+        <PracticeColumns
+          main={
+            <>
+              {playback?.kind === "embed" ? (
+                <EmbedPlayer src={playback.src} title={playback.title} />
+              ) : playback ? (
+                <PracticePlayer
+                  videoUrl={playback.src}
+                  poster={practice.poster}
+                  posterAlt={practice.imageAlt}
+                  categoryLabel={categoryLabel}
+                  durationSeconds={durationSeconds}
+                  chapters={practice.chapters}
+                  episode={programDay ? t("programDay", { day: programDay.day, series: programDay.program.title }) : practice.series}
+                  gate={gate}
+                />
+              ) : (
+                <LockedPracticeStage
+                  poster={practice.poster}
+                  posterAlt={practice.imageAlt}
+                  durationMinutes={practice.durationMinutes}
+                  primaryHref={gate.primaryHref}
                   signInHref={viewer.user ? undefined : gate.signInHref}
-                  programContext={programContext}
-                  accessMode={access.mode}
                 />
-              </div>
-            </div>
+              )}
 
-            <p className="max-w-3xl font-body-lg text-body-lg text-on-surface-variant">{practice.summary}</p>
-
-            {practice.instructorNote && (
-              <div className="flex flex-col items-start gap-space-md rounded-xl bg-surface-container-low p-space-lg shadow-sm sm:flex-row">
-                <Image
-                  src="/images/brand/elena-closeup.jpg"
-                  alt=""
-                  width={64}
-                  height={64}
-                  className="size-16 shrink-0 rounded-full object-cover ring-4 ring-surface"
-                />
-                <div className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="font-headline-sm text-headline-sm text-on-surface">
-                      {t("noteTitle", { name: tBrand("instructor") })}
-                    </h2>
-                    <span className="font-label-sm text-label-sm tracking-wider text-clay uppercase">• {t("masterGuide")}</span>
-                  </div>
-                  <blockquote className="font-body-md text-body-md text-on-surface-variant italic rtl:not-italic">
-                    “{practice.instructorNote}”
-                  </blockquote>
-                </div>
-              </div>
-            )}
-
-            {(practice.focus.length > 0 || practice.implements.length > 0) && (
-              <div className="grid grid-cols-1 gap-space-md md:grid-cols-2">
-                {practice.focus.length > 0 && (
-                  <div className="rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
-                    <div className="mb-3 flex items-center gap-2 text-clay">
-                      <Flower2Icon className="size-4" />
-                      <h2 className="font-label-md text-label-md font-semibold tracking-wider uppercase">{t("focusTitle")}</h2>
-                    </div>
-                    <ul className="space-y-2.5 font-body-sm text-body-sm text-on-surface-variant">
-                      {practice.focus.map((item) => (
-                        <li key={item} className="flex items-start gap-2.5">
-                          <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
-                          {item}
+              {/* Practice Title, Metadata Tags & Primary Actions */}
+              <div className="flex flex-col gap-space-md">
+                <div className="flex flex-col gap-4">
+                  {/* Title & Metadata Tags Row */}
+                  <div className="space-y-2.5">
+                    <h1 className="font-headline-lg text-headline-lg tracking-tight text-primary">
+                      {practice.title}
+                    </h1>
+                    <ul className="flex flex-wrap items-center gap-2 font-label-md text-label-md text-on-surface-variant">
+                      {chips.map((chip) => (
+                        <li key={chip} className="rounded bg-surface-container px-2.5 py-1 text-on-surface">
+                          {chip}
                         </li>
                       ))}
+                      <li className="rounded bg-secondary-container px-2.5 py-1 font-semibold text-on-secondary-container">
+                        {t("ledBy", { name: tBrand("instructor") })}
+                      </li>
                     </ul>
                   </div>
-                )}
-                {practice.implements.length > 0 && (
-                  <div className="rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
-                    <div className="mb-3 flex items-center gap-2 text-clay">
-                      <PackageIcon className="size-4" />
-                      <h2 className="font-label-md text-label-md font-semibold tracking-wider uppercase">{t("implementsTitle")}</h2>
+
+                  {/* Dedicated Action Row: Mark Complete + Elegant Icon Buttons with Tooltips */}
+                  <PracticeHeaderActions
+                    practiceSlug={practice.slug}
+                    practiceTitle={practice.title}
+                    completed={completed}
+                    saved={saved}
+                    signInHref={viewer.user ? undefined : gate.signInHref}
+                    programContext={programContext}
+                    accessMode={access.mode}
+                    likes={likes}
+                    downloadHref={downloadHref}
+                  />
+                </div>
+              </div>
+
+              <p className="max-w-3xl font-body-lg text-body-lg text-on-surface-variant">{practice.summary}</p>
+
+              {practice.instructorNote && (
+                <div className="flex flex-col items-start gap-space-md rounded-xl bg-surface-container-low p-space-lg shadow-sm sm:flex-row">
+                  <Image
+                    src="/images/brand/elena-closeup.jpg"
+                    alt=""
+                    width={64}
+                    height={64}
+                    className="size-16 shrink-0 rounded-full object-cover ring-4 ring-surface"
+                  />
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="font-headline-sm text-headline-sm text-on-surface">
+                        {t("noteTitle", { name: tBrand("instructor") })}
+                      </h2>
+                      <span className="font-label-sm text-label-sm tracking-wider text-clay uppercase">• {t("masterGuide")}</span>
                     </div>
-                    <ul className="mt-2 grid grid-cols-3 gap-2">
-                      {practice.implements.map((item) => {
-                        const Icon = implementIcons[item.kind];
-                        return (
-                          <li key={item.name} className="flex flex-col items-center rounded-lg bg-surface-container p-3 text-center">
-                            <Icon className="mb-1 size-6 text-clay" />
-                            <span className="font-label-sm text-label-sm font-semibold text-on-surface">{item.name}</span>
-                            <span className="font-label-sm text-label-sm text-outline">{item.detail}</span>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                    <blockquote className="font-body-md text-body-md text-on-surface-variant italic rtl:not-italic">
+                      “{practice.instructorNote}”
+                    </blockquote>
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
 
-            {practice.chapters.length > 0 && (
-              <PracticeChapters chapters={practice.chapters} durationSeconds={durationSeconds} />
-            )}
-          </section>
-
-          <aside className="flex flex-col gap-space-lg lg:col-span-4">
-            {programDay && programProgress?.enrolled && (
-              <ProgramContextCard program={programDay.program} day={programDay.day} next={programDay.next} progress={programProgress} />
-            )}
-            <section className="space-y-space-md rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
-              <div className="flex items-center justify-between">
-                <h2 className="font-headline-sm text-headline-sm text-on-surface">{t("relatedTitle")}</h2>
-                <Link href="/practices" className="font-label-sm text-label-sm tracking-wider text-clay uppercase transition-colors hover:text-primary">
-                  {t("viewAll")}
-                </Link>
-              </div>
-              <ul className="space-y-3">
-                {related.map((item) => (
-                  <li key={item.slug}>
-                    <Link href={`/practices/${item.slug}`} className="group flex gap-3 rounded-lg p-2 transition-colors hover:bg-surface-container">
-                      <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-md bg-surface-dim">
-                        <Image
-                          src={item.image}
-                          alt=""
-                          fill
-                          sizes="96px"
-                          className="object-cover transition-transform group-hover:scale-105"
-                        />
-                        <span className="absolute end-1 bottom-1 rounded bg-black/60 px-1.5 py-0.5 font-label-sm text-[10px] text-white">
-                          {tPractice("minutes", { count: item.durationMinutes })}
-                        </span>
+              {(practice.focus.length > 0 || practice.implements.length > 0) && (
+                <div className="grid grid-cols-1 gap-space-md md:grid-cols-2">
+                  {practice.focus.length > 0 && (
+                    <div className="rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+                      <div className="mb-3 flex items-center gap-2 text-clay">
+                        <Flower2Icon className="size-4" />
+                        <h2 className="font-label-md text-label-md font-semibold tracking-wider uppercase">{t("focusTitle")}</h2>
                       </div>
-                      <div className="flex min-w-0 flex-col justify-center">
-                        <span className="truncate font-label-sm text-label-sm tracking-wider text-clay uppercase">{item.series}</span>
-                        <h3 className="line-clamp-2 font-heading text-[0.95rem] leading-tight text-on-surface transition-colors group-hover:text-primary">
-                          {item.title}
-                        </h3>
-                        <span className="mt-0.5 font-body-sm text-[12px] text-outline">
-                          {item.intensity.label} • {practiceCategory(item.category)}
-                        </span>
+                      <ul className="space-y-2.5 font-body-sm text-body-sm text-on-surface-variant">
+                        {practice.focus.map((item) => (
+                          <li key={item} className="flex items-start gap-2.5">
+                            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {practice.implements.length > 0 && (
+                    <div className="rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+                      <div className="mb-3 flex items-center gap-2 text-clay">
+                        <PackageIcon className="size-4" />
+                        <h2 className="font-label-md text-label-md font-semibold tracking-wider uppercase">{t("implementsTitle")}</h2>
                       </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
+                      <ul className="mt-2 grid grid-cols-3 gap-2">
+                        {practice.implements.map((item) => {
+                          const Icon = implementIcons[item.kind];
+                          return (
+                            <li key={item.name} className="flex flex-col items-center rounded-lg bg-surface-container p-3 text-center">
+                              <Icon className="mb-1 size-6 text-clay" />
+                              <span className="font-label-sm text-label-sm font-semibold text-on-surface">{item.name}</span>
+                              <span className="font-label-sm text-label-sm text-outline">{item.detail}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
 
-              <PracticeReflections practice={practice} viewer={viewer} signInHref={gate.signInHref} membershipHref={gate.primaryHref} />
-          </aside>
-        </div>
+              {practice.chapters.length > 0 && (
+                <PracticeChapters chapters={practice.chapters} durationSeconds={durationSeconds} />
+              )}
+            </>
+          }
+          aside={
+            <>
+              {programDay && programProgress?.enrolled && (
+                <ProgramContextCard program={programDay.program} day={programDay.day} next={programDay.next} progress={programProgress} />
+              )}
+              <section className="space-y-space-md rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-headline-sm text-headline-sm text-on-surface">{t("relatedTitle")}</h2>
+                  <Link href="/practices" className="font-label-sm text-label-sm tracking-wider text-clay uppercase transition-colors hover:text-primary">
+                    {t("viewAll")}
+                  </Link>
+                </div>
+                <ul className="space-y-3">
+                  {related.map((item) => (
+                    <li key={item.slug}>
+                      <Link href={`/practices/${item.slug}`} className="group flex gap-3 rounded-lg p-2 transition-colors hover:bg-surface-container">
+                        <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-md bg-surface-dim">
+                          <Image
+                            src={item.image}
+                            alt=""
+                            fill
+                            sizes="96px"
+                            className="object-cover transition-transform group-hover:scale-105"
+                          />
+                          <span className="absolute end-1 bottom-1 rounded bg-black/60 px-1.5 py-0.5 font-label-sm text-[10px] text-white">
+                            {tPractice("minutes", { count: item.durationMinutes })}
+                          </span>
+                        </div>
+                        <div className="flex min-w-0 flex-col justify-center">
+                          <span className="truncate font-label-sm text-label-sm tracking-wider text-clay uppercase">{item.series}</span>
+                          <h3 className="line-clamp-2 font-heading text-[0.95rem] leading-tight text-on-surface transition-colors group-hover:text-primary">
+                            {item.title}
+                          </h3>
+                          <span className="mt-0.5 font-body-sm text-[12px] text-outline">
+                            {item.intensity.label} • {practiceCategory(item.category)}
+                          </span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+                <PracticeReflections practice={practice} viewer={viewer} signInHref={gate.signInHref} membershipHref={gate.primaryHref} />
+            </>
+          }
+        />
       </PracticeStage>
     </Container>
   );

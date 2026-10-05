@@ -2,6 +2,8 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 type StageContextValue = {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   /** True when a playable source is mounted. */
@@ -15,6 +17,15 @@ type StageContextValue = {
   gateOpen: boolean;
   openGate: () => void;
   closeGate: () => void;
+  /** Sound only: the picture is covered by the poster while the practice keeps playing. */
+  audioOnly: boolean;
+  setAudioOnly: (on: boolean) => void;
+  /** Wide mode: the player takes the page's full width and the sidebar moves below. */
+  theater: boolean;
+  setTheater: (on: boolean) => void;
+  /** The keyboard-shortcuts panel over the player. */
+  shortcutsOpen: boolean;
+  setShortcutsOpen: (open: boolean) => void;
 };
 
 const StageContext = createContext<StageContextValue | null>(null);
@@ -32,6 +43,9 @@ export function PracticeStage({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [gateOpen, setGateOpen] = useState(false);
+  const [audioOnly, setAudioOnly] = useState(false);
+  const [theater, setTheater] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
   const openGate = useCallback(() => {
     const video = videoRef.current;
@@ -66,8 +80,14 @@ export function PracticeStage({
       gateOpen,
       openGate,
       closeGate: () => setGateOpen(false),
+      audioOnly,
+      setAudioOnly,
+      theater,
+      setTheater,
+      shortcutsOpen,
+      setShortcutsOpen,
     }),
-    [hasVideo, limitSeconds, currentTime, seek, gateOpen, openGate],
+    [hasVideo, limitSeconds, currentTime, seek, gateOpen, openGate, audioOnly, theater, shortcutsOpen],
   );
 
   return <StageContext.Provider value={value}>{children}</StageContext.Provider>;
@@ -77,4 +97,20 @@ export function usePracticeStage() {
   const ctx = useContext(StageContext);
   if (!ctx) throw new Error("usePracticeStage must be used inside <PracticeStage>");
   return ctx;
+}
+
+/**
+ * The practice page's two columns. In wide mode the main column (player first) spans the page
+ * and the sidebar drops below it; the server-rendered content inside is unchanged.
+ */
+export function PracticeColumns({ main, aside }: { main: React.ReactNode; aside: React.ReactNode }) {
+  const { theater } = usePracticeStage();
+  return (
+    <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
+      <section className={cn("flex flex-col gap-space-lg", theater ? "lg:col-span-12" : "lg:col-span-8")}>{main}</section>
+      <aside className={cn("flex flex-col gap-space-lg", theater ? "lg:col-span-12 lg:grid lg:grid-cols-2 lg:items-start" : "lg:col-span-4")}>
+        {aside}
+      </aside>
+    </div>
+  );
 }

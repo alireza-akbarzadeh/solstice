@@ -155,7 +155,38 @@
       "fullscreen": "Full screen",
       "exitFullscreen": "Exit full screen",
       "unavailable": "The video for this practice is being prepared.",
-      "embedMissing": "No video has been attached to this practice yet."
+      "embedMissing": "No video has been attached to this practice yet.",
+      "ambience": {
+        "title": "Soundscape",
+        "voice": "Voice only",
+        "rain": "Soft rain",
+        "bowls": "Singing bowls 432 Hz"
+      },
+      "mix": {
+        "title": "Voice and soundscape balance",
+        "label": "Voice {voice} · Amb {ambience}",
+        "voiceOnly": "Voice only",
+        "voice": "Voice {value}",
+        "ambience": "Soundscape {value}"
+      },
+      "pip": "Picture in picture",
+      "theater": "Wide mode",
+      "exitTheater": "Exit wide mode",
+      "chapterLabel": "Ch {number}: {title}",
+      "audioOnlyTitle": "Listening only",
+      "audioOnlyBody": "Follow the voice with your eyes closed. Tap to pause or play.",
+      "shortcuts": {
+        "title": "Keyboard shortcuts",
+        "close": "Close",
+        "playPause": "Play or pause (also Space)",
+        "back": "Back 10 seconds (also ←)",
+        "forward": "Forward 10 seconds (also →)",
+        "mute": "Mute or unmute",
+        "fullscreen": "Full screen",
+        "theater": "Wide mode",
+        "audioOnly": "Listen only",
+        "hint": "Shortcuts work while the player is focused. Press ? to open this panel."
+      }
     },
     "preview": {
       "badge": "Free preview · {minutes, number} min",
@@ -714,20 +745,23 @@
     "completed": "Completed today",
     "autoCompleted": "Practice complete — beautifully done",
     "signInToComplete": "Sign in to track your practice",
-    "heldInHeart": "Held in Heart ({count})",
-    "heldInHeartLabel": "Hold in Heart",
     "share": "Share",
-    "download": "Download",
-    "downloadTooltip": "Download for Offline Sanctuary Practice",
-    "downloadToast": "Practice cached for offline practice",
-    "audioOnly": "Audio Only",
-    "audioOnlyTooltip": "Audio Only Sanctuary Mode",
-    "audioOnlyToast": "Audio-only mode toggled",
-    "moreOptions": "More Options",
     "errors": {
       "members": "This practice is for members.",
       "generic": "That didn’t go through — please try again."
-    }
+    },
+    "copied": "Link copied",
+    "like": "Hold in heart",
+    "liked": "Held in heart",
+    "likeCount": "{count, plural, =0 {Be the first to hold this in heart} one {# person holds this in heart} other {# people hold this in heart}}",
+    "signInToLike": "Sign in to hold this in heart",
+    "download": "Download video",
+    "audioOnly": "Listen only",
+    "audioOnlyOn": "Listening only — the picture is hidden",
+    "audioOnlyOff": "Show the video",
+    "more": "More",
+    "copyLink": "Copy link",
+    "shortcuts": "Keyboard shortcuts"
   },
   "Program": {
     "pulseDaily": "Guided immersion · {days, number} continuous days · one new practice each morning",
@@ -1292,7 +1326,8 @@
       "pages": "Pages",
       "subscribers": "Subscribers",
       "settings": "Settings",
-      "insights": "Insights"
+      "insights": "Insights",
+      "payments": "Payments"
     },
     "overview": {
       "metaTitle": "Studio overview",
@@ -2707,93 +2742,6 @@
           "invalid": "Some fields need attention.",
           "failed": "Couldn't save. Please try again."
         }
-      },
-      "tabs": {
-        "contact": "Contact",
-        "payments": "Payments"
-      },
-      "paymentsGuide": {
-        "title": "How payments work",
-        "prices": "Give each plan a price in every currency you want to sell in: toman for Zarinpal, dollars, euros or pounds for Stripe. A gateway only appears for plans priced in its currency.",
-        "test": "Test mode runs the whole checkout with test cards and moves no money. Use it until your keys are in.",
-        "keys": "Keys are stored encrypted and never shown again; only their last four characters appear here. Keys set on the server win.",
-        "choice": "The visitor's country only picks the default. When both gateways can sell a plan, checkout lets people switch between an Iranian and an international card, which helps anyone on a VPN or holding a card from elsewhere.",
-        "plansLink": "Set plan prices"
-      },
-      "payments": {
-        "title": "Payment gateways",
-        "lede": "Switch gateways on, choose test, sandbox or live, paste their keys and decide which one each visitor sees first.",
-        "save": "Save payments",
-        "saved": "Payment settings saved",
-        "on": "On",
-        "off": "Off",
-        "enable": "Take payments with {gateway}",
-        "cards": {
-          "iranian": "Iranian cards",
-          "international": "International cards"
-        },
-        "gateways": {
-          "zarinpal": {
-            "name": "Zarinpal",
-            "body": "Shetab bank cards from Iran. Members pay for each period and renew by hand."
-          },
-          "stripe": {
-            "name": "Stripe",
-            "body": "Visa, Mastercard and other international cards, renewing automatically."
-          }
-        },
-        "mode": "Mode",
-        "modes": {
-          "test": "Test",
-          "sandbox": "Sandbox",
-          "live": "Live"
-        },
-        "modeHints": {
-          "test": "The in-app test checkout: test cards, no account needed, no money moves.",
-          "sandbox": "The gateway's own test environment, with your sandbox keys.",
-          "live": "Real payments, with your live keys."
-        },
-        "notConnected": "Sandbox and live open once {gateway} is connected to the site.",
-        "stripeCurrency": "Stripe currency",
-        "stripeCurrencyHint": "Stripe charges in this currency; plans need a price in it to be sold through Stripe.",
-        "zarinpalCurrency": "Zarinpal charges in toman; plans need a toman price to be sold through Zarinpal.",
-        "keys": {
-          "title": "Keys",
-          "notSet": "Not set",
-          "hint": "Paste it from the gateway's dashboard.",
-          "saved": "Saved.",
-          "willRemove": "Will be removed when you save.",
-          "remove": "Remove",
-          "keep": "Keep",
-          "fromEnv": "Set on the server ({name}).",
-          "wrongShape": "That doesn't look like this key. Check you copied the right one.",
-          "zarinpal": {
-            "merchantId": "Merchant ID"
-          },
-          "stripe": {
-            "secretKey": "Secret key",
-            "webhookSecret": "Webhook signing secret"
-          }
-        },
-        "routing": {
-          "title": "Who sees which gateway first",
-          "body": "Chosen from the country the visitor connects from. It only preselects: people can still switch at checkout.",
-          "iranGateway": "Visitors from Iran",
-          "iranGatewayHint": "Usually Zarinpal.",
-          "defaultGateway": "Everyone else",
-          "defaultGatewayHint": "Usually Stripe.",
-          "yourCountry": "Your connection comes from {country}.",
-          "noCountry": "Your country can't be detected here; it is once the site runs on its host."
-        },
-        "errors": {
-          "forbidden": "Only the instructor can change payments.",
-          "invalid": "Some fields need attention.",
-          "unsupported": "That mode isn't available for this gateway yet.",
-          "missingKeys": "Sandbox and live need every key for that gateway.",
-          "failed": "The payment settings couldn't be saved.",
-          "oneEnabled": "Keep at least one gateway on.",
-          "disabled": "Pick a gateway that is switched on."
-        }
       }
     },
     "insights": {
@@ -2893,6 +2841,95 @@
         "trialEnds": "trial ends {date}"
       },
       "empty": "Nothing in this period yet."
+    },
+    "payments": {
+      "metaTitle": "Payments · Studio",
+      "eyebrow": "Business",
+      "title": "Payments",
+      "lede": "Which gateways take payments, in which mode, and which one each visitor sees first.",
+      "guide": {
+        "title": "How payments work",
+        "prices": "Give each plan a price in every currency you want to sell in: toman for Zarinpal, dollars, euros or pounds for Stripe. A gateway only appears for plans priced in its currency.",
+        "test": "Test mode runs the whole checkout with test cards and moves no money. Use it until your keys are in.",
+        "keys": "Keys are stored encrypted and never shown again; only their last four characters appear here. Keys set on the server win.",
+        "choice": "The visitor's country only picks the default. When both gateways can sell a plan, checkout lets people switch between an Iranian and an international card, which helps anyone on a VPN or holding a card from elsewhere.",
+        "plansLink": "Set plan prices"
+      },
+      "editor": {
+        "title": "Payment gateways",
+        "lede": "Switch gateways on, choose test, sandbox or live, paste their keys and decide which one each visitor sees first.",
+        "save": "Save payments",
+        "saved": "Payment settings saved",
+        "on": "On",
+        "off": "Off",
+        "enable": "Take payments with {gateway}",
+        "cards": {
+          "iranian": "Iranian cards",
+          "international": "International cards"
+        },
+        "gateways": {
+          "zarinpal": {
+            "name": "Zarinpal",
+            "body": "Shetab bank cards from Iran. Members pay for each period and renew by hand."
+          },
+          "stripe": {
+            "name": "Stripe",
+            "body": "Visa, Mastercard and other international cards, renewing automatically."
+          }
+        },
+        "mode": "Mode",
+        "modes": {
+          "test": "Test",
+          "sandbox": "Sandbox",
+          "live": "Live"
+        },
+        "modeHints": {
+          "test": "The in-app test checkout: test cards, no account needed, no money moves.",
+          "sandbox": "The gateway's own test environment, with your sandbox keys.",
+          "live": "Real payments, with your live keys."
+        },
+        "notConnected": "Sandbox and live open once {gateway} is connected to the site.",
+        "stripeCurrency": "Stripe currency",
+        "stripeCurrencyHint": "Stripe charges in this currency; plans need a price in it to be sold through Stripe.",
+        "zarinpalCurrency": "Zarinpal charges in toman; plans need a toman price to be sold through Zarinpal.",
+        "keys": {
+          "title": "Keys",
+          "notSet": "Not set",
+          "hint": "Paste it from the gateway's dashboard.",
+          "saved": "Saved.",
+          "willRemove": "Will be removed when you save.",
+          "remove": "Remove",
+          "keep": "Keep",
+          "fromEnv": "Set on the server ({name}).",
+          "wrongShape": "That doesn't look like this key. Check you copied the right one.",
+          "zarinpal": {
+            "merchantId": "Merchant ID"
+          },
+          "stripe": {
+            "secretKey": "Secret key",
+            "webhookSecret": "Webhook signing secret"
+          }
+        },
+        "routing": {
+          "title": "Who sees which gateway first",
+          "body": "Chosen from the country the visitor connects from. It only preselects: people can still switch at checkout.",
+          "iranGateway": "Visitors from Iran",
+          "iranGatewayHint": "Usually Zarinpal.",
+          "defaultGateway": "Everyone else",
+          "defaultGatewayHint": "Usually Stripe.",
+          "yourCountry": "Your connection comes from {country}.",
+          "noCountry": "Your country can't be detected here; it is once the site runs on its host."
+        },
+        "errors": {
+          "forbidden": "Only the instructor can change payments.",
+          "invalid": "Some fields need attention.",
+          "unsupported": "That mode isn't available for this gateway yet.",
+          "missingKeys": "Sandbox and live need every key for that gateway.",
+          "failed": "The payment settings couldn't be saved.",
+          "oneEnabled": "Keep at least one gateway on.",
+          "disabled": "Pick a gateway that is switched on."
+        }
+      }
     }
   },
   "Legal": {
