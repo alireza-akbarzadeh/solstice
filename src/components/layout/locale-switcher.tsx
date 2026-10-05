@@ -4,7 +4,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useTransition } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 export function LocaleSwitcher() {
   const t = useTranslations("LocaleSwitcher");
@@ -37,27 +37,26 @@ export function LocaleSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-9 gap-2 rounded-lg border-border/60 bg-background/50 px-3 text-xs font-medium backdrop-blur-sm transition-all hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label={t("label")}
+        <button
+          type="button"
           disabled={isPending}
+          aria-label={t("label")}
+          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-outline-variant/30 bg-surface-container-low/60 px-3 font-mono text-xs font-semibold uppercase text-on-surface-variant backdrop-blur-sm transition-all hover:bg-surface-container hover:text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:bg-surface-container-high/40 dark:hover:bg-surface-container-highest/80"
         >
           {isPending ? (
-            <Loader2Icon className="size-3.5 animate-spin text-muted-foreground" />
+            <Loader2Icon className="size-4 animate-spin text-on-surface-variant" />
           ) : (
-            <GlobeIcon className="size-3.5 text-muted-foreground" />
+            <GlobeIcon className="size-4 text-on-surface-variant" />
           )}
-          <span className="font-mono text-xs font-semibold uppercase">{locale}</span>
-        </Button>
+          <span>{locale}</span>
+        </button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
         align="end"
-        className="w-44 rounded-xl border border-border/80 bg-popover/95 p-1.5 shadow-md backdrop-blur-md"
+        className="w-44 rounded-2xl border border-hairline bg-surface/95 p-1.5 shadow-ambient backdrop-blur-md"
       >
-        <div className="px-2 py-1.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+        <div className="px-2.5 py-1.5 font-label-sm text-[10px] font-semibold tracking-wider text-outline uppercase">
           {t("label") ?? "Language"}
         </div>
 
@@ -70,14 +69,15 @@ export function LocaleSwitcher() {
                 key={l}
                 onSelect={() => onSelect(l)}
                 disabled={isPending}
-                className={`flex items-center justify-between rounded-md px-2 py-1.5 text-xs transition-colors cursor-pointer ${
+                className={cn(
+                  "flex cursor-pointer items-center justify-between rounded-xl px-2.5 py-2 font-label-md text-xs transition-colors",
                   isSelected
-                    ? "bg-accent font-semibold text-accent-foreground"
-                    : "text-foreground hover:bg-muted/60"
-                }`}
+                    ? "bg-primary-container/20 font-semibold text-primary"
+                    : "text-on-surface hover:bg-surface-container",
+                )}
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-5 font-mono text-[10px] uppercase text-muted-foreground">
+                  <span className="w-5 font-mono text-[10px] uppercase text-outline">
                     {l}
                   </span>
                   <span>{t(l)}</span>

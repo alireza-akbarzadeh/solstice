@@ -25,11 +25,12 @@ export async function SiteHeader() {
     getNavigationPages(locale).catch(() => []),
   ]);
   const { user } = viewer;
-  // Conversations: the instructor's queue, or a guidance member's unread replies.
+  // Conversations: the instructor's queue, or a member's unread guidance replies.
   const messages = await (async () => {
     try {
       if (user?.role === "instructor") return { href: "/instructor/inbox", count: await countWaiting() };
-      if (user && (await hasGuidanceAccess(viewer))) return { href: "/guidance", count: await countUnreadForMember(user.id, "guidance") };
+      // Every member sees it: without a guidance plan, /guidance explains which plan includes it.
+      if (user) return { href: "/guidance", count: (await hasGuidanceAccess(viewer)) ? await countUnreadForMember(user.id, "guidance") : 0 };
     } catch {
       // Conversations not migrated yet: no link.
     }
@@ -58,7 +59,7 @@ export async function SiteHeader() {
 
         <MainNav extraItems={extraPages} />
 
-        <div className="flex shrink-0 items-center gap-1 sm:gap-space-xs md:gap-space-md">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <LocaleSwitcher />
           {user && isPushConfigured() && <PushToggle />}
           {messages && <MessagesLink href={messages.href} count={messages.count} />}

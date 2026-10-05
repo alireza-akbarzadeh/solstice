@@ -47,7 +47,7 @@ export function SharedCheckbox({
       checked={checked}
       onCheckedChange={handleCheckedChange}
       disabled={disabled}
-      aria-invalid={invalid || undefined}
+      aria-invalid={invalid ? true : undefined}
       className={cn(
         "mt-0.5 shrink-0",
         invalid && "border-error ring-2 ring-error/40",

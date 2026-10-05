@@ -2,6 +2,7 @@
 
 import { and, eq, isNull } from "drizzle-orm";
 import { getLocale, getTranslations } from "next-intl/server";
+import { after } from "next/server";
 
 import { env } from "@/env";
 import { getPathname } from "@/i18n/navigation";
@@ -48,7 +49,8 @@ export async function replyAsStaff(input: { conversationId: number; body: string
 
   const message = await addMessage({ conversationId: row.id, author: "instructor", authorId: me.id, body: parsed.data.body });
   await setStatus(row, "answered");
-  await notifyMemberReply(row, parsed.data.body, me.name);
+  // Signed with the studio's instructor name in the member's language, as MessageBubble shows it.
+  after(() => notifyMemberReply(row, parsed.data.body));
   return { ok: true, messages: await messagesAfter(row.id, message.id - 1, (await getLocale())), status: "answered" };
 }
 

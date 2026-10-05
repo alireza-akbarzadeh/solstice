@@ -65,14 +65,18 @@ export async function notifyStaffWaiting(row: Conversation, body: string, from: 
   }
 }
 
+/** The instructor's name as the studio writes it in each language (Brand messages). */
+const instructorIn = async (locale: Locale) => (await getTranslations({ locale, namespace: "Brand" }))("instructor");
+
 /** The studio replied: the member (push + email) or the visitor (email, if they left one). */
-export async function notifyMemberReply(row: Conversation, body: string, instructorName: string) {
+export async function notifyMemberReply(row: Conversation, body: string) {
   try {
     const locale = (routing.locales as readonly string[]).includes(row.locale) ? (row.locale as Locale) : routing.defaultLocale;
     const href = memberHref(row);
     if (row.userId && isPushConfigured()) {
+      const names = Object.fromEntries(await Promise.all(routing.locales.map(async (l) => [l, await instructorIn(l)] as const)));
       const copy = await pushCopy((t, l) => ({
-        title: t("member.title", { name: instructorName }),
+        title: t("member.title", { name: names[l] ?? "" }),
         body: preview(body),
         url: getPathname({ href, locale: l }),
         tag: `conversation-${row.id}`,
@@ -81,7 +85,7 @@ export async function notifyMemberReply(row: Conversation, body: string, instruc
     }
     const contact = row.userId ? await getUserContact(row.userId) : row.guestEmail ? { name: row.guestName ?? "", email: row.guestEmail } : null;
     if (!contact) return;
-    const t = await notifyT(locale);
+    const [t, instructorName] = await Promise.all([notifyT(locale), instructorIn(locale)]);
     const url = absolute(href, locale);
     await sendEmail({
       to: contact.email,

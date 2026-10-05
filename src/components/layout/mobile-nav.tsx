@@ -4,7 +4,6 @@ import { LayoutGridIcon, MenuIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -37,14 +36,13 @@ export function MobileNav({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon-lg"
-          className="size-11 rounded-full lg:hidden"
+        <button
+          type="button"
+          className="inline-flex size-10 items-center justify-center rounded-full border border-outline-variant/30 bg-surface-container-low/60 text-on-surface-variant backdrop-blur-sm transition-all hover:bg-surface-container hover:text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 lg:hidden dark:bg-surface-container-high/40 dark:hover:bg-surface-container-highest/80"
           aria-label={t("openMenu")}
         >
-          <MenuIcon className="size-5" />
-        </Button>
+          <MenuIcon className="size-4.5" />
+        </button>
       </SheetTrigger>
       <SheetContent
         side={side}

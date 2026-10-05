@@ -2,6 +2,7 @@
 
 import { getLocale, getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 
 import { redirect } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
@@ -92,7 +93,8 @@ export async function sendAssistantMessage(input: { conversationId: number | nul
     // A person is on it: no AI; the studio hears about the follow-up.
     await setStatus(row, "waiting");
     status = "waiting";
-    await notifyStaffWaiting(row, parsed.data.body, await senderName(viewer.user?.name ?? row.guestName ?? undefined));
+    const from = await senderName(viewer.user?.name ?? row.guestName ?? undefined);
+    after(() => notifyStaffWaiting(row, parsed.data.body, from));
   }
   created.push(...(await messagesAfter(row.id, message.id - 1, locale)));
   return { ok: true, conversationId: row.id, status, messages: created, failure };
@@ -116,7 +118,8 @@ export async function escalateAssistant(input: { conversationId: number; name: s
   await setStatus(row, "waiting");
   const thread = await getThread(row, row.locale as Locale, "member");
   const lastQuestion = [...thread.messages].reverse().find((m) => m.author === "member")?.body ?? "";
-  await notifyStaffWaiting(row, lastQuestion, await senderName(viewer.user?.name ?? (parsed.data.name || undefined)));
+  const from = await senderName(viewer.user?.name ?? (parsed.data.name || undefined));
+  after(() => notifyStaffWaiting(row, lastQuestion, from));
   return { ok: true };
 }
 
@@ -194,7 +197,8 @@ export async function startGuidanceThread(input: unknown): Promise<GuidanceResul
   const { topic, subject, body, practiceSlug, practiceAt } = parsed.data;
   const row = await createConversation({ kind: "guidance", owner, topic, subject, status: "waiting", locale });
   const message = await addMessage({ conversationId: row.id, author: "member", authorId: viewer.user.id, body, practiceSlug, practiceAt });
-  await notifyStaffWaiting(row, body, viewer.user.name);
+  const from = viewer.user.name;
+  after(() => notifyStaffWaiting(row, body, from));
   return afterMemberMessage(row, message.id, locale);
 }
 
@@ -213,7 +217,8 @@ export async function sendGuidanceMessage(input: { conversationId: number } & Re
   if (row.status !== "waiting") {
     // A follow-up after a reply (or on a closed thread) puts it back in the queue.
     await setStatus(row, "waiting");
-    await notifyStaffWaiting(row, parsed.data.body, viewer.user.name);
+    const from = viewer.user.name;
+    after(() => notifyStaffWaiting(row, parsed.data.body, from));
   }
   return afterMemberMessage(row, message.id, locale);
 }

@@ -12,11 +12,11 @@ export async function MessagesLink({ href, count }: { href: string; count: numbe
       href={href}
       aria-label={label}
       title={label}
-      className="relative flex size-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
+      className="relative inline-flex size-10 items-center justify-center rounded-full border border-outline-variant/30 bg-surface-container-low/60 text-on-surface-variant backdrop-blur-sm transition-all hover:bg-surface-container hover:text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 dark:bg-surface-container-high/40 dark:hover:bg-surface-container-highest/80"
     >
-      <MessageCircleIcon className="size-5" />
+      <MessageCircleIcon className="size-4" />
       {count > 0 && (
-        <span className="absolute end-1 top-1 flex min-w-4 items-center justify-center rounded-full bg-clay px-1 font-label-sm text-[10px] leading-4 text-on-primary">
+        <span className="absolute -top-1 -end-1 flex min-w-4 h-4 items-center justify-center rounded-full bg-primary px-1 font-mono text-[10px] font-bold text-on-primary ring-2 ring-surface shadow-xs">
           {format.number(Math.min(count, 99))}
         </span>
       )}

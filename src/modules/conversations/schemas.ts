@@ -49,12 +49,10 @@ export type EscalateValues = z.input<typeof escalateSchema>;
 
 export const staffReplySchema = z.object({ conversationId: z.number().int().positive(), body: body(MESSAGE_MAX) });
 
+/** Typed as text in the form; the server receives the number the form already parsed. */
 const wholeNumber = (min: number, max: number) =>
   z
-    .string()
-    .trim()
-    .regex(/^\d{1,6}$/, "number")
-    .transform(Number)
+    .union([z.number(), z.string().trim().regex(/^\d{1,6}$/, "number").transform(Number)])
     .pipe(z.number().int().min(min).max(max));
 
 /** The studio's assistant settings. The key is write-only: empty keeps the stored one. */

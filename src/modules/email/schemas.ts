@@ -12,11 +12,9 @@ export const emailSettingsSchema = z
   .object({
     provider: z.enum(["outbox", "smtp"]),
     host: z.string().trim().max(200),
+    // Typed as text in the form; the server action receives the number the form already parsed.
     port: z
-      .string()
-      .trim()
-      .regex(/^\d{1,5}$/, "port")
-      .transform(Number)
+      .union([z.number(), z.string().trim().regex(/^\d{1,5}$/, "port").transform(Number)])
       .pipe(z.number().int().min(1).max(65535)),
     security: z.enum(smtpSecurities),
     user: z.string().trim().max(200),

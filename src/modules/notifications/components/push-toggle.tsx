@@ -13,7 +13,6 @@ import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,49 +107,48 @@ export function PushToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative h-10 w-10 rounded-full transition-transform active:scale-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          aria-label={status === "on" ? t("disable") : t("enable")}
+        <button
+          type="button"
           disabled={isPending}
+          aria-label={status === "on" ? t("disable") : t("enable")}
+          className="relative inline-flex size-10 items-center justify-center rounded-full border border-outline-variant/30 bg-surface-container-low/60 text-on-surface-variant backdrop-blur-sm transition-all hover:bg-surface-container hover:text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:bg-surface-container-high/40 dark:hover:bg-surface-container-highest/80"
         >
           {isPending ? (
-            <Loader2Icon className="h-5 w-5 animate-spin text-muted-foreground" />
+            <Loader2Icon className="size-4 animate-spin text-on-surface-variant" />
           ) : status === "on" ? (
-            <BellRingIcon className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            <BellRingIcon className="size-4 text-primary" />
           ) : status === "off" ? (
-            <BellIcon className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+            <BellIcon className="size-4 text-on-surface-variant" />
           ) : (
-            <BellOffIcon className="h-5 w-5 text-amber-500/80" />
+            <BellOffIcon className="size-4 text-clay" />
           )}
 
-          {/* Glowing Status Dot */}
+          {/* Active status indicator pip */}
           {status === "on" && (
-            <span className="absolute right-2 top-2 flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="absolute end-1.5 top-1.5 flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/60 opacity-75" />
+              <span className="relative inline-flex size-2 rounded-full bg-primary ring-2 ring-surface" />
             </span>
           )}
-        </Button>
+        </button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
         align="end"
-        className="w-80 rounded-xl p-2 shadow-lg ring-1 ring-black/5 dark:ring-white/10"
+        className="w-80 rounded-2xl border border-hairline bg-surface/95 p-2 shadow-ambient backdrop-blur-md"
       >
         {/* Card Header with Status Summary */}
         <DropdownMenuLabel className="p-3 font-normal">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                <BellIcon className="h-4 w-4" />
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-surface-container text-primary">
+                <BellIcon className="size-4" />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <p className="font-label-sm text-[10px] font-bold uppercase tracking-wider text-outline">
                   Push Notifications
                 </p>
-                <p className="text-xs font-medium text-foreground">
+                <p className="font-headline-sm text-xs font-medium text-on-surface">
                   {status === "on"
                     ? "Active Subscribed"
                     : status === "off"
@@ -164,12 +162,12 @@ export function PushToggle() {
 
             <Badge
               variant="outline"
-              className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${
+              className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
                 status === "on"
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  ? "border-primary/30 bg-primary/10 text-primary"
                   : status === "off"
-                  ? "border-slate-300 bg-slate-100 text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
-                  : "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                  ? "border-outline-variant/30 bg-surface-container text-on-surface-variant"
+                  : "border-clay/30 bg-clay/10 text-clay"
               }`}
             >
               {status}
@@ -181,15 +179,15 @@ export function PushToggle() {
 
         {/* State Information / Callouts */}
         {status === "unsupported" && (
-          <div className="m-1 flex items-start gap-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 text-xs text-amber-600 dark:text-amber-400">
-            <AlertCircleIcon className="h-4 w-4 shrink-0 mt-0.5" />
+          <div className="m-1 flex items-start gap-2.5 rounded-xl border border-clay/30 bg-clay/10 p-3 text-xs text-clay">
+            <AlertCircleIcon className="size-4 shrink-0 mt-0.5" />
             <p className="leading-relaxed">{t("unsupported")}</p>
           </div>
         )}
 
         {status === "blocked" && (
-          <div className="m-1 flex items-start gap-2.5 rounded-lg border border-rose-500/20 bg-rose-500/5 p-3 text-xs text-rose-600 dark:text-rose-400">
-            <AlertCircleIcon className="h-4 w-4 shrink-0 mt-0.5" />
+          <div className="m-1 flex items-start gap-2.5 rounded-xl border border-error/30 bg-error/10 p-3 text-xs text-error">
+            <AlertCircleIcon className="size-4 shrink-0 mt-0.5" />
             <p className="leading-relaxed">{t("blocked")}</p>
           </div>
         )}
@@ -200,9 +198,9 @@ export function PushToggle() {
             <DropdownMenuItem
               onSelect={turnOn}
               disabled={isPending}
-              className="rounded-lg cursor-pointer py-2.5 text-xs font-semibold text-violet-600 focus:bg-violet-500/10 focus:text-violet-700 dark:text-violet-400 flex items-center gap-2.5"
+              className="flex cursor-pointer items-center gap-2.5 rounded-xl py-2.5 text-xs font-semibold text-primary focus:bg-primary/10 focus:text-primary"
             >
-              <CheckCircle2Icon className="h-4 w-4" />
+              <CheckCircle2Icon className="size-4" />
               <span>{t("enable")}</span>
             </DropdownMenuItem>
           )}
@@ -212,9 +210,9 @@ export function PushToggle() {
               <DropdownMenuItem
                 onSelect={sendTest}
                 disabled={isPending}
-                className="rounded-lg cursor-pointer py-2 text-xs font-medium flex items-center gap-2.5"
+                className="flex cursor-pointer items-center gap-2.5 rounded-xl py-2 text-xs font-medium text-on-surface focus:bg-surface-container"
               >
-                <SendIcon className="h-4 w-4 text-muted-foreground" />
+                <SendIcon className="size-4 text-on-surface-variant" />
                 <span>{t("sendTest")}</span>
               </DropdownMenuItem>
 
@@ -223,9 +221,9 @@ export function PushToggle() {
               <DropdownMenuItem
                 onSelect={turnOff}
                 disabled={isPending}
-                className="rounded-lg cursor-pointer py-2 text-xs font-medium text-destructive focus:bg-destructive/10 focus:text-destructive flex items-center gap-2.5"
+                className="flex cursor-pointer items-center gap-2.5 rounded-xl py-2 text-xs font-medium text-error focus:bg-error/10 focus:text-error"
               >
-                <BellOffIcon className="h-4 w-4" />
+                <BellOffIcon className="size-4" />
                 <span>{t("disable")}</span>
               </DropdownMenuItem>
             </>

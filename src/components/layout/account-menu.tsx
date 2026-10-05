@@ -92,11 +92,11 @@ export function AccountMenu({
       type="button"
       disabled={isPending}
       aria-label={t("menu")}
-      className="rounded-full transition-transform focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
+      className="rounded-full transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95"
     >
-      <Avatar className="size-10 ring-2 ring-primary-container/20">
+      <Avatar className="size-10 border border-outline-variant/30 ring-2 ring-transparent transition-all hover:ring-primary/40">
         {user.image && <AvatarImage src={user.image} alt="" />}
-        <AvatarFallback className="bg-primary-container font-label-lg text-label-lg text-on-primary">
+        <AvatarFallback className="bg-primary-container font-headline-sm text-sm font-semibold text-on-primary">
           {initial}
         </AvatarFallback>
       </Avatar>
@@ -108,10 +108,10 @@ export function AccountMenu({
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
-        <DrawerContent className="max-h-[88svh] overflow-y-auto border-t border-hairline bg-surface px-4 pb-safe pt-2">
+        <DrawerContent className="border-t border-hairline bg-surface p-0">
           <DrawerTitle className="sr-only">{t("menu")}</DrawerTitle>
-
-          {/* Profile header card */}
+          <div className="max-h-[85svh] overflow-y-auto overscroll-contain px-4 pb-safe pt-2">
+            {/* Profile header card */}
           <div className="flex items-center gap-3.5 rounded-2xl bg-surface-container-low p-3.5">
             <Avatar className="size-12 ring-2 ring-primary/20">
               {user.image && <AvatarImage src={user.image} alt="" />}
@@ -209,6 +209,7 @@ export function AccountMenu({
               <LogOutIcon className="size-4" />
               {t("signOut")}
             </button>
+          </div>
           </div>
         </DrawerContent>
       </Drawer>
