@@ -555,7 +555,12 @@
     "membership": "Membership",
     "studio": "Studio",
     "signOut": "Sign out",
-    "profile": "Profile"
+    "profile": "Profile",
+    "darkMode": "Dark mode",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
   },
   "TestMode": {
     "checkout": {
@@ -1248,6 +1253,18 @@
       "save": "Save changes",
       "saved": "Profile saved",
       "error": "Couldn’t save — please check your name."
+    },
+    "appearance": {
+      "title": "Appearance & theme",
+      "body": "Customize your visual atmosphere for yoga and meditation.",
+      "themeLabel": "Visual theme",
+      "quickToggle": "Dark mode",
+      "light": "Light",
+      "lightDesc": "Warm sanctuary day tones",
+      "dark": "Dark",
+      "darkDesc": "Soft contrast for evening and resting eyes",
+      "system": "System",
+      "systemDesc": "Follows your device preferences"
     },
     "security": {
       "title": "Change password",

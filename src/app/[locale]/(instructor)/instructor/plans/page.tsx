@@ -106,6 +106,8 @@ export default async function StudioPlansPage({
         prices: editRow.prices,
         intervalMonths: editRow.intervalMonths,
         trialDays: editRow.trialDays,
+        guidance: editRow.guidance,
+        guidancePlaces: editRow.guidancePlaces,
       }
     : creating
       ? { id: null, ...blankPlanFields() }

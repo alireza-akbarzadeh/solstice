@@ -43,6 +43,8 @@ const toPlan = (
   prices,
   intervalMonths: row.intervalMonths,
   trialDays: row.trialDays,
+  guidance: row.guidance,
+  guidancePlaces: row.guidancePlaces,
   };
 };
 

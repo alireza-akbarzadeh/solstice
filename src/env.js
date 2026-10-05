@@ -43,6 +43,11 @@ export const env = createEnv({
     SMTP_PASSWORD: z.string().optional(),
     EMAIL_FROM: z.string().email().optional(),
 
+    // The AI assistant is set up in the studio (/instructor/inbox/settings). A key here wins over
+    // the studio's; get a free one at https://aistudio.google.com/apikey.
+    GEMINI_API_KEY: z.string().optional(),
+    GEMINI_MODEL: z.string().optional(),
+
     // Which VideoProvider serves practice video. "mock" plays a media URL with our own
     // player; "youtube"/"aparat" embed the platform's player. None of them can gate
     // members-only video — that needs a paid provider with signed URLs.
@@ -113,6 +118,10 @@ export const env = createEnv({
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
 
     EMAIL_FROM: process.env.EMAIL_FROM,
+
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+
+    GEMINI_MODEL: process.env.GEMINI_MODEL,
 
     VIDEO_PROVIDER: process.env.VIDEO_PROVIDER,
 

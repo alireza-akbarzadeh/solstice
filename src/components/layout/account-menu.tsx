@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { authClient } from "@/server/better-auth/client";
 
 import { memberNavItems } from "./nav-items";
+import { AccountThemeToggle } from "@/components/theme/theme-toggle";
 
 export type AccountStatus = "member" | "trial" | "instructor" | "none";
 
@@ -131,6 +132,10 @@ export function AccountMenu({ user, status }: { user: { name: string; email: str
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
+        <DropdownMenuSeparator />
+        <div className="px-1 py-1">
+          <AccountThemeToggle />
+        </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={signOut} disabled={isPending} variant="destructive" className="cursor-pointer rounded-lg py-2">
           <LogOutIcon />

@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * Theme source: Stitch project "Sanctuary Yoga Studio" (design/stitch/DESIGN.md).
@@ -265,46 +265,87 @@
 
 /* Stitch ships light only; this is a warm counterpart derived from its inverse tokens. */
 .dark {
-  --surface: #1d1b19;
-  --surface-dim: #151412;
-  --surface-bright: #3a3835;
-  --surface-container-lowest: #181715;
-  --surface-container-low: #22201e;
-  --surface-container: #272523;
-  --surface-container-high: #32302e;
-  --surface-container-highest: #3d3b38;
+  color-scheme: dark;
+
+  --surface: #191715;
+  --surface-dim: #131210;
+  --surface-bright: #363431;
+  --surface-container-lowest: #141311;
+  --surface-container-low: #1e1c1a;
+  --surface-container: #242220;
+  --surface-container-high: #2e2c29;
+  --surface-container-highest: #393633;
   --surface-variant: #444842;
-  --on-surface: #e7e1de;
-  --on-surface-variant: #c4c8bf;
-  --inverse-surface: #e7e1de;
+  --surface-tint: #baccb4;
+  --on-surface: #e8e2de;
+  --on-surface-variant: #c3c7bf;
+  --inverse-surface: #e8e2de;
   --inverse-on-surface: #32302e;
   --inverse-primary: #3c4b39;
-  --outline: #8e928a;
-  --outline-variant: #444842;
-  --hairline: #3a3733;
-  --primary-container: #3b4b39;
+  --outline: #8d9289;
+  --outline-variant: #434841;
+  --hairline: #302e2a;
+  --primary-container: #334331;
   --on-primary-container: #d6e8d0;
+  --primary-fixed: #d6e8d0;
+  --primary-fixed-dim: #baccb4;
+  --on-primary-fixed: #111f10;
+  --on-primary-fixed-variant: #3b4b39;
   --clay: #e0c299;
   --on-clay: #281901;
-  --secondary-container: #584324;
+  --secondary-container: #4f3b21;
   --on-secondary-container: #fddeb3;
+  --secondary-fixed: #fddeb3;
+  --secondary-fixed-dim: #e0c299;
+  --on-secondary-fixed: #281901;
+  --on-secondary-fixed-variant: #584324;
   --tertiary: #ffb4a4;
   --on-tertiary: #3b0902;
-  --tertiary-container: #743326;
+  --tertiary-container: #5d251b;
   --on-tertiary-container: #ffdad3;
+  --tertiary-fixed: #ffdad3;
+  --tertiary-fixed-dim: #ffb4a4;
+  --on-tertiary-fixed: #3b0902;
+  --on-tertiary-fixed-variant: #743326;
   --on-error: #690005;
   --error-container: #93000a;
   --on-error-container: #ffdad6;
 
+  --background: var(--surface);
+  --foreground: var(--on-surface);
   --card: var(--surface-container-low);
+  --card-foreground: var(--on-surface);
   --popover: var(--surface-container);
+  --popover-foreground: var(--on-surface);
   --primary: #baccb4;
   --primary-foreground: #111f10;
+  --secondary: var(--surface-container);
+  --secondary-foreground: var(--on-surface);
+  --muted: var(--surface-container-low);
+  --muted-foreground: var(--on-surface-variant);
+  --accent: var(--surface-container-high);
+  --accent-foreground: var(--on-surface);
   --destructive: #ffb4ab;
+  --border: var(--hairline);
   --input: var(--outline-variant);
   --ring: var(--primary-fixed-dim);
+  --sidebar: var(--surface-container-low);
+  --sidebar-foreground: var(--on-surface);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--surface-container-high);
+  --sidebar-accent-foreground: var(--on-surface);
+  --sidebar-border: var(--hairline);
+  --sidebar-ring: var(--primary-container);
+  --chart-1: #baccb4;
+  --chart-2: #e0c299;
+  --chart-3: #ffb4a4;
+  --chart-4: #5a6e57;
+  --chart-5: #a68c6a;
+
+  --shadow-ambient: 0 12px 36px -4px rgb(0 0 0 / 0.45),
+    0 4px 16px -2px rgb(0 0 0 / 0.3);
+  --shadow-bloom: 0 16px 40px -6px rgb(0 0 0 / 0.5);
 }
 
 @layer base {

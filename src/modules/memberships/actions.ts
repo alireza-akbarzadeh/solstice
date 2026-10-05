@@ -8,6 +8,7 @@ import { getPathname, redirect } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { gatewayOf, providerFor, type PaymentProvider } from "@/infrastructure/payment";
 import { safeNextPath, withNext } from "@/lib/safe-next";
+import { hasPlaceFor } from "@/modules/conversations/server/guidance";
 import { getPaymentMethods, getProviderCurrency, methodsFor } from "@/modules/payments/server/routing";
 
 import { getAllPlans } from "./server/plans";
@@ -38,6 +39,8 @@ export async function startCheckout(formData: FormData) {
   }
   if (viewer.hasAccess) return redirect({ href: next, locale });
   if (!plan) return redirect({ href: withNext("/membership", next), locale });
+  // Every guidance place on the plan is taken: back to the plans with a note.
+  if (!(await hasPlaceFor(plan, viewer.membership))) return redirect({ href: withNext(`/membership?plan=${plan.id}&full=1`, next), locale });
 
   // The visitor's pick wins over the country's preselection, as long as it can sell the plan.
   const usable = methodsFor((await getPaymentMethods()).methods, plan);
@@ -160,6 +163,7 @@ export async function changePlan(formData: FormData) {
   const plan = await activePlan(formData.get("plan"));
   const viewer = await getViewer();
   if (!viewer.user || !viewer.membership || !plan) return redirect({ href: "/profile", locale });
+  if (!(await hasPlaceFor(plan, viewer.membership))) return redirect({ href: "/profile?full=1", locale });
   // A member stays with the gateway (and so the currency) they pay through.
   const currency = await getProviderCurrency(viewer.membership.provider);
   const price = plan.prices[currency];

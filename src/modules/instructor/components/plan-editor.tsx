@@ -87,10 +87,13 @@ export function PlanEditor({
       ),
       intervalMonths: plan.intervalMonths,
       trialDays: String(plan.trialDays),
+      guidance: plan.guidance,
+      guidancePlaces: String(plan.guidancePlaces),
     },
   });
   const features = useFieldArray({ control: form.control, name: "features" });
   const onSale = form.watch("status") === "active";
+  const guidance = form.watch("guidance");
   const saving = form.formState.isSubmitting;
 
   const fail = (result: PlanResult) => {
@@ -458,6 +461,45 @@ export function PlanEditor({
             )}
           />
         </div>
+
+        <section className="gap-space-md bg-surface p-space-md flex flex-col rounded-lg">
+          <Controller
+            control={form.control}
+            name="guidance"
+            render={({ field }) => (
+              <Field orientation="horizontal">
+                <FieldContent>
+                  <FieldLabel htmlFor="plan-guidance">{t("fields.guidance")}</FieldLabel>
+                  <FieldDescription>{t("fields.guidanceHint")}</FieldDescription>
+                </FieldContent>
+                <Switch id="plan-guidance" checked={field.value} onCheckedChange={field.onChange} />
+              </Field>
+            )}
+          />
+          {guidance && (
+            <Controller
+              control={form.control}
+              name="guidancePlaces"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid || undefined} className="max-w-xs">
+                  <FieldLabel htmlFor="plan-guidance-places">{t("fields.guidancePlaces")}</FieldLabel>
+                  <Input
+                    {...field}
+                    id="plan-guidance-places"
+                    inputMode="numeric"
+                    dir="ltr"
+                    aria-invalid={fieldState.invalid || undefined}
+                  />
+                  {fieldState.invalid ? (
+                    <FieldError>{t("validation.guidancePlaces")}</FieldError>
+                  ) : (
+                    <FieldDescription>{t("fields.guidancePlacesHint")}</FieldDescription>
+                  )}
+                </Field>
+              )}
+            />
+          )}
+        </section>
       </FieldGroup>
     </form>
   );

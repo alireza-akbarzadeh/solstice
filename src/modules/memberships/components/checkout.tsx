@@ -12,6 +12,7 @@ import {
   LockIcon,
   LockOpenIcon,
   MailIcon,
+  MessageCircleHeartIcon,
   XCircleIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -39,6 +40,8 @@ export type CheckoutPlan = {
   /** "Billed yearly after a 14-day free trial". */
   billing: string;
   trialDays: number;
+  /** Plans with 1:1 guidance: places left, and whether every place is taken (then it can't be chosen). */
+  guidance?: { note: string; full: boolean };
 };
 
 /** One way to pay (a gateway), with the plans it can sell priced in its currency. */
@@ -94,21 +97,25 @@ export function Checkout({
   const method = methods.find((m) => m.gateway === methodId) ?? methods[0]!;
   const { plans, zero, testMode, recurring } = method;
   // Switching method keeps the plan when the new method sells it.
-  const selected = plans.find((p) => p.id === planId) ?? plans.find((p) => p.id === method.featured) ?? plans[0]!;
+  const open = (p: CheckoutPlan) => !p.guidance?.full;
+  const selected =
+    plans.find((p) => p.id === planId && open(p)) ?? plans.find((p) => p.id === method.featured && open(p)) ?? plans.find(open) ?? plans[0]!;
   const trialDays = selected.trialDays;
   const hasTrial = trialDays > 0;
 
   const planCard = (plan: CheckoutPlan) => {
-    const active = selected.id === plan.id;
+    const full = !!plan.guidance?.full;
+    const active = selected.id === plan.id && !full;
     return (
       <label
         key={plan.id}
         className={cn(
-          "relative block cursor-pointer rounded-2xl p-6 transition-all duration-300 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary",
-          active ? "bg-surface-container-lowest shadow-ambient ring-1 ring-primary" : "bg-surface-container-low hover:bg-surface-container",
+          "relative block rounded-2xl p-6 transition-all duration-300 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary",
+          full ? "cursor-not-allowed bg-surface-container-low opacity-70" : "cursor-pointer",
+          active ? "bg-surface-container-lowest shadow-ambient ring-1 ring-primary" : !full && "bg-surface-container-low hover:bg-surface-container",
         )}
       >
-        <input type="radio" name="plan" value={plan.id} checked={active} onChange={() => setPlanId(plan.id)} className="sr-only" />
+        <input type="radio" name="plan" value={plan.id} checked={active} disabled={full} onChange={() => setPlanId(plan.id)} className="sr-only" />
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2">
@@ -137,6 +144,17 @@ export function Checkout({
           {plan.perMonth && <span className="font-body-sm text-body-sm text-on-surface-variant">· {plan.perMonth}</span>}
           <span className="w-full font-body-sm text-body-sm text-on-surface-variant">{plan.billing}</span>
         </div>
+        {plan.guidance && (
+          <p
+            className={cn(
+              "mt-4 flex items-center gap-2 font-label-md text-label-md",
+              full ? "text-on-surface-variant" : "text-primary",
+            )}
+          >
+            <MessageCircleHeartIcon className="size-4 shrink-0" />
+            {plan.guidance.note}
+          </p>
+        )}
         {plan.features.length > 0 && (
           <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {plan.features.map((text, index) => (

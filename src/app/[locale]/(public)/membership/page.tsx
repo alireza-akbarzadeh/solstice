@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { routing } from "@/i18n/routing";
 import { safeNextPath } from "@/lib/safe-next";
+import { getGuidancePlaces, isFull } from "@/modules/conversations/server/guidance";
 import { Checkout, type CheckoutMethod } from "@/modules/memberships/components/checkout";
 import { MembershipStatus } from "@/modules/memberships/components/membership-status";
 import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
@@ -28,12 +29,21 @@ export default async function MembershipPage({ params, searchParams }: PageProps
 
   const query = await searchParams;
   const next = safeNextPath(query.next, "/practices");
-  const [t, tBrand, viewer, { methods, country }] = await Promise.all([
+  const [t, tBrand, viewer, { methods, country }, places] = await Promise.all([
     getTranslations("Membership"),
     getTranslations("Brand"),
     getViewer(),
     getPaymentMethods(),
+    getGuidancePlaces(locale),
   ]);
+  // Plans with 1:1 guidance say how many places are left; a full one can't be chosen.
+  const guidanceOf = (planId: string) => {
+    const p = places.find((entry) => entry.planId === planId);
+    if (!p) return undefined;
+    const full = isFull(p);
+    const note = p.places === 0 ? t("guidance.unlimited") : full ? t("guidance.full", { places: p.places }) : t("guidance.left", { left: p.places - p.used, places: p.places });
+    return { note, full };
+  };
 
   if (viewer.hasAccess) {
     return (
@@ -57,7 +67,10 @@ export default async function MembershipPage({ params, searchParams }: PageProps
       cards: method.cards,
       zero: money(0),
       featured: catalog.featured?.id ?? null,
-      plans: catalog.plans.map((plan) => describe(firstTime ? plan : { ...plan, trialDays: 0 }, { byHand })),
+      plans: catalog.plans.map((plan) => ({
+        ...describe(firstTime ? plan : { ...plan, trialDays: 0 }, { byHand }),
+        guidance: guidanceOf(plan.id),
+      })),
       testMode: method.provider.testMode,
       recurring: !byHand,
     });
@@ -77,9 +90,10 @@ export default async function MembershipPage({ params, searchParams }: PageProps
     offers.find((o) => o.gateway === query.method && (!query.plan || o.plans.some((p) => p.id === query.plan))) ??
     offers.find((o) => o.plans.some((p) => p.id === query.plan)) ??
     offers[0]!;
-  const requested = initial.plans.find((plan) => plan.id === query.plan);
-  const featured = initial.plans.find((plan) => plan.id === initial.featured);
-  const initialPlan = (requested ?? featured ?? initial.plans[0]!).id;
+  const open = (plan: { guidance?: { full: boolean } }) => !plan.guidance?.full;
+  const requested = initial.plans.find((plan) => plan.id === query.plan && open(plan));
+  const featured = initial.plans.find((plan) => plan.id === initial.featured && open(plan));
+  const initialPlan = (requested ?? featured ?? initial.plans.find(open) ?? initial.plans[0]!).id;
   const trialDays = (requested ?? featured)?.trialDays ?? 0;
   const gatewayDown = query.payment === "unavailable";
 
@@ -104,6 +118,12 @@ export default async function MembershipPage({ params, searchParams }: PageProps
             </span>
           )}
         </div>
+
+        {query.full === "1" && (
+          <div role="alert" className="mb-space-md rounded-xl bg-secondary-fixed p-4 font-body-sm text-body-sm text-on-secondary-fixed">
+            {t("guidance.fullNotice")}
+          </div>
+        )}
 
         {gatewayDown && (
           <div role="alert" className="mb-space-md rounded-xl bg-error-container p-4 font-body-sm text-body-sm text-on-error-container">

@@ -31,6 +31,10 @@ export type MembershipPlan = {
   prices: PlanPrices;
   intervalMonths: number;
   trialDays: number;
+  /** Members on this plan can ask the instructor 1:1 (/guidance). */
+  guidance: boolean;
+  /** Members the plan takes while guidance is on; 0 = no limit. */
+  guidancePlaces: number;
 };
 
 export type PlanPrices = Partial<Record<Currency, number>>;

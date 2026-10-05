@@ -16,6 +16,7 @@ import { getDirection } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
 import { isActivePath, memberNavItems, publicNavItems } from "./nav-items";
+import { AccountThemeToggle } from "@/components/theme/theme-toggle";
 
 export function MobileNav({
   signedIn,
@@ -124,6 +125,9 @@ export function MobileNav({
             )}
           </nav>
         )}
+        <div className="mt-space-md border-t border-hairline pt-space-sm">
+          <AccountThemeToggle />
+        </div>
         {!signedIn && (
           <div className="gap-space-sm mt-auto flex flex-col">
             <Link

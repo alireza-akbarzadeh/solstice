@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 
 import { PwaUpdatePrompt } from "@/components/pwa/pwa-update-prompt";
 import { PwaUpdateProvider } from "@/components/pwa/pwa-update-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import { DirectionProvider } from "@/components/ui/direction";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/env";
@@ -25,7 +26,10 @@ export function generateStaticParams() {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#fef8f4",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fef8f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#191715" },
+  ],
   // The bottom tab bar sits against the home indicator, so the page must reach under it and
   // pad itself back with env(safe-area-inset-*) — see `pb-safe` in globals.css.
   viewportFit: "cover",
@@ -66,14 +70,21 @@ export default async function LocaleLayout({ children, params }: Props) {
     >
       <body className="flex min-h-svh flex-col">
         <NextIntlClientProvider>
-          <DirectionProvider dir={dir}>
-            <PwaUpdateProvider>
-              <PagePreviewBanner />
-              {children}
-              <Toaster />
-              <PwaUpdatePrompt />
-            </PwaUpdateProvider>
-          </DirectionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <DirectionProvider dir={dir}>
+              <PwaUpdateProvider>
+                <PagePreviewBanner />
+                {children}
+                <Toaster />
+                <PwaUpdatePrompt />
+              </PwaUpdateProvider>
+            </DirectionProvider>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

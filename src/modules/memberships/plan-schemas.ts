@@ -12,6 +12,7 @@ const required = (max: number) =>
 
 const price = z.number().finite().min(0).max(1_000_000_000).multipleOf(0.01);
 const trialDays = z.number().int().min(0).max(90);
+const guidancePlaces = z.number().int().min(0).max(10_000);
 
 const planFieldsObject = z.object({
   status: z.enum(["active", "hidden"]),
@@ -28,6 +29,8 @@ const planFieldsObject = z.object({
     .int()
     .refine((n) => (billingIntervals as readonly number[]).includes(n)),
   trialDays,
+  guidance: z.boolean(),
+  guidancePlaces,
 });
 
 /** A hidden plan can't be the recommended one. */
@@ -51,6 +54,8 @@ export const blankPlanFields = (): PlanFields => ({
   prices: {},
   intervalMonths: 1,
   trialDays: 0,
+  guidance: false,
+  guidancePlaces: 0,
 });
 
 // Persian keyboards type ۰–۹ and "٫" for the decimal point; the studio accepts either.
@@ -90,6 +95,7 @@ export const planFormSchema = planFieldsObject
     price: numberText(price),
     prices: optionalPrices,
     trialDays: numberText(trialDays),
+    guidancePlaces: numberText(guidancePlaces),
   })
   .transform(hiddenIsNotFeatured);
 export type PlanFormValues = z.input<typeof planFormSchema>;

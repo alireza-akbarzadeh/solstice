@@ -11,6 +11,7 @@ import { providerFor } from "@/infrastructure/payment";
 import { BillingHistory } from "@/modules/memberships/components/billing-history";
 import { getMemberPayments } from "@/modules/memberships/server/billing";
 import { cn } from "@/lib/utils";
+import { getFullPlanIds } from "@/modules/conversations/server/guidance";
 import { cancelMembership, changePlan, renewMembership, resumeMembership } from "@/modules/memberships/actions";
 import { RenewalNotice } from "@/modules/memberships/components/renewal-notice";
 import { localize } from "@/lib/localized";
@@ -22,6 +23,7 @@ import { getAllPlans } from "@/modules/memberships/server/plans";
 import { requireUser } from "@/modules/memberships/server/viewer";
 import { getCompletions } from "@/modules/progress/server/completions";
 import { DeleteAccount, PasswordForm, ProfileForm } from "@/modules/users/components/account-forms";
+import { ProfileAppearanceSection } from "@/components/theme/theme-toggle";
 import { type PracticeRhythm, practiceRhythms } from "@/modules/users/types";
 import { getSession } from "@/server/better-auth/server";
 
@@ -59,6 +61,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
     getAllPlans(),
     getMemberPayments(viewer.user.id).catch(() => []),
   ]);
+  const fullPlans = await getFullPlanIds();
   const user = session!.user;
   const rhythm: PracticeRhythm = practiceRhythms.includes(user.practiceRhythm as PracticeRhythm) ? (user.practiceRhythm as PracticeRhythm) : "morning";
   const membership = viewer.membership;
@@ -66,7 +69,8 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   // The member's own plan may since have been hidden from sale; it still describes what they pay.
   const found = membership ? allPlans.find((p) => p.id === membership.plan) : undefined;
   const plan = found && { ...found, price: found.prices[currency] ?? found.price };
-  const otherPlans = catalog.plans.filter((p) => p.id !== membership?.plan);
+  // A plan whose guidance places are all taken isn't offered as a switch.
+  const otherPlans = catalog.plans.filter((p) => p.id !== membership?.plan && !fullPlans.has(p.id));
   const minutes = completions.reduce((sum, c) => sum + c.minutes, 0);
   // Zarinpal and the like: the member pays each period with "Renew"; nothing is charged by itself.
   const byHand = renewsByHand(membership);
@@ -284,10 +288,16 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
       )}
 
       {tab === "details" && (
-        <section className="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
-          <h2 className="mb-space-md font-headline-sm text-headline-sm text-primary">{t("details.title")}</h2>
-          <ProfileForm initial={{ name: user.name, email: user.email, practiceRhythm: rhythm, marketingOptIn: !!user.marketingOptIn }} />
-        </section>
+        <div className="space-y-space-lg">
+          <section className="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
+            <h2 className="mb-space-md font-headline-sm text-headline-sm text-primary">{t("details.title")}</h2>
+            <ProfileForm initial={{ name: user.name, email: user.email, practiceRhythm: rhythm, marketingOptIn: !!user.marketingOptIn }} />
+          </section>
+
+          <section className="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
+            <ProfileAppearanceSection />
+          </section>
+        </div>
       )}
 
       {tab === "security" && (

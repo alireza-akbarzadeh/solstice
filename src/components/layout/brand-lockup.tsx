@@ -10,7 +10,7 @@ export function BrandLockup({ name, studio, logoAlt }: Props) {
         alt={logoAlt}
         width={36}
         height={42}
-        className="h-[42px] w-9 shrink-0 object-contain"
+        className="h-[42px] w-9 shrink-0 object-contain dark:brightness-125 dark:contrast-105"
         sizes="36px"
         priority
         unoptimized
