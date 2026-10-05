@@ -195,6 +195,12 @@ To add a provider, implement `PaymentProvider` (`infrastructure/payment/types.ts
 
 Gateways are configured at `/instructor/payments` (sidebar → Business → Payments): switch Zarinpal and Stripe on, pick test / sandbox / live (sandbox and live unlock once the gateway's provider is registered in `infrastructure/payment/index.ts`), paste keys (sealed with `lib/secret-box.ts`; env vars override) and choose the gateway for visitors from Iran and for everyone else. Routing lives in `modules/payments/server/routing.ts` (`getPaymentMethods`, `methodsFor`, `getVisitorCurrency`, `getProviderCurrency`). A gateway is offered for a plan only when the plan has a price in its currency (`plan.prices`). In test mode the test panel's **Visitor country** switch pretends to be in Iran or elsewhere.
 
+Zarinpal (`providers/zarinpal.ts`) confirms on return and never renews by itself: members on it see **Renew** (a renewal checkout that starts where the current period ends), get an in-app notice in their last week and an email 3 days before the end from `/api/cron/renewal-reminders` (scheduled in `vercel.json`; set `CRON_SECRET` on Vercel — without it the job only runs in development). To test against Zarinpal's sandbox, set the gateway to **Sandbox** with any UUID as merchant ID; on the sandbox page **پرداخت** pays and **انصراف** declines.
+
+### Email and newsletters
+
+Mail goes through `sendEmail()` (`infrastructure/email`). Until SMTP is configured at `/instructor/email` it lands in the test mailbox (`/test/mailbox`). Any mailbox with SMTP works (Gmail needs an app password); `SMTP_*` and `EMAIL_FROM` env vars override the studio. Newsletters are written and sent from `/instructor/subscribers`; unsubscribe links are signed (`modules/newsletter/server/unsubscribe.ts`). On a new database run `pnpm db:seed:newsletter`.
+
 ### Database schema
 
 Tables live in `src/server/db/schema/`, one file per area (`auth`, `content`, `community`, `activity`, `messaging`, `memberships`, `payments`), re-exported from `index.ts`; import them from `@/server/db/schema`. Inside the folder, import siblings as `./auth.ts` (with the extension) and keep `@/…` imports type-only — the seed scripts load the schema straight from Node.

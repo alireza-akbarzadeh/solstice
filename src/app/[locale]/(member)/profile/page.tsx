@@ -11,11 +11,13 @@ import { providerFor } from "@/infrastructure/payment";
 import { BillingHistory } from "@/modules/memberships/components/billing-history";
 import { getMemberPayments } from "@/modules/memberships/server/billing";
 import { cn } from "@/lib/utils";
-import { cancelMembership, changePlan, resumeMembership } from "@/modules/memberships/actions";
+import { cancelMembership, changePlan, renewMembership, resumeMembership } from "@/modules/memberships/actions";
+import { RenewalNotice } from "@/modules/memberships/components/renewal-notice";
 import { localize } from "@/lib/localized";
 import { monthlyEquivalent } from "@/modules/memberships/plans";
 import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
 import { getProviderCurrency } from "@/modules/payments/server/routing";
+import { renewsByHand } from "@/modules/memberships/server/memberships";
 import { getAllPlans } from "@/modules/memberships/server/plans";
 import { requireUser } from "@/modules/memberships/server/viewer";
 import { getCompletions } from "@/modules/progress/server/completions";
@@ -66,6 +68,8 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   const plan = found && { ...found, price: found.prices[currency] ?? found.price };
   const otherPlans = catalog.plans.filter((p) => p.id !== membership?.plan);
   const minutes = completions.reduce((sum, c) => sum + c.minutes, 0);
+  // Zarinpal and the like: the member pays each period with "Renew"; nothing is charged by itself.
+  const byHand = renewsByHand(membership);
 
   const stats = [
     { icon: SparklesIcon, label: t("stats.sessions"), value: format.number(completions.length) },
@@ -78,6 +82,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   else if (membership) {
     const date = format.dateTime(membership.currentPeriodEnd, { dateStyle: "long" });
     if (!viewer.hasAccess) statusLine = membership.status === "past_due" ? t("status.pastDue") : t("status.ended", { date });
+    else if (byHand) statusLine = membership.status === "trialing" ? t("status.trialByHand", { date }) : t("status.paidThrough", { date });
     else if (membership.cancelAtPeriodEnd) statusLine = t("status.canceling", { date });
     else if (membership.status === "trialing") statusLine = t("status.trial", { date });
     else statusLine = t("status.renews", { date });
@@ -138,6 +143,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
 
       {tab === "membership" && (
         <section className="space-y-space-lg">
+          <RenewalNotice viewer={viewer} back="/profile" />
           {membership ? (
             <div className="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
               <div className="grid grid-cols-1 items-start gap-space-lg lg:grid-cols-12">
@@ -179,15 +185,15 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
                       <dt className="text-on-surface-variant">{t("ledger.method")}</dt>
                       <dd className="flex items-center gap-1.5 font-medium text-primary">
                         <CreditCardIcon className="size-4" />
-                        {providerFor(membership?.provider)?.testMode ? t("ledger.testCard") : t("ledger.onFile")}
+                        {byHand ? t("ledger.byHand") : providerFor(membership?.provider)?.testMode ? t("ledger.testCard") : t("ledger.onFile")}
                       </dd>
                     </div>
                     <div className="flex items-center justify-between gap-3">
-                      <dt className="text-on-surface-variant">{membership.cancelAtPeriodEnd ? t("ledger.accessUntil") : t("ledger.nextDate")}</dt>
+                      <dt className="text-on-surface-variant">{membership.cancelAtPeriodEnd || byHand ? t("ledger.accessUntil") : t("ledger.nextDate")}</dt>
                       <dd className="font-medium text-primary">{format.dateTime(membership.currentPeriodEnd, { dateStyle: "long" })}</dd>
                     </div>
                     <div className="flex items-center justify-between gap-3">
-                      <dt className="text-on-surface-variant">{t("ledger.amount")}</dt>
+                      <dt className="text-on-surface-variant">{byHand ? t("ledger.nextPeriod") : t("ledger.amount")}</dt>
                       <dd className="font-medium text-primary">{membership.cancelAtPeriodEnd || !plan ? "—" : money(plan.price)}</dd>
                     </div>
                     <div className="flex items-center justify-between gap-3">
@@ -245,7 +251,18 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
             </div>
           )}
 
-          {membership && viewer.hasAccess && (
+          {membership && viewer.hasAccess && byHand && (
+            <div className="flex flex-col justify-between gap-3 px-2 pt-space-sm sm:flex-row sm:items-center">
+              <p className="font-body-sm text-body-sm text-outline">{t("plan.renewNote")}</p>
+              <form action={renewMembership}>
+                <input type="hidden" name="back" value="/profile" />
+                <button type="submit" className="font-label-sm text-label-sm tracking-wider text-primary uppercase underline-offset-4 hover:underline">
+                  {membership.status === "trialing" ? t("plan.payNow") : t("plan.renewNow")}
+                </button>
+              </form>
+            </div>
+          )}
+          {membership && viewer.hasAccess && !byHand && (
             <div className="flex flex-col justify-between gap-3 px-2 pt-space-sm sm:flex-row sm:items-center">
               <p className="font-body-sm text-body-sm text-outline">{membership.cancelAtPeriodEnd ? t("plan.resumeNote") : t("plan.cancelNote")}</p>
               <form action={membership.cancelAtPeriodEnd ? resumeMembership : cancelMembership}>

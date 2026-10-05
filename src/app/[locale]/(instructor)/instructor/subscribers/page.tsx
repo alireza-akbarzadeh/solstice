@@ -27,11 +27,15 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { routing } from "@/i18n/routing";
+import { emailTestMode } from "@/infrastructure/email";
+import { localize } from "@/lib/localized";
+import { NewsletterComposer } from "@/modules/instructor/components/newsletter-composer";
 import { StatCard } from "@/modules/instructor/components/stat-card";
 import { StudioPageHeader } from "@/modules/instructor/components/studio-page-header";
 import { StudioSearch } from "@/modules/instructor/components/studio-search";
 import { SubscriberList } from "@/modules/instructor/components/subscriber-list";
 import { requireInstructor } from "@/modules/memberships/server/viewer";
+import { listIssues } from "@/modules/newsletter/server/issues";
 import {
   getSubscriberStats,
   listSubscribers,
@@ -50,6 +54,9 @@ export async function generateMetadata({
 
 // No Stitch screen. Addresses captured by the footer and journal forms; sending waits for a
 // real EmailProvider, so for now the list is exported and used in a mailing tool.
+// Sending a newsletter runs in this page's server action, one message per subscriber.
+export const maxDuration = 300;
+
 export default async function StudioSubscribersPage({
   params,
   searchParams,
@@ -64,11 +71,13 @@ export default async function StudioSubscribersPage({
   const trimmed = rawQ?.trim().slice(0, 200);
   const q = trimmed?.length ? trimmed : undefined;
 
-  const [t, format, stats, items] = await Promise.all([
+  const [t, format, stats, items, issues, mailbox] = await Promise.all([
     getTranslations("Studio.subscribers"),
     getFormatter(),
     getSubscriberStats(),
     listSubscribers({ q, limit: LIST_LIMIT }),
+    listIssues(10),
+    emailTestMode(),
   ]);
 
   const crumbItems: StudioCrumbItem[] = q ? [{ label: `“${q}”` }] : [];
@@ -106,6 +115,26 @@ export default async function StudioSubscribersPage({
           icon={LanguagesIcon}
         />
       </div>
+
+      {stats.total > 0 && !q && <NewsletterComposer subscribers={stats.total} mailbox={mailbox} />}
+
+      {issues.length > 0 && !q && (
+        <section className="flex flex-col gap-space-sm rounded-xl bg-surface-container-low p-space-md shadow-sm md:p-space-lg">
+          <h2 className="font-label-lg text-label-lg text-on-surface">{t("issues.title")}</h2>
+          <ul className="divide-y divide-outline-variant/30">
+            {issues.map((issue) => (
+              <li key={issue.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2.5">
+                <span className="min-w-0 truncate font-label-lg text-label-lg text-on-surface">{localize(issue.subject, locale)}</span>
+                <span className="font-body-sm text-body-sm text-on-surface-variant">
+                  {issue.sentAt
+                    ? t("issues.sent", { date: format.dateTime(issue.sentAt, { dateStyle: "medium", timeStyle: "short" }), count: issue.recipients, failed: issue.failed })
+                    : t("issues.sending")}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {stats.total === 0 ? (
         <Empty className="bg-surface-container-low rounded-xl">

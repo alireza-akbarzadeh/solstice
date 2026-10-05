@@ -30,8 +30,18 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
-    // Which EmailProvider sends mail. "outbox" stores messages for the test mailbox instead.
-    EMAIL_PROVIDER: z.enum(["outbox"]).default("outbox"),
+    // Bearer token Vercel Cron sends to /api/cron/* (set it in the Vercel project). Without it,
+    // scheduled jobs only run in development.
+    CRON_SECRET: z.string().optional(),
+
+    // Email delivery is chosen in the studio (/instructor/email). These SMTP settings win over the
+    // studio's when set; SMTP_HOST alone switches delivery to SMTP.
+    SMTP_HOST: z.string().optional(),
+    SMTP_PORT: z.coerce.number().int().positive().optional(),
+    SMTP_SECURITY: z.enum(["ssl", "starttls", "none"]).optional(),
+    SMTP_USER: z.string().optional(),
+    SMTP_PASSWORD: z.string().optional(),
+    EMAIL_FROM: z.string().email().optional(),
 
     // Which VideoProvider serves practice video. "mock" plays a media URL with our own
     // player; "youtube"/"aparat" embed the platform's player. None of them can gate
@@ -90,7 +100,19 @@ export const env = createEnv({
 
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
 
-    EMAIL_PROVIDER: process.env.EMAIL_PROVIDER,
+    CRON_SECRET: process.env.CRON_SECRET,
+
+    SMTP_HOST: process.env.SMTP_HOST,
+
+    SMTP_PORT: process.env.SMTP_PORT,
+
+    SMTP_SECURITY: process.env.SMTP_SECURITY,
+
+    SMTP_USER: process.env.SMTP_USER,
+
+    SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+
+    EMAIL_FROM: process.env.EMAIL_FROM,
 
     VIDEO_PROVIDER: process.env.VIDEO_PROVIDER,
 

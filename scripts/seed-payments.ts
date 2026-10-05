@@ -1,6 +1,7 @@
 // Creates the checkout, payment and payment-event tables used by the payment flow, and gives
-// plans a price per currency (13b). Additive and safe to re-run; existing plans get their one
-// price recorded under the site currency.
+// plans a price per currency (13b), and adds manual renewal (13c: renewal checkouts, reminder
+// tracking). Additive and safe to re-run; existing plans get their one price recorded under the
+// site currency.
 import postgres from "postgres";
 
 const TABLES = `
@@ -52,6 +53,9 @@ CREATE TABLE IF NOT EXISTS "solstice_payment_event" (
   "createdAt" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("provider", "eventId")
 );
+
+ALTER TABLE "solstice_checkout" ADD COLUMN IF NOT EXISTS "renewal" boolean NOT NULL DEFAULT false;
+ALTER TABLE "solstice_membership" ADD COLUMN IF NOT EXISTS "renewalReminderFor" timestamptz;
 
 ALTER TABLE "solstice_membership_plan" ADD COLUMN IF NOT EXISTS "prices" jsonb NOT NULL DEFAULT '{}'::jsonb;
 UPDATE "solstice_membership_plan" p

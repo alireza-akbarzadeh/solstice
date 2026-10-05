@@ -30,6 +30,8 @@ export const memberships = createTable(
     trialEndsAt: d.timestamp({ withTimezone: true }),
     currentPeriodEnd: d.timestamp({ withTimezone: true }).notNull(),
     cancelAtPeriodEnd: d.boolean().default(false).notNull(),
+    /** The period end a renewal reminder was sent for, so each period gets one (manual renewal only). */
+    renewalReminderFor: d.timestamp({ withTimezone: true }),
     createdAt: d
       .timestamp({ withTimezone: true })
       .$defaultFn(() => new Date())

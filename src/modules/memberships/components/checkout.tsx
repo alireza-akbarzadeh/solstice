@@ -51,6 +51,8 @@ export type CheckoutMethod = {
   featured: string | null;
   plans: CheckoutPlan[];
   testMode: boolean;
+  /** Renews by itself (Stripe); otherwise the member pays each period by hand (Zarinpal). */
+  recurring: boolean;
 };
 
 function SubmitButton({ label }: { label: string }) {
@@ -90,7 +92,7 @@ export function Checkout({
   const [methodId, setMethodId] = useState(initialMethod);
   const [planId, setPlanId] = useState(initialPlan);
   const method = methods.find((m) => m.gateway === methodId) ?? methods[0]!;
-  const { plans, zero, testMode } = method;
+  const { plans, zero, testMode, recurring } = method;
   // Switching method keeps the plan when the new method sells it.
   const selected = plans.find((p) => p.id === planId) ?? plans.find((p) => p.id === method.featured) ?? plans[0]!;
   const trialDays = selected.trialDays;
@@ -152,12 +154,14 @@ export function Checkout({
   // A reminder only makes sense when the trial is long enough to send one before it ends.
   const timeline = [
     { day: 0, icon: CalendarCheckIcon, title: t("timeline.arrivalTitle"), body: t("timeline.arrivalBody", { zero }) },
-    ...(trialDays > 2 ? [{ day: trialDays - 2, icon: MailIcon, title: t("timeline.noticeTitle"), body: t("timeline.noticeBody") }] : []),
+    ...(trialDays > 2
+      ? [{ day: trialDays - 2, icon: MailIcon, title: t("timeline.noticeTitle"), body: recurring ? t("timeline.noticeBody") : t("timeline.noticeBodyByHand") }]
+      : []),
     {
       day: trialDays,
       icon: InfinityIcon,
       title: t("timeline.renewTitle"),
-      body: t("timeline.renew", { price: selected.price, per: selected.per }),
+      body: recurring ? t("timeline.renew", { price: selected.price, per: selected.per }) : t("timeline.renewByHand", { price: selected.price, per: selected.per }),
     },
   ];
 
@@ -277,7 +281,9 @@ export function Checkout({
               </div>
             )}
             <div className="flex justify-between gap-4">
-              <dt className="text-on-surface-variant">{hasTrial ? t("checkout.renews", { days: trialDays }) : selected.name}</dt>
+              <dt className="text-on-surface-variant">
+                {hasTrial ? (recurring ? t("checkout.renews", { days: trialDays }) : t("checkout.thenByHand", { days: trialDays })) : selected.name}
+              </dt>
               <dd className="text-on-surface">
                 {selected.price} {selected.per}
               </dd>
@@ -290,7 +296,7 @@ export function Checkout({
               <dt>
                 <span className="block font-label-lg text-label-lg text-on-surface">{t("checkout.dueNow")}</span>
                 <span className="font-label-sm text-label-sm text-outline">
-                  {hasTrial ? t("checkout.firstCharge", { days: trialDays }) : t("checkout.firstChargeNow")}
+                  {hasTrial ? (recurring ? t("checkout.firstCharge", { days: trialDays }) : t("checkout.noCardNeeded")) : t("checkout.firstChargeNow")}
                 </span>
               </dt>
               <dd className="font-headline-md text-headline-md text-primary">{hasTrial ? zero : selected.price}</dd>
@@ -316,7 +322,7 @@ export function Checkout({
             <span aria-hidden>•</span>
             <span className="inline-flex items-center gap-1">
               <XCircleIcon className="size-3.5" />
-              {t("checkout.cancelAnytime")}
+              {recurring ? t("checkout.cancelAnytime") : t("checkout.noAutoCharge")}
             </span>
           </div>
         </div>

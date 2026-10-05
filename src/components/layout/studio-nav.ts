@@ -9,6 +9,7 @@ import {
   MegaphoneIcon,
   MessagesSquareIcon,
   NotebookPenIcon,
+  SendIcon,
   SettingsIcon,
   ShapesIcon,
   TagIcon,
@@ -42,6 +43,7 @@ export const studioNavGroups: readonly { label: StudioNavLabel; items: readonly 
       { href: "/instructor", label: "overview", icon: LayoutGridIcon, exact: true },
       { href: "/instructor/insights", label: "insights", icon: ChartColumnIcon },
       { href: "/instructor/settings", label: "settings", icon: SettingsIcon },
+      { href: "/instructor/email", label: "email", icon: SendIcon },
     ],
   },
   {

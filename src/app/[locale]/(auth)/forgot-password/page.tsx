@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { emailProvider } from "@/infrastructure/email";
+import { emailTestMode } from "@/infrastructure/email";
 import { AuthCard } from "@/modules/auth/components/auth-card";
 import { ForgotPasswordForm } from "@/modules/auth/components/recovery-forms";
 
@@ -25,7 +25,7 @@ export default async function ForgotPasswordPage({ params }: PageProps<"/[locale
 
   return (
     <AuthCard eyebrow={t("eyebrow")} title={t("forgotTitle")} lede={t("forgotLede")}>
-      <ForgotPasswordForm mailbox={emailProvider.testMode} />
+      <ForgotPasswordForm mailbox={await emailTestMode()} />
       <Link href="/sign-in" className="text-center font-label-md text-label-md text-on-surface-variant underline-offset-4 hover:text-primary hover:underline">
         {t("backToSignIn")}
       </Link>

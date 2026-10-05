@@ -454,7 +454,9 @@
       "noticeTitle": "Gentle notice",
       "noticeBody": "A reminder email before your trial concludes.",
       "renewTitle": "Deepened path",
-      "renew": "Renews at {price} {per} unless canceled online."
+      "renew": "Renews at {price} {per} unless canceled online.",
+      "noticeBodyByHand": "A reminder before your trial ends, with a link to pay.",
+      "renewByHand": "Then {price} {per}, paid by you when you choose — nothing is charged automatically."
     },
     "promise": {
       "label": "Founder’s personal promise",
@@ -477,7 +479,10 @@
       "cancelAnytime": "One-click cancel",
       "renews": "Renews on day {days, number}",
       "firstChargeNow": "Your first period starts today",
-      "ctaNow": "Join now for {price}"
+      "ctaNow": "Join now for {price}",
+      "thenByHand": "Then, if you continue (day {days, number})",
+      "noCardNeeded": "No card needed to start",
+      "noAutoCharge": "No automatic charges"
     },
     "active": {
       "title": "You’re a member",
@@ -487,7 +492,9 @@
       "instructor": "You have full access as the studio’s instructor.",
       "continue": "Continue your practice",
       "cancel": "Cancel membership",
-      "resume": "Keep my membership"
+      "resume": "Keep my membership",
+      "paidThrough": "Your {plan} is paid through {date}. It doesn't renew by itself — renew whenever you like.",
+      "renew": "Renew now"
     },
     "welcome": {
       "metaTitle": "Welcome",
@@ -528,6 +535,15 @@
       },
       "hint": "Prices are shown in the currency of the card you pick.",
       "suggestedIran": "Iranian card is selected because you seem to be in Iran. Paying with another card? Switch here."
+    },
+    "paidEvery": "{months, plural, =1 {Paid monthly} =12 {Paid yearly} other {Paid every # months}}, renewed by you",
+    "gatewayUnavailable": "The payment gateway couldn't be reached just now. Nothing was charged — please try again in a moment, or pick the other card type.",
+    "renewal": {
+      "title": "Your membership ends in {days, plural, =0 {less than a day} one {# day} other {# days}} ({date})",
+      "trialTitle": "Your free trial ends in {days, plural, =0 {less than a day} one {# day} other {# days}} ({date})",
+      "body": "Payments through Zarinpal don't renew automatically. Renew now and the new period starts when this one ends — you lose nothing by paying early.",
+      "renew": "Renew now",
+      "payNow": "Pay to continue"
     }
   },
   "Account": {
@@ -1053,7 +1069,21 @@
     "placeholder": "Enter your email address…",
     "submit": "Subscribe",
     "invalid": "Please enter a valid email address.",
-    "saved": "You’re on the list. Thank you for joining us."
+    "saved": "You’re on the list. Thank you for joining us.",
+    "email": {
+      "footer": "You're receiving this because you subscribed to the studio's letters. Unsubscribe: {url}"
+    },
+    "unsubscribe": {
+      "metaTitle": "Unsubscribe",
+      "title": "Unsubscribe from the newsletter?",
+      "body": "{email} will stop receiving the studio's letters.",
+      "confirm": "Unsubscribe",
+      "doneTitle": "You're unsubscribed",
+      "doneBody": "{email} won't receive the newsletter any more. You can subscribe again from any page's footer.",
+      "home": "Back to the studio",
+      "invalidTitle": "This link doesn't work",
+      "invalidBody": "It may have been copied incompletely. Use the link at the bottom of any newsletter."
+    }
   },
   "Dashboard": {
     "metaTitle": "Today",
@@ -1104,7 +1134,8 @@
       "trial": "Free trial until {date}.",
       "renews": "Renews on {date}.",
       "ends": "Access until {date}; it won’t renew.",
-      "manage": "Manage membership"
+      "manage": "Manage membership",
+      "paidThrough": "Paid through {date}; renew by hand."
     },
     "journal": "From the Chronicle"
   },
@@ -1165,7 +1196,9 @@
       "ended": "Membership ended on {date}",
       "canceling": "Access until {date}, then it ends",
       "trial": "Free trial until {date}",
-      "renews": "Renews on {date}"
+      "renews": "Renews on {date}",
+      "paidThrough": "Paid through {date} — renewed by you",
+      "trialByHand": "Free trial until {date} — then pay to continue"
     },
     "stats": {
       "sessions": "Practices completed",
@@ -1191,7 +1224,10 @@
       "price": "{price} {per}",
       "priceEquivalent": "{price} {per} ({perMonth} / month).",
       "switchTo": "Switch to {name} ({price} {per}) at renewal",
-      "otherPlans": "Other plans"
+      "otherPlans": "Other plans",
+      "renewNote": "Zarinpal doesn't renew automatically. Pay for the next period whenever you like; it starts when this one ends.",
+      "renewNow": "Renew now",
+      "payNow": "Pay to continue"
     },
     "ledger": {
       "title": "Billing summary",
@@ -1201,7 +1237,9 @@
       "nextDate": "Next renewal",
       "accessUntil": "Access until",
       "amount": "Renewal amount",
-      "receipts": "Receipts to"
+      "receipts": "Receipts to",
+      "byHand": "Iranian card, paid each period",
+      "nextPeriod": "Next period"
     },
     "details": {
       "title": "Profile & practice rhythm",
@@ -1300,6 +1338,16 @@
     "verify": {
       "subject": "Confirm your email for Arte",
       "body": "Hello {name},\n\nWelcome to the sanctuary. Please confirm your email address:\n\n{url}\n\n— Elena & Arte Yoga Studio"
+    },
+    "renewal": {
+      "period": {
+        "subject": "Your membership ends on {date}",
+        "body": "Hello {name},\n\nYour membership is paid through {date}. Payments through Zarinpal don't renew automatically, so to keep practising, renew from your account:\n\n{url}\n\nRenewing early loses nothing — the new period starts when this one ends.\n\nWith care,\nThe studio"
+      },
+      "trial": {
+        "subject": "Your free trial ends on {date}",
+        "body": "Hello {name},\n\nYour free trial ends on {date}. Nothing is charged automatically — if you'd like to continue, pay for your first period here:\n\n{url}\n\nWith care,\nThe studio"
+      }
     }
   },
   "Studio": {
@@ -1327,7 +1375,8 @@
       "subscribers": "Subscribers",
       "settings": "Settings",
       "insights": "Insights",
-      "payments": "Payments"
+      "payments": "Payments",
+      "email": "Email"
     },
     "overview": {
       "metaTitle": "Studio overview",
@@ -1729,7 +1778,8 @@
             "unsupported": "This payment's provider is no longer available, so it can't be refunded here.",
             "forbidden": "Only the instructor can refund payments.",
             "invalid": "Something was wrong with the request.",
-            "failed": "The refund didn't go through. Please try again."
+            "failed": "The refund didn't go through. Please try again.",
+            "manual": "Zarinpal payments are refunded from your Zarinpal panel; this one can't be refunded from here."
           }
         }
       }
@@ -2453,7 +2503,39 @@
       "removeConfirm": "Remove",
       "cancel": "Cancel",
       "removed": "{email} removed",
-      "actionFailed": "That didn't work. Please try again."
+      "actionFailed": "That didn't work. Please try again.",
+      "compose": {
+        "title": "Write a newsletter",
+        "lede": "Each subscriber gets the version in the language they signed up in; if that one is empty, they get the other.",
+        "mailboxNote": "Email isn't set up yet, so newsletters only go to the test mailbox.",
+        "setUpEmail": "Set up email",
+        "subject": "Subject",
+        "body": "Message",
+        "bodyHint": "Plain text. Blank lines start new paragraphs. An unsubscribe link is added at the end.",
+        "send": "{count, plural, one {Send to # subscriber} other {Send to # subscribers}}",
+        "confirmTitle": "{count, plural, one {Send to # subscriber?} other {Send to # subscribers?}}",
+        "confirmBody": "It goes out now and can't be recalled.",
+        "confirmMailbox": "Email isn't set up, so the messages will only appear in the test mailbox.",
+        "cancel": "Not yet",
+        "confirm": "Send now",
+        "sent": "{sent, plural, one {Sent to # subscriber} other {Sent to # subscribers}}",
+        "sentToMailbox": "{sent, plural, one {# message} other {# messages}} put in the test mailbox",
+        "sentWithFailures": "Sent to {sent}; {failed} couldn't be delivered (see the server log).",
+        "validation": {
+          "empty": "Write the newsletter in at least one language.",
+          "incomplete": "Each language you write needs both a subject and a message."
+        },
+        "errors": {
+          "forbidden": "Only the instructor can send newsletters.",
+          "invalid": "Some fields need attention.",
+          "failed": "The newsletter couldn't be sent."
+        }
+      },
+      "issues": {
+        "title": "Sent newsletters",
+        "sent": "{date} · {count, plural, one {# recipient} other {# recipients}}{failed, plural, =0 {} other {, # failed}}",
+        "sending": "Sending…"
+      }
     },
     "plans": {
       "metaTitle": "Membership plans · Studio",
@@ -2929,6 +3011,103 @@
           "oneEnabled": "Keep at least one gateway on.",
           "disabled": "Pick a gateway that is switched on."
         }
+      }
+    },
+    "email": {
+      "metaTitle": "Email · Studio",
+      "eyebrow": "Studio",
+      "title": "Email",
+      "lede": "How the site sends mail: sign-up confirmations, password resets, renewal reminders and your newsletters.",
+      "guide": {
+        "title": "Common settings",
+        "body": "Any mailbox that offers SMTP works. Use an address on your own domain if you can — mail from it is less likely to land in spam.",
+        "gmail": {
+          "name": "Gmail / Google Workspace",
+          "settings": "smtp.gmail.com · 465 · SSL/TLS",
+          "note": "Use an app password (Google account → Security → App passwords), not your normal password."
+        },
+        "zoho": {
+          "name": "Zoho Mail",
+          "settings": "smtp.zoho.com · 465 · SSL/TLS",
+          "note": "Your Zoho address and password, or an app-specific password if two-factor sign-in is on."
+        },
+        "host": {
+          "name": "Your web host's mail",
+          "settings": "mail.yourdomain.com · 587 · STARTTLS",
+          "note": "The details are in your host's control panel, usually under Email accounts."
+        }
+      },
+      "editor": {
+        "title": "Delivery",
+        "lede": "Until SMTP is set up, every message stays in the test mailbox and nobody receives anything.",
+        "save": "Save",
+        "saved": "Email settings saved",
+        "test": "Send test email",
+        "saveFirst": "Save your changes first",
+        "testSent": "Test email sent to {to}. Check the inbox (and spam).",
+        "testInMailbox": "Test email put in the test mailbox for {to}.",
+        "testFailed": "The test email couldn't be sent: {detail}",
+        "active": {
+          "smtp": "Sending through SMTP",
+          "outbox": "Test mailbox"
+        },
+        "fields": {
+          "provider": "Send mail with",
+          "host": "SMTP server",
+          "port": "Port",
+          "security": "Security",
+          "user": "Username",
+          "password": "Password",
+          "fromName": "Sender name",
+          "fromAddress": "Sender address",
+          "replyTo": "Reply-to address (optional)"
+        },
+        "providers": {
+          "outbox": "Test mailbox",
+          "smtp": "SMTP server"
+        },
+        "providerHints": {
+          "outbox": "Messages are kept on the site for testing; nothing is delivered.",
+          "smtp": "Messages go out through your mail server, to real inboxes."
+        },
+        "openMailbox": "Open the test mailbox",
+        "serverTitle": "Server",
+        "senderTitle": "Sender",
+        "securities": {
+          "ssl": "SSL/TLS (usually port 465)",
+          "starttls": "STARTTLS (usually port 587)",
+          "none": "None (not recommended)"
+        },
+        "hints": {
+          "host": "From your mail provider, e.g. smtp.gmail.com.",
+          "password": "Stored encrypted and never shown again.",
+          "fromName": "What people see as the sender, e.g. the studio's name.",
+          "fromAddress": "Must be an address your SMTP account may send from.",
+          "replyTo": "Where replies go, if not to the sender address."
+        },
+        "notSet": "Not set",
+        "passwordSaved": "Saved.",
+        "willRemove": "Will be removed when you save.",
+        "remove": "Remove",
+        "keep": "Keep",
+        "fromEnv": "Set on the server.",
+        "validation": {
+          "host": "Enter the SMTP server.",
+          "port": "Enter a port between 1 and 65535.",
+          "user": "Too long.",
+          "fromName": "Too long.",
+          "fromAddress": "Enter the address mail is sent from.",
+          "replyTo": "Enter a valid email address."
+        },
+        "errors": {
+          "forbidden": "Only the instructor can change email settings.",
+          "invalid": "Some fields need attention.",
+          "failed": "The email settings couldn't be saved."
+        }
+      },
+      "testMessage": {
+        "subject": "Test email from your studio",
+        "body": "Hello {name},\n\nThis is a test message from your studio's email settings. If you're reading it, mail is being delivered.\n\nWith care,\nThe studio"
       }
     }
   },

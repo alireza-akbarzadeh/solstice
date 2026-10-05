@@ -5,13 +5,15 @@ import { redirect as redirectExternal } from "next/navigation";
 
 import { env } from "@/env";
 import { getPathname, redirect } from "@/i18n/navigation";
-import { providerFor } from "@/infrastructure/payment";
+import type { Locale } from "@/i18n/routing";
+import { gatewayOf, providerFor, type PaymentProvider } from "@/infrastructure/payment";
 import { safeNextPath, withNext } from "@/lib/safe-next";
 import { getPaymentMethods, getProviderCurrency, methodsFor } from "@/modules/payments/server/routing";
 
 import { getAllPlans } from "./server/plans";
-import { createCheckout, setCheckoutReference } from "./server/billing";
-import { setCancelAtPeriodEnd, setPlan } from "./server/memberships";
+import type { MembershipPlan } from "./plans";
+import { applyPaymentEvents, createCheckout, setCheckoutReference } from "./server/billing";
+import { renewsByHand, setCancelAtPeriodEnd, setPlan } from "./server/memberships";
 import { getViewer } from "./server/viewer";
 
 /** Only plans currently on sale can be bought or switched to. */
@@ -42,22 +44,89 @@ export async function startCheckout(formData: FormData) {
   const method = usable.find((m) => m.gateway === asked) ?? usable[0];
   if (!method) return redirect({ href: withNext("/membership", next), locale });
   const { provider, currency } = method;
-  const price = plan.prices[currency]!;
+  // A free trial is for a first membership only; anyone who has had one pays from day one.
+  const trialDays = viewer.membership ? 0 : plan.trialDays;
 
-  // A checkout record first: the provider's confirmation (webhook or return) completes it.
-  const checkout = await createCheckout({ userId: viewer.user.id, plan: { ...plan, price }, currency, provider: provider.id, locale, nextPath: next });
-  const absolute = (path: string) => new URL(path, env.BETTER_AUTH_URL).toString();
-  const { url, reference } = await provider.createCheckout({
-    checkoutId: checkout.id,
-    email: viewer.user.email,
-    plan: { id: plan.id, price, currency, intervalMonths: plan.intervalMonths },
-    trialDays: plan.trialDays,
+  const checkout = await createCheckout({
+    userId: viewer.user.id,
+    plan: { ...plan, price: plan.prices[currency]!, trialDays },
+    currency,
+    provider: provider.id,
     locale,
-    returnUrl: absolute(`/api/payments/${provider.id}/return?checkout=${checkout.id}`),
-    cancelUrl: absolute(getPathname({ href: withNext(`/membership?plan=${plan.id}`, next), locale })),
+    nextPath: next,
   });
-  if (reference) await setCheckoutReference(checkout.id, reference);
-  return redirectExternal(url);
+  // A gateway that can't charge later (Zarinpal) has nothing to take for a trial: it starts
+  // here, and the member pays when it ends.
+  if (trialDays > 0 && !provider.recurring) {
+    await applyPaymentEvents(provider.id, [
+      { id: `trial_${checkout.id}`, type: "checkout.completed", checkoutId: checkout.id, subscriptionId: null, charge: null },
+    ]);
+    return redirect({ href: { pathname: "/membership/welcome", query: { checkout: checkout.id } }, locale });
+  }
+  return sendToGateway({ provider, checkout, plan, email: viewer.user.email, locale, back: withNext(`/membership?plan=${plan.id}`, next) });
+}
+
+/**
+ * Opens the provider's checkout for a checkout record and sends the member there. If the
+ * gateway can't be reached, they come back to `back` with a message instead of an error page.
+ */
+async function sendToGateway(input: {
+  provider: PaymentProvider;
+  checkout: Awaited<ReturnType<typeof createCheckout>>;
+  plan: MembershipPlan;
+  email: string;
+  locale: Locale;
+  back: string;
+}) {
+  const { provider, checkout, plan, locale } = input;
+  const absolute = (path: string) => new URL(path, env.BETTER_AUTH_URL).toString();
+  let opened: { url: string; reference?: string };
+  try {
+    opened = await provider.createCheckout({
+      checkoutId: checkout.id,
+      email: input.email,
+      plan: { id: plan.id, price: checkout.amount, currency: checkout.currency, intervalMonths: checkout.intervalMonths },
+      trialDays: checkout.trialDays,
+      locale,
+      returnUrl: absolute(`/api/payments/${provider.id}/return?checkout=${checkout.id}`),
+      cancelUrl: absolute(getPathname({ href: input.back, locale })),
+    });
+  } catch (error) {
+    console.error(`Checkout could not be opened with ${provider.id}.`, error);
+    const separator = input.back.includes("?") ? "&" : "?";
+    return redirect({ href: `${input.back}${separator}payment=unavailable`, locale });
+  }
+  if (opened.reference) await setCheckoutReference(checkout.id, opened.reference);
+  return redirectExternal(opened.url);
+}
+
+/**
+ * Pays the next period now, for memberships whose gateway doesn't renew by itself (Zarinpal).
+ * The new period starts where the current one ends, so renewing early loses nothing.
+ */
+export async function renewMembership(formData?: FormData) {
+  const locale = await getLocale();
+  const back = safeNextPath(formData?.get("back"), "/profile");
+  const viewer = await getViewer();
+  const membership = viewer.membership;
+  if (!viewer.user || !membership || !renewsByHand(membership)) return redirect({ href: back, locale });
+
+  // Through the same gateway, in whatever mode the studio runs it now.
+  const method = (await getPaymentMethods()).methods.find((m) => m.gateway === gatewayOf(membership.provider));
+  const plan = (await getAllPlans()).find((p) => p.id === membership.plan);
+  const price = method && plan?.prices[method.currency];
+  if (!method || !plan || price === undefined) return redirect({ href: "/membership", locale });
+
+  const checkout = await createCheckout({
+    userId: viewer.user.id,
+    plan: { ...plan, price },
+    currency: method.currency,
+    provider: method.provider.id,
+    locale,
+    nextPath: back,
+    renewal: true,
+  });
+  return sendToGateway({ provider: method.provider, checkout, plan, email: viewer.user.email, locale, back });
 }
 
 export async function cancelMembership(formData?: FormData) {

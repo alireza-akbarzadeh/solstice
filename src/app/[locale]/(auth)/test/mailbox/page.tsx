@@ -5,7 +5,7 @@ import { getFormatter, getTranslations, setRequestLocale } from "next-intl/serve
 import { notFound } from "next/navigation";
 
 import { routing } from "@/i18n/routing";
-import { emailProvider, readOutbox } from "@/infrastructure/email";
+import { emailTestMode, readOutbox } from "@/infrastructure/email";
 import { AuthCard } from "@/modules/auth/components/auth-card";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/test/mailbox">): Promise<Metadata> {
@@ -20,7 +20,7 @@ export default async function MailboxPage({ params }: PageProps<"/[locale]/test/
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
-  if (!emailProvider.testMode) notFound();
+  if (!(await emailTestMode())) notFound();
 
   const [t, format, messages] = await Promise.all([getTranslations("TestMode.mailbox"), getFormatter(), readOutbox()]);
 

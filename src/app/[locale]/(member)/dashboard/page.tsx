@@ -11,6 +11,8 @@ import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { ArticleCard } from "@/modules/journal/components/article-card";
 import { getJournal } from "@/modules/journal/server/get-articles";
+import { RenewalNotice } from "@/modules/memberships/components/renewal-notice";
+import { renewsByHand } from "@/modules/memberships/server/memberships";
 import { requireUser } from "@/modules/memberships/server/viewer";
 import { getAllPracticeSummaries } from "@/modules/practices/server/get-practice";
 import type { PracticeSummary } from "@/modules/practices/types";
@@ -109,6 +111,7 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
 
       <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
         <div className="flex flex-col gap-space-lg lg:col-span-8">
+          <RenewalNotice viewer={viewer} back="/dashboard" />
           {!viewer.hasAccess && (
             <div role="note" className="flex flex-col gap-3 rounded-xl bg-secondary-fixed/50 p-space-md sm:flex-row sm:items-center sm:justify-between">
               <div className="flex gap-3">
@@ -271,7 +274,9 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
             <section className="rounded-xl bg-surface-container-low p-space-md">
               <span className="font-label-sm text-label-sm tracking-widest text-clay uppercase">{t("membership.eyebrow")}</span>
               <p className="mt-1 font-body-sm text-body-sm text-on-surface">
-                {membership.cancelAtPeriodEnd
+                {renewsByHand(membership)
+                  ? t("membership.paidThrough", { date: format.dateTime(membership.currentPeriodEnd, { dateStyle: "long" }) })
+                  : membership.cancelAtPeriodEnd
                   ? t("membership.ends", { date: format.dateTime(membership.currentPeriodEnd, { dateStyle: "long" }) })
                   : membership.status === "trialing"
                     ? t("membership.trial", { date: format.dateTime(membership.currentPeriodEnd, { dateStyle: "long" }) })

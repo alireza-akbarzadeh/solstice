@@ -23,8 +23,9 @@ export async function getPlanDisplay(locale: Locale, currency?: Currency) {
     formatMoney(format, amount, catalog.currency, locale);
   const per = (months: number) => t("per", { months });
 
-  const describe = (plan: MembershipPlan): CheckoutPlan => {
-    const billed = t("billedEvery", { months: plan.intervalMonths });
+  /** `byHand`: paid through a gateway that doesn't renew by itself, so nothing is "billed". */
+  const describe = (plan: MembershipPlan, { byHand = false }: { byHand?: boolean } = {}): CheckoutPlan => {
+    const billed = t(byHand ? "paidEvery" : "billedEvery", { months: plan.intervalMonths });
     return {
       id: plan.id,
       name: localize(plan.name, locale),

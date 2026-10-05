@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { emailProvider } from "@/infrastructure/email";
+import { emailTestMode } from "@/infrastructure/email";
 import { AuthCard } from "@/modules/auth/components/auth-card";
 import { ResendVerification } from "@/modules/auth/components/recovery-forms";
 import { getSession } from "@/server/better-auth/server";
@@ -51,7 +51,7 @@ export default async function VerifyEmailPage({ params, searchParams }: PageProp
             <p className="font-body-md text-body-md text-on-surface-variant">{session ? t("verifyPending", { email: session.user.email }) : t("verifySignIn")}</p>
           )}
           {session ? (
-            <ResendVerification email={session.user.email} mailbox={emailProvider.testMode} />
+            <ResendVerification email={session.user.email} mailbox={await emailTestMode()} />
           ) : (
             <Link
               href="/sign-in?next=/verify-email"

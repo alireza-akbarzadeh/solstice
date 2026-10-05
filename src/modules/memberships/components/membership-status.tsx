@@ -4,7 +4,8 @@ import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { localize } from "@/lib/localized";
 
-import { cancelMembership, resumeMembership } from "../actions";
+import { cancelMembership, renewMembership, resumeMembership } from "../actions";
+import { renewsByHand } from "../server/memberships";
 import { getPlan } from "../server/plans";
 import type { Viewer } from "../server/viewer";
 
@@ -20,8 +21,10 @@ export async function MembershipStatus({ viewer, next }: { viewer: Viewer; next:
   const date = membership ? format.dateTime(membership.currentPeriodEnd, { dateStyle: "long" }) : "";
   const plan = planRow ? localize(planRow.name, locale) : (membership?.plan ?? "");
 
+  const byHand = renewsByHand(membership);
   let detail = t("instructor");
-  if (membership?.cancelAtPeriodEnd) detail = t("canceled", { date });
+  if (byHand) detail = t("paidThrough", { date, plan });
+  else if (membership?.cancelAtPeriodEnd) detail = t("canceled", { date });
   else if (membership?.status === "trialing") detail = t("trial", { date, plan });
   else if (membership) detail = t("renews", { date, plan });
 
@@ -39,7 +42,15 @@ export async function MembershipStatus({ viewer, next }: { viewer: Viewer; next:
         {t("continue")}
         <ArrowRightIcon className="size-4 rtl:rotate-180" />
       </Link>
-      {membership && (
+      {membership && byHand && (
+        <form action={renewMembership}>
+          <input type="hidden" name="back" value="/membership" />
+          <button type="submit" className="font-label-md text-label-md text-primary underline-offset-4 hover:underline">
+            {t("renew")}
+          </button>
+        </form>
+      )}
+      {membership && !byHand && (
         <form action={membership.cancelAtPeriodEnd ? resumeMembership : cancelMembership}>
           <button type="submit" className="font-label-md text-label-md text-on-surface-variant underline-offset-4 hover:text-primary hover:underline">
             {membership.cancelAtPeriodEnd ? t("resume") : t("cancel")}

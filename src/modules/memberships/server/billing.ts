@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 import { and, desc, eq, gte, sql } from "drizzle-orm";
 
 import type { Locale } from "@/i18n/routing";
-import { providerFor, type Charge, type PaymentEvent, type PaymentProvider } from "@/infrastructure/payment";
+import { providerFor, RefundUnsupportedError, type Charge, type PaymentEvent, type PaymentProvider } from "@/infrastructure/payment";
 import { db } from "@/server/db";
 import { checkouts, membershipPlans, memberships, paymentEvents, payments, user } from "@/server/db/schema";
 
@@ -22,6 +22,8 @@ export async function createCheckout(input: {
   provider: string;
   locale: Locale;
   nextPath: string;
+  /** Pays the next period of the member's current membership instead of starting one. */
+  renewal?: boolean;
 }) {
   const id = `co_${randomBytes(12).toString("hex")}`;
   const [row] = await db
@@ -34,7 +36,8 @@ export async function createCheckout(input: {
       amount: input.plan.price,
       currency: input.currency,
       intervalMonths: input.plan.intervalMonths,
-      trialDays: input.plan.trialDays,
+      trialDays: input.renewal ? 0 : input.plan.trialDays,
+      renewal: input.renewal ?? false,
       locale: input.locale,
       nextPath: input.nextPath,
     })
@@ -110,6 +113,7 @@ async function applyEvent(tx: Tx, provider: string, event: PaymentEvent) {
     case "checkout.completed": {
       const [checkout] = await tx.select().from(checkouts).where(eq(checkouts.id, event.checkoutId)).limit(1);
       if (checkout?.provider !== provider || checkout.status === "completed") return;
+      if (checkout.renewal) return renewByCheckout(tx, provider, checkout, event.charge, now);
       // With a free trial nothing is charged yet; otherwise the first period is paid now.
       const trialEndsAt = !event.charge && checkout.trialDays > 0 ? addDays(now, checkout.trialDays) : null;
       const periodEnd = trialEndsAt ?? addBillingPeriod(now, checkout.intervalMonths);
@@ -120,8 +124,10 @@ async function applyEvent(tx: Tx, provider: string, event: PaymentEvent) {
         providerSubscriptionId: event.subscriptionId ?? `${provider}_${checkout.id}`,
         trialEndsAt,
         currentPeriodEnd: periodEnd,
-        // A provider that doesn't renew by itself leaves the member to renew by hand.
-        cancelAtPeriodEnd: !(providerFor(provider)?.recurring ?? true),
+        // Nothing is set to end: with a provider that doesn't renew by itself (Zarinpal) the
+        // member renews by hand, which the UI derives from the provider (renewsByHand).
+        cancelAtPeriodEnd: false,
+        renewalReminderFor: null,
       };
       await tx.insert(memberships).values({ userId: checkout.userId, ...values }).onConflictDoUpdate({ target: memberships.userId, set: values });
       if (event.charge) {
@@ -196,6 +202,40 @@ async function applyEvent(tx: Tx, provider: string, event: PaymentEvent) {
   }
 }
 
+/**
+ * A paid renewal checkout: the next period starts where the current one ends (or now, if it has
+ * lapsed), so renewing early never loses days.
+ */
+async function renewByCheckout(tx: Tx, provider: string, checkout: Checkout, charge: Charge | null, now: Date) {
+  const [membership] = await tx.select().from(memberships).where(eq(memberships.userId, checkout.userId)).limit(1);
+  const start = membership && membership.currentPeriodEnd > now ? membership.currentPeriodEnd : now;
+  const periodEnd = addBillingPeriod(start, checkout.intervalMonths);
+  const values = {
+    plan: checkout.planId,
+    status: "active" as const,
+    provider,
+    providerSubscriptionId: membership?.providerSubscriptionId ?? `${provider}_${checkout.id}`,
+    trialEndsAt: null,
+    currentPeriodEnd: periodEnd,
+    cancelAtPeriodEnd: false,
+    renewalReminderFor: null,
+  };
+  await tx.insert(memberships).values({ userId: checkout.userId, ...values }).onConflictDoUpdate({ target: memberships.userId, set: values });
+  if (charge) {
+    await recordCharge(tx, {
+      userId: checkout.userId,
+      provider,
+      charge,
+      planId: checkout.planId,
+      kind: "renewal",
+      checkoutId: checkout.id,
+      periodStart: start,
+      periodEnd,
+    });
+  }
+  await tx.update(checkouts).set({ status: "completed", completedAt: now }).where(eq(checkouts.id, checkout.id));
+}
+
 // ── Reading the ledger ───────────────────────────────────────────────────────────────
 
 export async function getMemberPayments(userId: string) {
@@ -234,7 +274,7 @@ export async function getCollectedByMonth(months: number) {
 
 // ── Refunds (studio) ─────────────────────────────────────────────────────────────────
 
-export type RefundResult = { ok: true } | { ok: false; error: "notFound" | "alreadyRefunded" | "unsupported" };
+export type RefundResult = { ok: true } | { ok: false; error: "notFound" | "alreadyRefunded" | "unsupported" | "manual" };
 
 /**
  * Refunds what is left of a payment through the provider that took it. `endAccess` also ends
@@ -248,7 +288,13 @@ export async function refundPayment(id: number, endAccess: boolean): Promise<Ref
   const provider: PaymentProvider | undefined = providerFor(payment.provider);
   if (!provider) return { ok: false, error: "unsupported" };
 
-  const events = await provider.refund({ providerPaymentId: payment.providerPaymentId, amount: remaining, currency: payment.currency });
+  let events: PaymentEvent[];
+  try {
+    events = await provider.refund({ providerPaymentId: payment.providerPaymentId, amount: remaining, currency: payment.currency });
+  } catch (error) {
+    if (error instanceof RefundUnsupportedError) return { ok: false, error: "manual" };
+    throw error;
+  }
   await applyPaymentEvents(provider.id, events);
   if (endAccess && payment.userId) {
     await db

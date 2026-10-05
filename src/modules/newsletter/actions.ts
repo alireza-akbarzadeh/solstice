@@ -12,7 +12,7 @@ const inputSchema = z.object({
   source: z.enum(["footer", "journal"]),
 });
 
-// Stores the address; sending the epistle waits for an EmailProvider (infrastructure/email).
+// Stores the address; newsletters are sent from the studio (/instructor/subscribers).
 export async function subscribeToNewsletter(
   input: unknown,
 ): Promise<{ ok: true } | { ok: false; error: "invalid" }> {

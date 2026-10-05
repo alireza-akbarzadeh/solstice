@@ -25,6 +25,8 @@ export const checkouts = createTable(
     currency: d.text().notNull(),
     intervalMonths: d.integer().notNull(),
     trialDays: d.integer().notNull().default(0),
+    /** Pays the next period of an existing membership (manual renewal, e.g. Zarinpal). */
+    renewal: d.boolean().notNull().default(false),
     status: d.text().$type<"open" | "completed" | "failed" | "canceled">().notNull().default("open"),
     /** The provider's own id for this checkout (session id, authority, …). */
     providerReference: d.text(),

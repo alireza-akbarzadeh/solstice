@@ -46,16 +46,20 @@ export default async function MembershipPage({ params, searchParams }: PageProps
   // Each switched-on gateway with the plans it can sell, priced in its currency. The first is
   // the one preselected for the visitor's country; the visitor can still switch.
   const offers: CheckoutMethod[] = [];
+  // A free trial is for a first membership only (startCheckout enforces it too).
+  const firstTime = !viewer.membership;
   for (const method of methods) {
     const { catalog, money, describe } = await getPlanDisplay(locale, method.currency);
     if (!catalog.plans.length) continue;
+    const byHand = !method.provider.recurring;
     offers.push({
       gateway: method.gateway,
       cards: method.cards,
       zero: money(0),
       featured: catalog.featured?.id ?? null,
-      plans: catalog.plans.map(describe),
+      plans: catalog.plans.map((plan) => describe(firstTime ? plan : { ...plan, trialDays: 0 }, { byHand })),
       testMode: method.provider.testMode,
+      recurring: !byHand,
     });
   }
   if (!offers.length) {
@@ -77,6 +81,7 @@ export default async function MembershipPage({ params, searchParams }: PageProps
   const featured = initial.plans.find((plan) => plan.id === initial.featured);
   const initialPlan = (requested ?? featured ?? initial.plans[0]!).id;
   const trialDays = (requested ?? featured)?.trialDays ?? 0;
+  const gatewayDown = query.payment === "unavailable";
 
   return (
     <div className="relative overflow-hidden">
@@ -99,6 +104,12 @@ export default async function MembershipPage({ params, searchParams }: PageProps
             </span>
           )}
         </div>
+
+        {gatewayDown && (
+          <div role="alert" className="mb-space-md rounded-xl bg-error-container p-4 font-body-sm text-body-sm text-on-error-container">
+            {t("gatewayUnavailable")}
+          </div>
+        )}
 
         <Checkout
           methods={offers}

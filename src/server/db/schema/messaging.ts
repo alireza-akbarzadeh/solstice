@@ -1,5 +1,8 @@
 import { index } from "drizzle-orm/pg-core";
 
+// Type-only imports: the seed scripts load the schema straight from Node.
+import type { Localized } from "@/lib/localized";
+
 import { user } from "./auth.ts";
 import { createTable } from "./table.ts";
 
@@ -41,6 +44,23 @@ export const newsletterSubscribers = createTable(
       .notNull(),
   }),
 );
+
+/**
+ * A newsletter the studio sent from /instructor/subscribers: subject and body per language
+ * (each subscriber gets their own, or the other when theirs is empty) and how delivery went.
+ */
+export const newsletterIssues = createTable("newsletter_issue", (d) => ({
+  id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+  subject: d.jsonb().$type<Localized>().notNull(),
+  body: d.jsonb().$type<Localized>().notNull(),
+  recipients: d.integer().notNull().default(0),
+  failed: d.integer().notNull().default(0),
+  sentAt: d.timestamp({ withTimezone: true }),
+  createdAt: d
+    .timestamp({ withTimezone: true })
+    .$defaultFn(() => new Date())
+    .notNull(),
+}));
 
 // Messages sent by the "outbox" EmailProvider (no real delivery): read them in /test/mailbox.
 export const emailOutbox = createTable(

@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 
+import { providerFor } from "@/infrastructure/payment";
 import { db } from "@/server/db";
 import { memberships } from "@/server/db/schema";
 
@@ -12,6 +13,14 @@ export function isMembershipActive(membership: Membership | null | undefined, no
   if (!membership) return false;
   if (membership.status !== "trialing" && membership.status !== "active") return false;
   return membership.currentPeriodEnd > now;
+}
+
+/**
+ * Paid through a gateway that doesn't renew by itself (Zarinpal): the member pays each period
+ * with "Renew" instead of being charged, so "cancel" and "resume" don't apply.
+ */
+export function renewsByHand(membership: Pick<Membership, "provider"> | null | undefined) {
+  return providerFor(membership?.provider)?.recurring === false;
 }
 
 export async function getMembership(userId: string): Promise<Membership | null> {

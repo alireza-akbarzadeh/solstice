@@ -1,9 +1,8 @@
 import { eq } from "drizzle-orm";
 import { cache } from "react";
 
-import { env } from "@/env";
-import { gatewayIds, gatewayModes, gateways, gatewaySupports, type GatewayId } from "@/infrastructure/payment";
-import { open, seal } from "@/lib/secret-box";
+import { gatewayIds, gatewayKeyFromEnv, gatewayModes, gateways, gatewaySupports, type GatewayId } from "@/infrastructure/payment";
+import { seal } from "@/lib/secret-box";
 import { db } from "@/server/db";
 import { settings as settingsTable } from "@/server/db/schema";
 
@@ -66,7 +65,7 @@ export async function paymentsTestMode() {
   return !gatewayIds.some((id) => settings[id].enabled && settings[id].mode === "live");
 }
 
-const envValue = (name: string) => (env as Record<string, string | undefined>)[name];
+const envValue = gatewayKeyFromEnv;
 
 /** What the studio's settings page shows: the settings, and each key as "set (…1234)" or not. */
 export async function getPaymentSettingsView(): Promise<PaymentSettingsView> {
@@ -85,20 +84,6 @@ export async function getPaymentSettingsView(): Promise<PaymentSettingsView> {
   ) as PaymentSettingsView["credentials"];
   const supported = Object.fromEntries(gatewayIds.map((id) => [id, gatewayModes.filter((mode) => gatewaySupports(id, mode))])) as PaymentSettingsView["supported"];
   return { settings, credentials, supported };
-}
-
-/**
- * A gateway's keys in plain text, for its provider to call the gateway's API. Environment
- * variables win; a stored key that can no longer be decrypted reads as missing.
- */
-export async function getGatewayCredentials(id: GatewayId): Promise<Record<string, string | undefined>> {
-  const { secrets } = await getStored();
-  return Object.fromEntries(
-    gateways[id].credentials.map(({ key, env: name }) => {
-      const sealed = secrets[id]?.[key]?.sealed;
-      return [key, envValue(name) ?? (sealed ? (open(sealed) ?? undefined) : undefined)];
-    }),
-  );
 }
 
 export type SaveResult = { ok: true } | { ok: false; error: "unsupported" | "missingKeys" };

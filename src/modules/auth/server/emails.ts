@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { routing } from "@/i18n/routing";
-import { emailProvider } from "@/infrastructure/email";
+import { sendEmail } from "@/infrastructure/email";
 
 // The auth pages put the locale in their callback paths (/fa/reset-password), so the
 // email speaks the language the member was using.
@@ -12,7 +12,7 @@ function localeOf(url: string) {
 
 export async function sendAuthEmail(kind: "reset" | "verify", user: { email: string; name: string }, url: string) {
   const t = await getTranslations({ locale: localeOf(url), namespace: "Email" });
-  await emailProvider.send({
+  await sendEmail({
     to: user.email,
     subject: t(`${kind}.subject`),
     text: t(`${kind}.body`, { name: user.name, url }),
