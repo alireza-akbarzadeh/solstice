@@ -24,8 +24,11 @@ export const env = createEnv({
 
     BETTER_AUTH_GITHUB_CLIENT_SECRET: z.string().optional(),
 
-    // Which PaymentProvider handles checkout. "mock" grants memberships without charging.
-    PAYMENT_PROVIDER: z.enum(["mock"]).default("mock"),
+    // Payment gateway keys. Studio settings (/instructor/settings → Payments) store them
+    // encrypted; when set here they win, and the settings show them as set by the server.
+    ZARINPAL_MERCHANT_ID: z.string().optional(),
+    STRIPE_SECRET_KEY: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
     // Which EmailProvider sends mail. "outbox" stores messages for the test mailbox instead.
     EMAIL_PROVIDER: z.enum(["outbox"]).default("outbox"),
@@ -81,7 +84,11 @@ export const env = createEnv({
     BETTER_AUTH_GITHUB_CLIENT_SECRET:
       process.env.BETTER_AUTH_GITHUB_CLIENT_SECRET,
 
-    PAYMENT_PROVIDER: process.env.PAYMENT_PROVIDER,
+    ZARINPAL_MERCHANT_ID: process.env.ZARINPAL_MERCHANT_ID,
+
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
 
     EMAIL_PROVIDER: process.env.EMAIL_PROVIDER,
 
