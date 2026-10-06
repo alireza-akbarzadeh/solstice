@@ -52,7 +52,7 @@ export default async function InstructorClassesPage({
   };
 
   return (
-    <div className="space-y-space-md p-margin-mobile md:p-margin">
+    <div className="space-y-space-md">
       <StudioCrumb items={[{ label: t("title") }]} />
 
       <StudioPageHeader

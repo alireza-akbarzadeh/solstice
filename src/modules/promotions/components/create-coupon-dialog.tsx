@@ -8,14 +8,15 @@ import { LoaderCircleIcon, PlusIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
+import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { couponFormSchema, type CouponFormValues } from "../schemas";
 import { createCouponAction } from "../actions";
 import type { MembershipPlan } from "@/modules/memberships/plans";
@@ -60,8 +61,8 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialogTrigger asChild>
         <button
           type="button"
           className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 font-label-md text-label-md text-on-primary transition-colors hover:bg-primary/90"
@@ -69,13 +70,13 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
           <PlusIcon className="size-4" />
           {t("createCoupon")}
         </button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
+      </ResponsiveDialogTrigger>
+      <ResponsiveDialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <DialogHeader>
-            <DialogTitle>{t("createCouponTitle")}</DialogTitle>
-            <DialogDescription>{t("createCouponDesc")}</DialogDescription>
-          </DialogHeader>
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>{t("createCouponTitle")}</ResponsiveDialogTitle>
+            <ResponsiveDialogDescription>{t("createCouponDesc")}</ResponsiveDialogDescription>
+          </ResponsiveDialogHeader>
 
           <div className="space-y-3">
             <div>
@@ -95,23 +96,24 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="discountType" className="block font-label-sm text-label-sm text-on-surface-variant">
+                <label htmlFor="discountType" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
                   {t("discountType")}
                 </label>
-                <select
-                  id="discountType"
-                  {...form.register("discountType")}
-                  className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
-                >
-                  <option value="percent">{t("percentDiscount")}</option>
-                  <option value="fixed">{t("fixedDiscount")}</option>
-                </select>
+                <ResponsiveSelect
+                  label={t("discountType")}
+                  value={form.watch("discountType")}
+                  onValueChange={(val) => form.setValue("discountType", val as "percent" | "fixed")}
+                  options={[
+                    { value: "percent", label: t("percentDiscount") },
+                    { value: "fixed", label: t("fixedDiscount") },
+                  ]}
+                />
               </div>
 
               <div>
-                <label htmlFor="discountValue" className="block font-label-sm text-label-sm text-on-surface-variant">
+                <label htmlFor="discountValue" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
                   {t("discountValue")}
                 </label>
                 <input
@@ -119,7 +121,7 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
                   type="number"
                   step="any"
                   {...form.register("discountValue")}
-                  className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
+                  className="w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
                 />
                 {form.formState.errors.discountValue && (
                   <p className="mt-1 font-body-sm text-body-sm text-error">
@@ -129,37 +131,38 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="duration" className="block font-label-sm text-label-sm text-on-surface-variant">
+                <label htmlFor="duration" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
                   {t("duration")}
                 </label>
-                <select
-                  id="duration"
-                  {...form.register("duration")}
-                  className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
-                >
-                  <option value="once">{t("durationOnce")}</option>
-                  <option value="repeating">{t("durationRepeating")}</option>
-                </select>
+                <ResponsiveSelect
+                  label={t("duration")}
+                  value={form.watch("duration")}
+                  onValueChange={(val) => form.setValue("duration", val as "once" | "repeating")}
+                  options={[
+                    { value: "once", label: t("durationOnce") },
+                    { value: "repeating", label: t("durationRepeating") },
+                  ]}
+                />
               </div>
 
               <div>
-                <label htmlFor="planId" className="block font-label-sm text-label-sm text-on-surface-variant">
+                <label htmlFor="planId" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
                   {t("planRestriction")}
                 </label>
-                <select
-                  id="planId"
-                  {...form.register("planId")}
-                  className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
-                >
-                  <option value="">{t("allPlans")}</option>
-                  {plans.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.id}
-                    </option>
-                  ))}
-                </select>
+                <ResponsiveSelect
+                  label={t("planRestriction")}
+                  value={form.watch("planId") ?? ""}
+                  onValueChange={(val) => form.setValue("planId", val)}
+                  options={[
+                    { value: "", label: t("allPlans") },
+                    ...plans.map((p) => ({
+                      value: p.id,
+                      label: p.id,
+                    })),
+                  ]}
+                />
               </div>
             </div>
 
@@ -203,7 +206,7 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
             </div>
           </div>
 
-          <DialogFooter className="mt-4">
+          <ResponsiveDialogFooter className="mt-4">
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -219,9 +222,9 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
               {isSubmitting && <LoaderCircleIcon className="size-4 animate-spin" />}
               {t("saveCoupon")}
             </button>
-          </DialogFooter>
+          </ResponsiveDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

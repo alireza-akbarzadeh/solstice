@@ -18,6 +18,7 @@ import {
   ResponsiveDialogTitle,
   ResponsiveDialogTrigger,
 } from "@/components/ui/responsive-dialog";
+import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { LocalizedField } from "@/modules/instructor/components/localized-field";
 import type { Localized } from "@/lib/localized";
 import type { LiveClass, LiveClassAccess, LiveClassStatus } from "../../types";
@@ -148,7 +149,7 @@ export function ClassEditorDialog({
         )}
       </ResponsiveDialogTrigger>
 
-      <ResponsiveDialogContent className="!max-w-3xl">
+      <ResponsiveDialogContent className="sm:max-w-3xl">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
             {isEditing ? t("editClass") : t("newClass")}
@@ -254,48 +255,50 @@ export function ClassEditorDialog({
               <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("access")}
               </label>
-              <select
+              <ResponsiveSelect
+                label={t("access")}
                 value={access}
-                onChange={(e) => setAccess(e.target.value as LiveClassAccess)}
-                className="bg-surface-container border-outline-variant/40 text-on-surface text-body-sm font-body-sm h-10 w-full rounded-lg border px-3 focus:outline-none"
-              >
-                <option value="members_only">{t("accessMembers")}</option>
-                <option value="open">{t("accessOpen")}</option>
-              </select>
+                onValueChange={(val) => setAccess(val as LiveClassAccess)}
+                options={[
+                  { value: "members_only", label: t("accessMembers") },
+                  { value: "open", label: t("accessOpen") },
+                ]}
+              />
             </div>
 
             <div>
               <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("status")}
               </label>
-              <select
+              <ResponsiveSelect
+                label={t("status")}
                 value={status}
-                onChange={(e) => setStatus(e.target.value as LiveClassStatus)}
-                className="bg-surface-container border-outline-variant/40 text-on-surface text-body-sm font-body-sm h-10 w-full rounded-lg border px-3 focus:outline-none"
-              >
-                <option value="scheduled">Scheduled</option>
-                <option value="live">Live in Broadcast</option>
-                <option value="completed">Completed</option>
-                <option value="canceled">Canceled</option>
-              </select>
+                onValueChange={(val) => setStatus(val as LiveClassStatus)}
+                options={[
+                  { value: "scheduled", label: "Scheduled" },
+                  { value: "live", label: "Live in Broadcast" },
+                  { value: "completed", label: "Completed" },
+                  { value: "canceled", label: "Canceled" },
+                ]}
+              />
             </div>
 
             <div>
               <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("replayPractice")}
               </label>
-              <select
+              <ResponsiveSelect
+                label={t("replayPractice")}
                 value={replayPracticeSlug}
-                onChange={(e) => setReplayPracticeSlug(e.target.value)}
-                className="bg-surface-container border-outline-variant/40 text-on-surface text-body-sm font-body-sm h-10 w-full rounded-lg border px-3 focus:outline-none"
-              >
-                <option value="">{t("noneReplay")}</option>
-                {availablePractices.map((p) => (
-                  <option key={p.slug} value={p.slug}>
-                    {p.title.en}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setReplayPracticeSlug}
+                options={[
+                  { value: "", label: t("noneReplay") },
+                  ...availablePractices.map((p) => ({
+                    value: p.slug,
+                    label: p.title.en,
+                  })),
+                ]}
+              />
             </div>
           </div>
 

@@ -48,7 +48,7 @@ export function ResponsiveSelect({
   if (!isMobile) {
     return (
       <Select value={value} onValueChange={onValueChange} disabled={disabled}>
-        <SelectTrigger id={id} aria-label={label} className={className}>
+        <SelectTrigger id={id} aria-label={label} className={cn("w-full bg-surface-container/60 border-outline-variant/40", className)}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -71,7 +71,7 @@ export function ResponsiveSelect({
         disabled={disabled}
         aria-label={label}
         className={cn(
-          "flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-border bg-surface px-3 text-start font-body-sm text-body-sm text-on-surface shadow-sm transition-colors disabled:opacity-50",
+          "flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-outline-variant/40 bg-surface px-3 text-start font-body-sm text-body-sm text-on-surface shadow-xs transition-colors disabled:opacity-50",
           className,
         )}
       >
@@ -79,10 +79,10 @@ export function ResponsiveSelect({
         <ChevronDownIcon className="size-4 shrink-0 text-on-surface-variant" />
       </DrawerTrigger>
       <DrawerContent className="pb-safe">
-        <DrawerHeader className="text-start">
+        <DrawerHeader className="text-start border-b border-outline-variant/20 pb-3">
           <DrawerTitle className="font-headline-sm text-headline-sm">{label}</DrawerTitle>
         </DrawerHeader>
-        <ul className="max-h-[60svh] overflow-y-auto overscroll-contain px-margin-mobile pb-space-md">
+        <ul className="max-h-[50svh] overflow-y-auto overscroll-contain p-2 space-y-1">
           {options.map((option) => {
             const active = option.value === value;
             return (
@@ -95,12 +95,12 @@ export function ResponsiveSelect({
                   }}
                   aria-current={active ? "true" : undefined}
                   className={cn(
-                    "flex min-h-12 w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-start transition-colors",
-                    active ? "bg-primary-container/40 text-primary" : "text-on-surface active:bg-surface-container",
+                    "flex min-h-11 w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-start transition-colors",
+                    active ? "bg-primary-fixed/40 text-primary font-medium" : "text-on-surface active:bg-surface-container",
                   )}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate font-label-lg text-label-lg">{option.label}</span>
+                    <span className="block truncate font-body-md text-body-md">{option.label}</span>
                     {option.description && <span className="block truncate font-body-sm text-body-sm text-on-surface-variant">{option.description}</span>}
                   </span>
                   {active && <CheckIcon className="size-4 shrink-0" />}

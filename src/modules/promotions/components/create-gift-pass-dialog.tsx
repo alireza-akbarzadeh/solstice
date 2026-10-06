@@ -8,14 +8,15 @@ import { GiftIcon, LoaderCircleIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
+import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { purchaseGiftSchema, type PurchaseGiftValues } from "../schemas";
 import { createStudioGiftPassAction } from "../actions";
 import type { MembershipPlan } from "@/modules/memberships/plans";
@@ -58,8 +59,8 @@ export function CreateGiftPassDialog({ plans }: { plans: MembershipPlan[] }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialogTrigger asChild>
         <button
           type="button"
           className="inline-flex items-center gap-2 rounded-xl bg-secondary-fixed px-4 py-2 font-label-md text-label-md text-on-secondary-fixed transition-colors hover:bg-secondary-fixed/80"
@@ -67,47 +68,46 @@ export function CreateGiftPassDialog({ plans }: { plans: MembershipPlan[] }) {
           <GiftIcon className="size-4" />
           {t("issueGiftPass")}
         </button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
+      </ResponsiveDialogTrigger>
+      <ResponsiveDialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <DialogHeader>
-            <DialogTitle>{t("issueGiftPassTitle")}</DialogTitle>
-            <DialogDescription>{t("issueGiftPassDesc")}</DialogDescription>
-          </DialogHeader>
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>{t("issueGiftPassTitle")}</ResponsiveDialogTitle>
+            <ResponsiveDialogDescription>{t("issueGiftPassDesc")}</ResponsiveDialogDescription>
+          </ResponsiveDialogHeader>
 
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="months" className="block font-label-sm text-label-sm text-on-surface-variant">
+                <label htmlFor="months" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
                   {t("duration")}
                 </label>
-                <select
-                  id="months"
-                  {...form.register("months", { valueAsNumber: true })}
-                  className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
-                >
-                  <option value={1}>{t("months1")}</option>
-                  <option value={3}>{t("months3")}</option>
-                  <option value={6}>{t("months6")}</option>
-                  <option value={12}>{t("months12")}</option>
-                </select>
+                <ResponsiveSelect
+                  label={t("duration")}
+                  value={String(form.watch("months"))}
+                  onValueChange={(val) => form.setValue("months", Number(val))}
+                  options={[
+                    { value: "1", label: t("months1") },
+                    { value: "3", label: t("months3") },
+                    { value: "6", label: t("months6") },
+                    { value: "12", label: t("months12") },
+                  ]}
+                />
               </div>
 
               <div>
-                <label htmlFor="planId" className="block font-label-sm text-label-sm text-on-surface-variant">
+                <label htmlFor="planId" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
                   {t("plan")}
                 </label>
-                <select
-                  id="planId"
-                  {...form.register("planId")}
-                  className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
-                >
-                  {plans.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.id}
-                    </option>
-                  ))}
-                </select>
+                <ResponsiveSelect
+                  label={t("plan")}
+                  value={form.watch("planId")}
+                  onValueChange={(val) => form.setValue("planId", val)}
+                  options={plans.map((p) => ({
+                    value: p.id,
+                    label: p.id,
+                  }))}
+                />
               </div>
             </div>
 
@@ -150,7 +150,7 @@ export function CreateGiftPassDialog({ plans }: { plans: MembershipPlan[] }) {
             </div>
           </div>
 
-          <DialogFooter className="mt-4">
+          <ResponsiveDialogFooter className="mt-4">
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -166,9 +166,9 @@ export function CreateGiftPassDialog({ plans }: { plans: MembershipPlan[] }) {
               {isSubmitting && <LoaderCircleIcon className="size-4 animate-spin" />}
               {t("createGiftCard")}
             </button>
-          </DialogFooter>
+          </ResponsiveDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

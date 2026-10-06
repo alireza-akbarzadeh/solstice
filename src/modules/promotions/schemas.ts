@@ -48,7 +48,7 @@ export const applyCouponSchema = z.object({
 });
 
 export const purchaseGiftSchema = z.object({
-  months: z.coerce.number().refine((val) => [1, 3, 6, 12].includes(val), "invalidDuration"),
+  months: z.number().int().refine((val) => [1, 3, 6, 12].includes(val), "invalidDuration"),
   planId: z.string().min(1, "planRequired"),
   purchaserEmail: z.string().trim().email("invalidEmail"),
   purchaserName: z.string().trim().max(100).optional().nullable(),
