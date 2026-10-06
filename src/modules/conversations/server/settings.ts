@@ -1,4 +1,4 @@
-import { aiEnv, DEFAULT_GEMINI_MODEL, loadAiConfig, readStoredAssistantSettings, type AiMode, type StoredAssistantSettings } from "@/infrastructure/ai";
+import { aiEnv, DEFAULT_GEMINI_MODEL, listGeminiModels, loadAiConfig, readStoredAssistantSettings, type AiMode, type StoredAssistantSettings } from "@/infrastructure/ai";
 import { seal } from "@/lib/secret-box";
 import { db } from "@/server/db";
 import { settings } from "@/server/db/schema";
@@ -44,11 +44,14 @@ export type AssistantSettingsView = {
   fromEnv: { apiKey: boolean; model: boolean };
   /** On but unusable: Gemini chosen without a key. */
   missingKey: boolean;
+  /** The chat models the saved key can use (live from Google); null without a key or a connection. */
+  models: string[] | null;
 };
 
 export async function getAssistantSettingsView(): Promise<AssistantSettingsView> {
   const stored = await readStoredAssistantSettings();
   const [config, chat] = await Promise.all([loadAiConfig(stored), getChatSettings(stored)]);
+  const models = config.apiKey ? await listGeminiModels(config.apiKey) : null;
   const env = aiEnv();
   return {
     mode: config.mode,
@@ -60,6 +63,7 @@ export async function getAssistantSettingsView(): Promise<AssistantSettingsView>
     dailyLimit: String(chat.dailyLimit),
     fromEnv: { apiKey: !!env.apiKey, model: !!env.model },
     missingKey: config.mode === "gemini" && !config.apiKey,
+    models,
   };
 }
 

@@ -5,6 +5,7 @@ import type { AiProvider } from "./types";
 
 export * from "./types";
 export { aiEnv, loadAiConfig, readStoredAssistantSettings, type StoredAssistantSettings } from "./config";
+export { listGeminiModels } from "./providers/gemini";
 
 /**
  * The provider the studio chose, or null when the assistant is off (or set to Gemini without a

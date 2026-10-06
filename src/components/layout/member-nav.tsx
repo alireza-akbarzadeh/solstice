@@ -1,6 +1,6 @@
 "use client";
 
-import { BookmarkIcon, ChartNoAxesColumnIcon, SunriseIcon, UserRoundIcon, UsersIcon } from "lucide-react";
+import { BookmarkIcon, ChartNoAxesColumnIcon, MessageCircleIcon, SunriseIcon, UserRoundIcon, UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link, usePathname } from "@/i18n/navigation";
@@ -13,6 +13,7 @@ const icons = {
   "/my-practices": BookmarkIcon,
   "/progress": ChartNoAxesColumnIcon,
   "/community": UsersIcon,
+  "/guidance": MessageCircleIcon,
   "/profile": UserRoundIcon,
 } as const;
 

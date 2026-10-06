@@ -1,4 +1,4 @@
-import { BadgeCheckIcon, Flower2Icon, HeartHandshakeIcon, PinIcon } from "lucide-react";
+import { BadgeCheckIcon, Flower2Icon, HeartHandshakeIcon, PinIcon, SparklesIcon, TvIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { hasLocale } from "next-intl";
@@ -6,6 +6,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
 import { routing } from "@/i18n/routing";
 import { ReflectionsPanel } from "@/modules/community/components/reflections-panel";
 import { reflectAccess } from "@/modules/community/server/access";
@@ -98,6 +100,31 @@ export default async function CommunityPage({ params }: PageProps<"/[locale]/com
         </div>
 
         <aside className="flex flex-col gap-space-lg lg:col-span-4">
+          <section className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-space-md shadow-xs">
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-secondary">
+                <SparklesIcon className="size-4" />
+                <h2 className="font-label-md text-label-md font-semibold tracking-wider uppercase">
+                  {locale === "fa" ? "کلاس‌های زنده و ساتسانگ" : "Live Sangha & Satsang"}
+                </h2>
+              </div>
+              <Link href="/classes" className="text-xs font-label-sm text-primary hover:underline">
+                {locale === "fa" ? "برنامه" : "Schedule"}
+              </Link>
+            </div>
+            <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed mb-3">
+              {locale === "fa"
+                ? "پخش زنده مستقیم از پاویون کیوتو همراه با تنفس جمعی و پاسخ به پرسش‌های سوماتیک."
+                : "Synchronized live practices streamed directly from the Kyoto Pavilion with collective breathing."}
+            </p>
+            <Button asChild size="sm" variant="outline" className="w-full">
+              <Link href="/classes">
+                <TvIcon className="size-3.5 me-2 text-primary" />
+                <span>{locale === "fa" ? "مشاهده برنامه کلاس‌ها" : "View Live Schedule"}</span>
+              </Link>
+            </Button>
+          </section>
+
           <section className="rounded-xl bg-surface-container-low p-space-lg">
             <div className="mb-3 flex items-center gap-2 text-clay">
               <HeartHandshakeIcon className="size-5" />

@@ -1,5 +1,6 @@
 import {
   BookOpenIcon,
+  CalendarIcon,
   ChartColumnIcon,
   CreditCardIcon,
   FileTextIcon,
@@ -51,6 +52,7 @@ export const studioNavGroups: readonly { label: StudioNavLabel; items: readonly 
     label: "content",
     items: [
       { href: "/instructor/videos", label: "practices", icon: Flower2Icon, badge: "drafts" },
+      { href: "/instructor/classes", label: "classes", icon: CalendarIcon },
       { href: "/instructor/programs", label: "programs", icon: BookOpenIcon },
       { href: "/instructor/journal", label: "journal", icon: NotebookPenIcon },
       { href: "/instructor/categories", label: "categories", icon: ShapesIcon },

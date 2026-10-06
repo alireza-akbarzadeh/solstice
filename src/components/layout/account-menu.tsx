@@ -8,6 +8,7 @@ import {
   CreditCardIcon,
   LayoutGridIcon,
   LogOutIcon,
+  MessageCircleIcon,
   SunriseIcon,
   UserRoundIcon,
   UsersIcon,
@@ -60,6 +61,7 @@ const icons = {
   "/my-practices": BookmarkIcon,
   "/progress": ChartNoAxesColumnIcon,
   "/community": UsersIcon,
+  "/guidance": MessageCircleIcon,
   "/profile": UserRoundIcon,
 } as const;
 

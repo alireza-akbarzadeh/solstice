@@ -33,8 +33,13 @@ export function geminiProvider({ apiKey, model }: { apiKey: string; model: strin
             generationConfig: {
               temperature: 0.4,
               maxOutputTokens: 800,
-              // 2.5 Flash "thinks" by default, which spends the output budget and adds seconds.
-              ...(model.includes("2.5-flash") ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+              // Flash models "think" by default, which spends the output budget (replies end mid-
+              // sentence) and adds seconds. Gemini 3 takes a level; 2.5 takes a token budget.
+              ...(model.startsWith("gemini-3")
+                ? { thinkingConfig: { thinkingLevel: "minimal" } }
+                : model.includes("2.5-flash")
+                  ? { thinkingConfig: { thinkingBudget: 0 } }
+                  : {}),
             },
           }),
           signal: AbortSignal.timeout(25_000),
@@ -58,4 +63,34 @@ export function geminiProvider({ apiKey, model }: { apiKey: string; model: strin
       return { text, model };
     },
   };
+}
+
+// Speech, image, robotics and other special-purpose models also answer generateContent but
+// can't hold a text chat, so the studio's model picker leaves them out. Google still lists 1.x
+// and 2.x models but refuses them to keys created since 2026 ("no longer available to new users").
+const notForChat = /tts|image|robotics|computer-use|transcribe|customtools|omni|embedding|aqa|live|audio|banana|lyria|antigravity|research/;
+
+/**
+ * The chat models this key can use, newest first with previews last, or null when Google can't
+ * be reached or refuses the key. Google retires models for new keys, so the studio picks from
+ * this list rather than from names written into the app.
+ */
+export async function listGeminiModels(apiKey: string): Promise<string[] | null> {
+  try {
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000", {
+      headers: { "x-goog-api-key": apiKey },
+      signal: AbortSignal.timeout(8_000),
+      cache: "no-store",
+    });
+    if (!response.ok) return null;
+    const data = (await response.json()) as { models?: { name: string; supportedGenerationMethods?: string[] }[] };
+    const preview = (name: string) => /preview|exp|latest/.test(name);
+    return (data.models ?? [])
+      .filter((m) => m.supportedGenerationMethods?.includes("generateContent"))
+      .map((m) => m.name.replace(/^models\//, ""))
+      .filter((name) => name.startsWith("gemini-") && !/^gemini-[12]\./.test(name) && !notForChat.test(name))
+      .sort((a, b) => Number(preview(a)) - Number(preview(b)) || b.localeCompare(a, "en", { numeric: true }));
+  } catch {
+    return null;
+  }
 }

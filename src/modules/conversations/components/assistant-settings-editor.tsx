@@ -12,12 +12,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useRouter } from "@/i18n/navigation";
-import { aiModes } from "@/infrastructure/ai/types";
+import { aiModes, DEFAULT_GEMINI_MODEL } from "@/infrastructure/ai/types";
 
 import { assistantSettingsSchema, type AssistantSettingsFormValues } from "../schemas";
 import type { AssistantSettingsView } from "../server/settings";
@@ -35,7 +36,8 @@ const formValues = (view: AssistantSettingsView): AssistantSettingsFormValues =>
 });
 
 /**
- * The assistant: off, test replies, or Gemini with a key (write-only; GEMINI_API_KEY wins).
+ * The assistant: off, test replies, or Gemini with a key (write-only; GEMINI_API_KEY wins) and a
+ * model picked from what that key can use.
  * The studio's instructions are added to what the assistant already knows from the site (plans,
  * prices, trials, payment methods, guidance places).
  */
@@ -166,12 +168,23 @@ export function AssistantSettingsEditor({ initial }: { initial: AssistantSetting
                 render={({ field }) => (
                   <Field>
                     <FieldLabel htmlFor="assistant-model">{t("fields.model")}</FieldLabel>
-                    <Input {...field} id="assistant-model" dir="ltr" autoComplete="off" disabled={view.fromEnv.model} list="assistant-models" />
-                    <datalist id="assistant-models">
-                      <option value="gemini-2.5-flash" />
-                      <option value="gemini-2.5-flash-lite" />
-                    </datalist>
-                    <FieldDescription>{view.fromEnv.model ? t("fromEnv") : t("hints.model")}</FieldDescription>
+                    {view.models?.length && !view.fromEnv.model ? (
+                      // Live from Google, so a retired model can't be picked; the saved one stays listed.
+                      <ResponsiveSelect
+                        id="assistant-model"
+                        label={t("fields.model")}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        className="w-full"
+                        options={(view.models.includes(field.value) || !field.value ? view.models : [field.value, ...view.models]).map((model) => ({
+                          value: model,
+                          label: model === DEFAULT_GEMINI_MODEL ? t("recommended", { model }) : model,
+                        }))}
+                      />
+                    ) : (
+                      <Input {...field} id="assistant-model" dir="ltr" autoComplete="off" disabled={view.fromEnv.model} placeholder={DEFAULT_GEMINI_MODEL} />
+                    )}
+                    <FieldDescription>{view.fromEnv.model ? t("fromEnv") : view.models?.length ? t("hints.modelLive") : t("hints.model")}</FieldDescription>
                   </Field>
                 )}
               />

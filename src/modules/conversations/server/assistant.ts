@@ -1,7 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { getFormatter, getTranslations } from "next-intl/server";
 
-import type { Locale } from "@/i18n/routing";
+import { routing, type Locale } from "@/i18n/routing";
 import { AiError, getAiProvider, readStoredAssistantSettings, type AiTurn } from "@/infrastructure/ai";
 import { localize } from "@/lib/localized";
 import { formatMoney, type Currency } from "@/modules/memberships/plans";
@@ -79,10 +79,12 @@ async function siteFacts(): Promise<string> {
 
 async function systemPrompt(kind: Conversation["kind"], instructions: string) {
   const tBrand = await getTranslations({ locale: "en", namespace: "Brand" });
+  // The hand-off button as the visitor sees it, so a Persian reply doesn't name it in English.
+  const handOff = (await Promise.all(routing.locales.map(async (locale) => `"${(await getTranslations({ locale, namespace: "Conversations.widget" }))("handOff")}" (${locale})`))).join(", ");
   const rules = [
     `You are the AI assistant on the website of ${tBrand("name")} ${tBrand("studio")}. You are an AI, not ${tBrand("instructor")} and not a person; if asked, say so plainly.`,
-    "Reply in the language the person writes in (usually English or Persian). Keep answers short — a few sentences, plain text, no headings or tables.",
-    "Use only the facts below for plans, prices, trials, payments and places. Never invent prices, discounts, dates or promises. If you don't know, say so and suggest the \"Talk to a person\" button.",
+    "Reply in the language the person writes in (usually English or Persian). Keep answers short — a few sentences of plain text. The chat shows text exactly as written: no Markdown, so no asterisks, bullet dashes, backticks, headings or tables. Name pages by what they are (\"the membership page\"), not by their path.",
+    `Use only the facts below for plans, prices, trials, payments and places. Never invent prices, discounts, dates or promises. If you don't know, say so and suggest the button below the chat, named in the reply's language: ${handOff}.`,
     "You can explain yoga basics in general terms, but never diagnose, treat or give medical advice. For pain, injury, pregnancy or health conditions, suggest a doctor and the instructor's 1:1 guidance.",
     "Don't ask for passwords, card numbers or other payment details.",
   ];

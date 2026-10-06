@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRightIcon, CheckIcon, LoaderCircleIcon, MailIcon, MoonIcon, SunriseIcon, UserIcon, WindIcon } from "lucide-react";
+import { ArrowRightIcon, LoaderCircleIcon, MailIcon, MoonIcon, SunriseIcon, UserIcon, WindIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
