@@ -65,7 +65,7 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
       <ResponsiveDialogTrigger asChild>
         <button
           type="button"
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 font-label-md text-label-md text-on-primary transition-colors hover:bg-primary/90"
+          className="bg-primary font-label-md text-label-md text-on-primary hover:bg-primary/90 inline-flex items-center gap-2 rounded-xl px-4 py-2 transition-colors"
         >
           <PlusIcon className="size-4" />
           {t("createCoupon")}
@@ -74,37 +74,49 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
       <ResponsiveDialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <ResponsiveDialogHeader>
-            <ResponsiveDialogTitle>{t("createCouponTitle")}</ResponsiveDialogTitle>
-            <ResponsiveDialogDescription>{t("createCouponDesc")}</ResponsiveDialogDescription>
+            <ResponsiveDialogTitle>
+              {t("createCouponTitle")}
+            </ResponsiveDialogTitle>
+            <ResponsiveDialogDescription>
+              {t("createCouponDesc")}
+            </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
           <div className="space-y-3">
             <div>
-              <label htmlFor="code" className="block font-label-sm text-label-sm text-on-surface-variant">
+              <label
+                htmlFor="code"
+                className="font-label-sm text-label-sm text-on-surface-variant block"
+              >
                 {t("couponCodeLabel")}
               </label>
               <input
                 id="code"
                 {...form.register("code")}
                 placeholder="WELCOME20"
-                className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-label-md text-label-md uppercase tracking-wider text-on-surface focus:border-primary focus:outline-hidden"
+                className="border-outline-variant/40 bg-surface font-label-md text-label-md text-on-surface focus:border-primary mt-1 w-full rounded-lg border px-3 py-2 tracking-wider uppercase focus:outline-hidden"
               />
               {form.formState.errors.code && (
-                <p className="mt-1 font-body-sm text-body-sm text-error">
+                <p className="font-body-sm text-body-sm text-error mt-1">
                   {form.formState.errors.code.message}
                 </p>
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
-                <label htmlFor="discountType" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
+                <label
+                  htmlFor="discountType"
+                  className="font-label-sm text-label-sm text-on-surface-variant mb-1 block"
+                >
                   {t("discountType")}
                 </label>
                 <ResponsiveSelect
                   label={t("discountType")}
                   value={form.watch("discountType")}
-                  onValueChange={(val) => form.setValue("discountType", val as "percent" | "fixed")}
+                  onValueChange={(val) =>
+                    form.setValue("discountType", val as "percent" | "fixed")
+                  }
                   options={[
                     { value: "percent", label: t("percentDiscount") },
                     { value: "fixed", label: t("fixedDiscount") },
@@ -113,7 +125,10 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
               </div>
 
               <div>
-                <label htmlFor="discountValue" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
+                <label
+                  htmlFor="discountValue"
+                  className="font-label-sm text-label-sm text-on-surface-variant mb-1 block"
+                >
                   {t("discountValue")}
                 </label>
                 <input
@@ -121,25 +136,30 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
                   type="number"
                   step="any"
                   {...form.register("discountValue")}
-                  className="w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
+                  className="border-outline-variant/40 bg-surface font-body-md text-body-md text-on-surface focus:border-primary w-full rounded-lg border px-3 py-2 focus:outline-hidden"
                 />
                 {form.formState.errors.discountValue && (
-                  <p className="mt-1 font-body-sm text-body-sm text-error">
+                  <p className="font-body-sm text-body-sm text-error mt-1">
                     {form.formState.errors.discountValue.message}
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
-                <label htmlFor="duration" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
+                <label
+                  htmlFor="duration"
+                  className="font-label-sm text-label-sm text-on-surface-variant mb-1 block"
+                >
                   {t("duration")}
                 </label>
                 <ResponsiveSelect
                   label={t("duration")}
-                  value={form.watch("duration")}
-                  onValueChange={(val) => form.setValue("duration", val as "once" | "repeating")}
+                  value={form.watch("duration") ?? "once"}
+                  onValueChange={(val) =>
+                    form.setValue("duration", val as "once" | "repeating")
+                  }
                   options={[
                     { value: "once", label: t("durationOnce") },
                     { value: "repeating", label: t("durationRepeating") },
@@ -148,7 +168,10 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
               </div>
 
               <div>
-                <label htmlFor="planId" className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
+                <label
+                  htmlFor="planId"
+                  className="font-label-sm text-label-sm text-on-surface-variant mb-1 block"
+                >
                   {t("planRestriction")}
                 </label>
                 <ResponsiveSelect
@@ -168,7 +191,10 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="maxUses" className="block font-label-sm text-label-sm text-on-surface-variant">
+                <label
+                  htmlFor="maxUses"
+                  className="font-label-sm text-label-sm text-on-surface-variant block"
+                >
                   {t("maxUses")}
                 </label>
                 <input
@@ -176,32 +202,38 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
                   type="number"
                   placeholder={t("unlimited")}
                   {...form.register("maxUses")}
-                  className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
+                  className="border-outline-variant/40 bg-surface font-body-md text-body-md text-on-surface focus:border-primary mt-1 w-full rounded-lg border px-3 py-2 focus:outline-hidden"
                 />
               </div>
 
               <div>
-                <label htmlFor="expiresAt" className="block font-label-sm text-label-sm text-on-surface-variant">
+                <label
+                  htmlFor="expiresAt"
+                  className="font-label-sm text-label-sm text-on-surface-variant block"
+                >
                   {t("expiresAt")}
                 </label>
                 <input
                   id="expiresAt"
                   type="date"
                   {...form.register("expiresAt")}
-                  className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
+                  className="border-outline-variant/40 bg-surface font-body-md text-body-md text-on-surface focus:border-primary mt-1 w-full rounded-lg border px-3 py-2 focus:outline-hidden"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="description" className="block font-label-sm text-label-sm text-on-surface-variant">
+              <label
+                htmlFor="description"
+                className="font-label-sm text-label-sm text-on-surface-variant block"
+              >
                 {t("notes")}
               </label>
               <input
                 id="description"
                 {...form.register("description")}
                 placeholder={t("notesPlaceholder")}
-                className="mt-1 w-full rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:outline-hidden"
+                className="border-outline-variant/40 bg-surface font-body-md text-body-md text-on-surface focus:border-primary mt-1 w-full rounded-lg border px-3 py-2 focus:outline-hidden"
               />
             </div>
           </div>
@@ -210,16 +242,18 @@ export function CreateCouponDialog({ plans }: { plans: MembershipPlan[] }) {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-lg px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container"
+              className="font-label-md text-label-md text-on-surface-variant hover:bg-surface-container rounded-lg px-4 py-2"
             >
               {t("cancel")}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-label-md text-label-md text-on-primary hover:bg-primary/90 disabled:opacity-50"
+              className="bg-primary font-label-md text-label-md text-on-primary hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 disabled:opacity-50"
             >
-              {isSubmitting && <LoaderCircleIcon className="size-4 animate-spin" />}
+              {isSubmitting && (
+                <LoaderCircleIcon className="size-4 animate-spin" />
+              )}
               {t("saveCoupon")}
             </button>
           </ResponsiveDialogFooter>

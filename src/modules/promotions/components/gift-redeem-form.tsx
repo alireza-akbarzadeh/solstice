@@ -39,7 +39,8 @@ export function GiftRedeemForm({
         setRedeemedGift(res.data as GiftMembership);
         toast.success(t("redeemSuccess"));
       } else {
-        setError(t(`redeemErrors.${res.error}`));
+        const errKey = !res.ok ? res.error : "failed";
+        setError(t(`redeemErrors.${errKey}` as any));
       }
     } catch (err) {
       console.error(err);

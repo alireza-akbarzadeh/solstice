@@ -142,11 +142,11 @@ export function Checkout({
         });
       } else {
         setCouponResult(null);
-        setCouponError(t(`checkout.couponErrors.${res.error}`));
+        setCouponError(t(`checkout.couponErrors.${res.error}` as any));
       }
     } catch (err) {
       console.error("Coupon check failed:", err);
-      setCouponError(t("checkout.couponErrors.failed"));
+      setCouponError(t("checkout.couponErrors.failed" as any));
     } finally {
       setIsValidatingCoupon(false);
     }

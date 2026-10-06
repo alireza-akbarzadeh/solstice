@@ -489,7 +489,16 @@
       "couponPlaceholder": "مثلاً WELCOME20",
       "applyCoupon": "اعمال کد",
       "removeCoupon": "حذف",
-      "couponApplied": "کد تخفیف {code} اعمال شد"
+      "couponApplied": "کد تخفیف {code} اعمال شد",
+      "couponErrors": {
+        "notFound": "کد تخفیف یافت نشد",
+        "inactive": "این کد تخفیف دیگر فعال نیست",
+        "expired": "مهلت استفاده از این کد تخفیف به پایان رسیده است",
+        "maxUsesReached": "سقف استفاده از این کد تخفیف تکمیل شده است",
+        "invalidPlan": "این کد تخفیف برای این پلن معتبر نیست",
+        "invalidInput": "کد تخفیف نامعتبر است",
+        "failed": "خطا در اعمال کد تخفیف. لطفاً دوباره تلاش کنید."
+      }
     },
     "active": {
       "title": "شما عضو هستید",
@@ -3953,7 +3962,9 @@
     "giftStatus": {
       "active": "فعال (استفاده‌نشده)",
       "redeemed": "استفاده‌شده",
-      "pending": "در انتظار پرداخت"
+      "pending": "در انتظار پرداخت",
+      "pending_payment": "در انتظار پرداخت",
+      "canceled": "لغوشده"
     },
     "viewCard": "مشاهده کارت هدیه",
     "noReferralsYet": "هنوز دعوتی ثبت نشده است.",

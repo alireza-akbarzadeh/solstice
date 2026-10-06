@@ -27,7 +27,7 @@ export default async function StudioPromotionsPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
-  await requireInstructor();
+  await requireInstructor(locale, "/instructor/promotions");
 
   const [t, coupons, gifts, referrals, plans] = await Promise.all([
     getTranslations({ locale, namespace: "Promotions" }),
@@ -42,13 +42,13 @@ export default async function StudioPromotionsPage({
       <StudioCrumb items={[{ label: t("title") }]} />
 
       <div>
-        <p className="font-label-md text-label-md tracking-widest text-clay uppercase">
+        <p className="font-label-md text-label-md text-clay tracking-widest uppercase">
           {t("eyebrow")}
         </p>
-        <h1 className="font-headline-lg-mobile text-headline-lg-mobile tracking-tight text-primary md:font-headline-lg md:text-headline-lg">
+        <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-headline-lg md:text-headline-lg tracking-tight">
           {t("title")}
         </h1>
-        <p className="mt-2 font-body-md text-body-md text-on-surface-variant max-w-2xl">
+        <p className="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">
           {t("lede")}
         </p>
       </div>

@@ -489,7 +489,16 @@
       "couponPlaceholder": "e.g. WELCOME20",
       "applyCoupon": "Apply",
       "removeCoupon": "Remove",
-      "couponApplied": "Coupon {code} applied"
+      "couponApplied": "Coupon {code} applied",
+      "couponErrors": {
+        "notFound": "Coupon not found",
+        "inactive": "This coupon is no longer active",
+        "expired": "This coupon has expired",
+        "maxUsesReached": "This coupon has reached its maximum redemptions",
+        "invalidPlan": "This coupon is not valid for this plan",
+        "invalidInput": "Invalid coupon code",
+        "failed": "Unable to apply coupon. Please try again."
+      }
     },
     "active": {
       "title": "You’re a member",
@@ -3953,7 +3962,9 @@
     "giftStatus": {
       "active": "Active (Unclaimed)",
       "redeemed": "Redeemed",
-      "pending": "Payment Pending"
+      "pending": "Payment Pending",
+      "pending_payment": "Payment Pending",
+      "canceled": "Canceled"
     },
     "viewCard": "View Certificate",
     "noReferralsYet": "No referral activity recorded yet.",

@@ -80,6 +80,12 @@ export async function validateCoupon(
 export async function createCoupon(values: CouponFormValues): Promise<Coupon | null> {
   const normalizedCode = values.code.trim().toUpperCase();
   const expiresAt = values.expiresAt ? new Date(values.expiresAt) : null;
+  const maxUsesRaw = values.maxUses;
+  const maxUsesNum =
+    maxUsesRaw !== null && maxUsesRaw !== undefined && maxUsesRaw !== ""
+      ? Number(maxUsesRaw)
+      : null;
+  const maxUses = typeof maxUsesNum === "number" && !Number.isNaN(maxUsesNum) ? maxUsesNum : null;
 
   const [created] = await db
     .insert(coupons)
@@ -87,9 +93,9 @@ export async function createCoupon(values: CouponFormValues): Promise<Coupon | n
       code: normalizedCode,
       discountType: values.discountType,
       discountValue: Number(values.discountValue),
-      duration: values.duration,
+      duration: (values.duration as "once" | "repeating") ?? "once",
       planId: values.planId || null,
-      maxUses: values.maxUses ?? null,
+      maxUses,
       expiresAt,
       active: values.active ?? true,
       description: values.description?.trim() || null,
