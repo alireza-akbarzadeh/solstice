@@ -5,7 +5,9 @@ import { and, desc, eq, gte, sql } from "drizzle-orm";
 import type { Locale } from "@/i18n/routing";
 import { providerFor, RefundUnsupportedError, type Charge, type PaymentEvent, type PaymentProvider } from "@/infrastructure/payment";
 import { db } from "@/server/db";
-import { checkouts, membershipPlans, memberships, paymentEvents, payments, user } from "@/server/db/schema";
+import { checkouts, giftMemberships, membershipPlans, memberships, paymentEvents, payments, user } from "@/server/db/schema";
+import { getCouponByCode, recordCouponRedemption } from "@/modules/promotions/server/coupons";
+import { rewardReferralIfEligible } from "@/modules/promotions/server/referrals";
 
 import { addBillingPeriod, addDays } from "../plans";
 
@@ -24,6 +26,9 @@ export async function createCheckout(input: {
   nextPath: string;
   /** Pays the next period of the member's current membership instead of starting one. */
   renewal?: boolean;
+  couponCode?: string;
+  discountAmount?: number;
+  giftId?: string;
 }) {
   const id = `co_${randomBytes(12).toString("hex")}`;
   const [row] = await db
@@ -40,6 +45,9 @@ export async function createCheckout(input: {
       renewal: input.renewal ?? false,
       locale: input.locale,
       nextPath: input.nextPath,
+      couponCode: input.couponCode ?? null,
+      discountAmount: input.discountAmount ?? 0,
+      giftId: input.giftId ?? null,
     })
     .returning();
   return row!;
@@ -141,6 +149,28 @@ async function applyEvent(tx: Tx, provider: string, event: PaymentEvent) {
           periodStart: now,
           periodEnd,
         });
+      }
+      if (checkout.couponCode) {
+        const coupon = await getCouponByCode(checkout.couponCode);
+        if (coupon) {
+          await recordCouponRedemption(tx, {
+            couponId: coupon.id,
+            userId: checkout.userId,
+            checkoutId: checkout.id,
+            discountAmount: checkout.discountAmount,
+          });
+        }
+      }
+      try {
+        await rewardReferralIfEligible(checkout.userId, checkout.planId);
+      } catch (err) {
+        console.error("Failed to reward referral:", err);
+      }
+      if (checkout.giftId) {
+        await tx
+          .update(giftMemberships)
+          .set({ status: "active" })
+          .where(eq(giftMemberships.id, checkout.giftId));
       }
       await tx.update(checkouts).set({ status: "completed", completedAt: now }).where(eq(checkouts.id, checkout.id));
       return;

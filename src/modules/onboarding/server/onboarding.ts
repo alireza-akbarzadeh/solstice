@@ -1,12 +1,10 @@
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "@/server/db";
 import { memberOnboarding } from "@/server/db/schema";
 import type {
-  ExperienceLevel,
   MemberOnboarding,
   OnboardingAggregate,
   PrimaryGoal,
-  TimeAvailable,
 } from "../types";
 import type { OnboardingFormValues } from "../schemas";
 
@@ -42,7 +40,7 @@ export async function saveMemberOnboarding(
     experienceLevel: values.experienceLevel,
     primaryGoals: values.primaryGoals,
     timeAvailable: values.timeAvailable,
-    injuriesAndLimits: values.injuriesAndLimits?.trim() || null,
+    injuriesAndLimits: values.injuriesAndLimits?.trim() ?? null,
     completedAt: new Date(),
   };
 
@@ -92,10 +90,10 @@ export async function getOnboardingAggregate(): Promise<OnboardingAggregate> {
 
     for (const r of rows) {
       if (r.experienceLevel in result.levels) {
-        result.levels[r.experienceLevel as ExperienceLevel]++;
+        result.levels[r.experienceLevel]++;
       }
       if (r.timeAvailable in result.timeAvailable) {
-        result.timeAvailable[r.timeAvailable as TimeAvailable]++;
+        result.timeAvailable[r.timeAvailable]++;
       }
       if (Array.isArray(r.primaryGoals)) {
         for (const g of r.primaryGoals) {

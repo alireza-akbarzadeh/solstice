@@ -12,3 +12,4 @@ export * from "./conversations.ts";
 export * from "./classes.ts";
 export * from "./member-notes.ts";
 export * from "./onboarding.ts";
+export * from "./promotions.ts";

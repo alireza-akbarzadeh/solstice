@@ -28,8 +28,11 @@ import { type PracticeRhythm, practiceRhythms } from "@/modules/users/types";
 import { getSession } from "@/server/better-auth/server";
 import { getMemberOnboarding } from "@/modules/onboarding/server/onboarding";
 import { ProfileOnboardingSection } from "@/modules/onboarding/components/profile-onboarding-section";
+import { env } from "@/env";
+import { MemberReferralCard } from "@/modules/promotions/components/member-referral-card";
+import { getMemberReferralSummary } from "@/modules/promotions/server/referrals";
 
-const tabs = ["membership", "details", "security", "privacy"] as const;
+const tabs = ["membership", "referrals", "details", "security", "privacy"] as const;
 type Tab = (typeof tabs)[number];
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/profile">): Promise<Metadata> {
@@ -52,7 +55,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
 
   // Prices show in the currency the member pays in (their gateway's), which is what a switch costs.
   const currency = await getProviderCurrency(viewer.membership?.provider);
-  const [t, tMembership, tAuth, format, session, completions, display, allPlans, payments, onboarding] = await Promise.all([
+  const [t, tMembership, tAuth, format, session, completions, display, allPlans, payments, onboarding, referralSummary] = await Promise.all([
     getTranslations("Profile"),
     getTranslations("Membership"),
     getTranslations("Auth.signUp"),
@@ -63,6 +66,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
     getAllPlans(),
     getMemberPayments(viewer.user.id).catch(() => []),
     getMemberOnboarding(viewer.user.id),
+    getMemberReferralSummary(viewer.user.id),
   ]);
   const fullPlans = await getFullPlanIds();
   const user = session!.user;
@@ -287,6 +291,12 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
             </div>
           )}
           <BillingHistory payments={payments} plans={allPlans} />
+        </section>
+      )}
+
+      {tab === "referrals" && (
+        <section className="space-y-space-lg">
+          <MemberReferralCard summary={referralSummary} baseUrl={env.BETTER_AUTH_URL} />
         </section>
       )}
 

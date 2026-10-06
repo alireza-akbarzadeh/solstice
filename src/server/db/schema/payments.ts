@@ -33,6 +33,9 @@ export const checkouts = createTable(
     locale: d.varchar({ length: 8 }).notNull(),
     /** Where the member goes after the welcome page. */
     nextPath: d.text().notNull().default("/practices"),
+    couponCode: d.text(),
+    discountAmount: d.numeric({ precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+    giftId: d.text(),
     createdAt: d.timestamp({ withTimezone: true }).notNull().defaultNow(),
     completedAt: d.timestamp({ withTimezone: true }),
   }),

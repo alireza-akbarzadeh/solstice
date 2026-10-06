@@ -53,7 +53,7 @@ export async function updateMemberNote(
   noteId: number,
   body: string,
 ): Promise<boolean> {
-  const res = await db
+  await db
     .update(memberNotes)
     .set({
       body: body.trim(),

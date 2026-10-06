@@ -139,6 +139,8 @@ export default async function MembershipPage({ params, searchParams }: PageProps
           next={next}
           signedIn={!!viewer.user}
           instructorName={tBrand("instructor")}
+          initialCoupon={typeof query.coupon === "string" ? query.coupon : undefined}
+          referralCode={typeof query.ref === "string" ? query.ref : undefined}
         />
       </Container>
     </div>

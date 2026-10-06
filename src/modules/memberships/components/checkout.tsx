@@ -13,20 +13,26 @@ import {
   LockOpenIcon,
   MailIcon,
   MessageCircleHeartIcon,
+  TagIcon,
   XCircleIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { cn } from "@/lib/utils";
+import type { Locale } from "@/i18n/routing";
+import { formatMoney, type Currency } from "../plans";
+import { validateCouponAction } from "@/modules/promotions/actions";
 
 import { startCheckout } from "../actions";
 
 /** A plan as the checkout shows it, with every price already formatted on the server. */
 export type CheckoutPlan = {
   id: string;
+  rawPrice: number;
+  currency: string;
   name: string;
   description: string;
   badge: string;
@@ -80,6 +86,8 @@ export function Checkout({
   next,
   signedIn,
   instructorName,
+  initialCoupon,
+  referralCode,
 }: {
   /** Never empty; the first is the one preselected for the visitor's country. */
   methods: CheckoutMethod[];
@@ -90,10 +98,25 @@ export function Checkout({
   next: string;
   signedIn: boolean;
   instructorName: string;
+  initialCoupon?: string;
+  referralCode?: string;
 }) {
   const t = useTranslations("Membership");
+  const format = useFormatter();
+  const locale = useLocale() as Locale;
   const [methodId, setMethodId] = useState(initialMethod);
   const [planId, setPlanId] = useState(initialPlan);
+  const [couponInput, setCouponInput] = useState(initialCoupon ?? "");
+  const [couponResult, setCouponResult] = useState<{
+    code: string;
+    discountAmount: number;
+    finalAmount: number;
+    discountType: "percent" | "fixed";
+    discountValue: number;
+  } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+
   const method = methods.find((m) => m.gateway === methodId) ?? methods[0]!;
   const { plans, zero, testMode, recurring } = method;
   // Switching method keeps the plan when the new method sells it.
@@ -102,6 +125,32 @@ export function Checkout({
     plans.find((p) => p.id === planId && open(p)) ?? plans.find((p) => p.id === method.featured && open(p)) ?? plans.find(open) ?? plans[0]!;
   const trialDays = selected.trialDays;
   const hasTrial = trialDays > 0;
+
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim()) return;
+    setIsValidatingCoupon(true);
+    setCouponError(null);
+    try {
+      const res = await validateCouponAction(couponInput, selected.id, selected.rawPrice);
+      if (res.valid) {
+        setCouponResult({
+          code: res.coupon.code,
+          discountAmount: res.discountAmount,
+          finalAmount: res.finalAmount,
+          discountType: res.coupon.discountType,
+          discountValue: res.coupon.discountValue,
+        });
+      } else {
+        setCouponResult(null);
+        setCouponError(t(`checkout.couponErrors.${res.error}`));
+      }
+    } catch (err) {
+      console.error("Coupon check failed:", err);
+      setCouponError(t("checkout.couponErrors.failed"));
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
 
   const planCard = (plan: CheckoutPlan) => {
     const full = !!plan.guidance?.full;
@@ -187,6 +236,8 @@ export function Checkout({
     <form action={startCheckout} className="grid grid-cols-1 gap-gutter lg:grid-cols-12">
       <input type="hidden" name="next" value={next} />
       <input type="hidden" name="method" value={method.gateway} />
+      <input type="hidden" name="coupon" value={couponResult?.code ?? ""} />
+      {referralCode && <input type="hidden" name="ref" value={referralCode} />}
 
       <div className="flex flex-col gap-space-lg lg:col-span-7">
         <div>
@@ -290,6 +341,67 @@ export function Checkout({
             </div>
           )}
 
+          <div className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-4">
+            <div className="flex items-center justify-between">
+              <span className="font-label-sm text-label-sm tracking-wider text-clay uppercase">
+                {t("checkout.couponLabel")}
+              </span>
+              {couponResult && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCouponResult(null);
+                    setCouponInput("");
+                    setCouponError(null);
+                  }}
+                  className="font-label-sm text-label-sm text-outline hover:text-error transition-colors"
+                >
+                  {t("checkout.removeCoupon")}
+                </button>
+              )}
+            </div>
+            {!couponResult ? (
+              <div className="mt-2 flex gap-2">
+                <input
+                  id="coupon-input"
+                  type="text"
+                  value={couponInput}
+                  onChange={(e) => {
+                    setCouponInput(e.target.value.toUpperCase());
+                    setCouponError(null);
+                  }}
+                  placeholder={t("checkout.couponPlaceholder")}
+                  className="h-10 flex-1 rounded-lg border border-outline-variant/40 bg-surface px-3 font-label-md text-label-md uppercase tracking-wider text-on-surface placeholder:normal-case placeholder:tracking-normal placeholder:text-outline focus:border-primary focus:outline-hidden"
+                />
+                <button
+                  type="button"
+                  disabled={isValidatingCoupon || !couponInput.trim()}
+                  onClick={handleApplyCoupon}
+                  className="flex h-10 items-center justify-center rounded-lg bg-surface-container-high px-4 font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-container-highest disabled:opacity-50"
+                >
+                  {isValidatingCoupon ? (
+                    <LoaderCircleIcon className="size-4 animate-spin" />
+                  ) : (
+                    t("checkout.applyCoupon")
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div className="mt-2 flex items-center justify-between rounded-lg bg-primary-fixed/40 px-3 py-2 text-primary">
+                <span className="flex items-center gap-1.5 font-label-md text-label-md font-semibold">
+                  <CheckIcon className="size-4" />
+                  {couponResult.code}
+                  {couponResult.discountType === "percent"
+                    ? ` (${couponResult.discountValue}%)`
+                    : ` (-${formatMoney(format, couponResult.discountAmount, selected.currency as Currency, locale)})`}
+                </span>
+              </div>
+            )}
+            {couponError && (
+              <p className="mt-1.5 font-body-sm text-body-sm text-error">{couponError}</p>
+            )}
+          </div>
+
           <dl className="space-y-3 rounded-xl bg-surface-container-low p-4 font-body-sm text-body-sm">
             <dt className="font-label-md text-label-md tracking-widest text-clay uppercase">{t("checkout.ledger")}</dt>
             {hasTrial && (
@@ -306,6 +418,17 @@ export function Checkout({
                 {selected.price} {selected.per}
               </dd>
             </div>
+            {couponResult && (
+              <div className="flex justify-between gap-4 text-primary">
+                <dt className="flex items-center gap-1">
+                  <TagIcon className="size-3.5" />
+                  {t("checkout.couponApplied", { code: couponResult.code })}
+                </dt>
+                <dd className="font-label-md text-label-md">
+                  -{formatMoney(format, couponResult.discountAmount, selected.currency as Currency, locale)}
+                </dd>
+              </div>
+            )}
             <div className="flex justify-between gap-4">
               <dt className="text-on-surface-variant">{t("checkout.taxes")}</dt>
               <dd className="text-on-surface">{zero}</dd>
@@ -317,7 +440,13 @@ export function Checkout({
                   {hasTrial ? (recurring ? t("checkout.firstCharge", { days: trialDays }) : t("checkout.noCardNeeded")) : t("checkout.firstChargeNow")}
                 </span>
               </dt>
-              <dd className="font-headline-md text-headline-md text-primary">{hasTrial ? zero : selected.price}</dd>
+              <dd className="font-headline-md text-headline-md text-primary">
+                {hasTrial
+                  ? zero
+                  : couponResult
+                    ? formatMoney(format, couponResult.finalAmount, selected.currency as Currency, locale)
+                    : selected.price}
+              </dd>
             </div>
           </dl>
 
@@ -327,7 +456,11 @@ export function Checkout({
                 ? t("checkout.ctaGuest")
                 : hasTrial
                   ? t("checkout.cta", { days: trialDays })
-                  : t("checkout.ctaNow", { price: selected.price })
+                  : t("checkout.ctaNow", {
+                      price: couponResult
+                        ? formatMoney(format, couponResult.finalAmount, selected.currency as Currency, locale)
+                        : selected.price,
+                    })
             }
           />
           {!signedIn && <p className="text-center font-body-sm text-body-sm text-on-surface-variant">{t("checkout.guestNote")}</p>}

@@ -16,6 +16,8 @@ import type { MembershipPlan } from "./plans";
 import { applyPaymentEvents, createCheckout, setCheckoutReference } from "./server/billing";
 import { renewsByHand, setCancelAtPeriodEnd, setPlan } from "./server/memberships";
 import { getViewer } from "./server/viewer";
+import { validateCoupon } from "@/modules/promotions/server/coupons";
+import { recordReferral } from "@/modules/promotions/server/referrals";
 
 /** Only plans currently on sale can be bought or switched to. */
 async function activePlan(value: FormDataEntryValue | null) {
@@ -27,6 +29,8 @@ export async function startCheckout(formData: FormData) {
   const plan = await activePlan(formData.get("plan"));
   const next = safeNextPath(formData.get("next"));
   const asked = formData.get("method");
+  const rawCoupon = formData.get("coupon")?.toString().trim();
+  const rawRef = formData.get("ref")?.toString().trim();
   const viewer = await getViewer();
 
   // Account first, then payment: come back here with the same plan, method and destination.
@@ -34,6 +38,8 @@ export async function startCheckout(formData: FormData) {
     const query = new URLSearchParams();
     if (plan) query.set("plan", plan.id);
     if (typeof asked === "string" && asked) query.set("method", asked);
+    if (rawCoupon) query.set("coupon", rawCoupon);
+    if (rawRef) query.set("ref", rawRef);
     const back = withNext(query.size ? `/membership?${query}` : "/membership", next);
     return redirect({ href: withNext("/sign-up", back), locale });
   }
@@ -41,6 +47,15 @@ export async function startCheckout(formData: FormData) {
   if (!plan) return redirect({ href: withNext("/membership", next), locale });
   // Every guidance place on the plan is taken: back to the plans with a note.
   if (!(await hasPlaceFor(plan, viewer.membership))) return redirect({ href: withNext(`/membership?plan=${plan.id}&full=1`, next), locale });
+
+  // Record referral if provided and this member doesn't have an existing membership
+  if (rawRef && !viewer.membership) {
+    try {
+      await recordReferral(rawRef, viewer.user.id);
+    } catch (e) {
+      console.error("Failed to record referral:", e);
+    }
+  }
 
   // The visitor's pick wins over the country's preselection, as long as it can sell the plan.
   const usable = methodsFor((await getPaymentMethods()).methods, plan);
@@ -50,13 +65,47 @@ export async function startCheckout(formData: FormData) {
   // A free trial is for a first membership only; anyone who has had one pays from day one.
   const trialDays = viewer.membership ? 0 : plan.trialDays;
 
+  // Evaluate coupon discount if supplied
+  let chargedPrice = plan.prices[currency]!;
+  let discountAmount = 0;
+  let appliedCouponCode: string | undefined = undefined;
+
+  if (rawCoupon) {
+    const validation = await validateCoupon(rawCoupon, plan.id, chargedPrice);
+    if (validation.valid) {
+      discountAmount = validation.discountAmount;
+      chargedPrice = validation.finalAmount;
+      appliedCouponCode = validation.coupon.code;
+    }
+  }
+
+  // If 100% discounted (e.g. comped code), grant immediately without hitting gateway
+  if (chargedPrice === 0) {
+    const checkout = await createCheckout({
+      userId: viewer.user.id,
+      plan: { ...plan, price: 0, trialDays: 0 },
+      currency,
+      provider: provider.id,
+      locale,
+      nextPath: next,
+      couponCode: appliedCouponCode,
+      discountAmount,
+    });
+    await applyPaymentEvents(provider.id, [
+      { id: `free_${checkout.id}`, type: "checkout.completed", checkoutId: checkout.id, subscriptionId: null, charge: null },
+    ]);
+    return redirect({ href: { pathname: "/membership/welcome", query: { checkout: checkout.id } }, locale });
+  }
+
   const checkout = await createCheckout({
     userId: viewer.user.id,
-    plan: { ...plan, price: plan.prices[currency]!, trialDays },
+    plan: { ...plan, price: chargedPrice, trialDays },
     currency,
     provider: provider.id,
     locale,
     nextPath: next,
+    couponCode: appliedCouponCode,
+    discountAmount,
   });
   // A gateway that can't charge later (Zarinpal) has nothing to take for a trial: it starts
   // here, and the member pays when it ends.

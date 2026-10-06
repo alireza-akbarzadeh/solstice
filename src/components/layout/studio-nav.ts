@@ -15,6 +15,7 @@ import {
   SettingsIcon,
   ShapesIcon,
   TagIcon,
+  TicketPercentIcon,
   UsersIcon,
   WalletIcon,
   type LucideIcon,
@@ -73,6 +74,7 @@ export const studioNavGroups: readonly { label: StudioNavLabel; items: readonly 
     label: "business",
     items: [
       { href: "/instructor/plans", label: "plans", icon: TagIcon },
+      { href: "/instructor/promotions", label: "promotions", icon: TicketPercentIcon },
       { href: "/instructor/payments", label: "payments", icon: WalletIcon },
       { href: "/instructor/revenue", label: "revenue", icon: CreditCardIcon },
     ],

@@ -21,7 +21,10 @@ import {
 import { LocalizedField } from "@/modules/instructor/components/localized-field";
 import type { Localized } from "@/lib/localized";
 import type { LiveClass, LiveClassAccess, LiveClassStatus } from "../../types";
-import { createLiveClassAction, updateLiveClassAction } from "../../server/actions";
+import {
+  createLiveClassAction,
+  updateLiveClassAction,
+} from "../../server/actions";
 
 export function ClassEditorDialog({
   liveClass,
@@ -40,10 +43,17 @@ export function ClassEditorDialog({
   const isEditing = Boolean(liveClass);
 
   // Form state
-  const [title, setTitle] = useState<Localized>(liveClass?.title ?? { en: "", fa: "" });
-  const [description, setDescription] = useState<Localized>(liveClass?.description ?? { en: "", fa: "" });
+  const [title, setTitle] = useState<Localized>(
+    liveClass?.title ?? { en: "", fa: "" },
+  );
+  const [description, setDescription] = useState<Localized>(
+    liveClass?.description ?? { en: "", fa: "" },
+  );
   const [locationName, setLocationName] = useState<Localized>(
-    liveClass?.locationName ?? { en: "Kyoto Pavilion · Pavilion Main", fa: "پاویون کیوتو · تالار اصلی" },
+    liveClass?.locationName ?? {
+      en: "Kyoto Pavilion · Pavilion Main",
+      fa: "پاویون کیوتو · تالار اصلی",
+    },
   );
 
   const defaultDate = liveClass
@@ -51,13 +61,28 @@ export function ClassEditorDialog({
     : new Date(Date.now() + 24 * 3600 * 1000).toISOString().slice(0, 16);
 
   const [scheduledAt, setScheduledAt] = useState(defaultDate);
-  const [durationMinutes, setDurationMinutes] = useState(liveClass?.durationMinutes ?? 60);
-  const [joinUrl, setJoinUrl] = useState(liveClass?.joinUrl ?? "https://meet.jit.si/ArteYogaSanctuary-Session");
-  const [capacity, setCapacity] = useState<string>(liveClass?.capacity ? String(liveClass.capacity) : "");
-  const [access, setAccess] = useState<LiveClassAccess>(liveClass?.access ?? "members_only");
-  const [status, setStatus] = useState<LiveClassStatus>(liveClass?.status ?? "scheduled");
-  const [replayPracticeSlug, setReplayPracticeSlug] = useState(liveClass?.replayPracticeSlug ?? "");
-  const [soundscapeDetails, setSoundscapeDetails] = useState(liveClass?.soundscapeDetails ?? "Elena + 432Hz Bowls · Voice 70% · Chimes 30%");
+  const [durationMinutes, setDurationMinutes] = useState(
+    liveClass?.durationMinutes ?? 60,
+  );
+  const [joinUrl, setJoinUrl] = useState(
+    liveClass?.joinUrl ?? "https://meet.jit.si/ArteYogaSanctuary-Session",
+  );
+  const [capacity, setCapacity] = useState<string>(
+    liveClass?.capacity ? String(liveClass.capacity) : "",
+  );
+  const [access, setAccess] = useState<LiveClassAccess>(
+    liveClass?.access ?? "members_only",
+  );
+  const [status, setStatus] = useState<LiveClassStatus>(
+    liveClass?.status ?? "scheduled",
+  );
+  const [replayPracticeSlug, setReplayPracticeSlug] = useState(
+    liveClass?.replayPracticeSlug ?? "",
+  );
+  const [soundscapeDetails, setSoundscapeDetails] = useState(
+    liveClass?.soundscapeDetails ??
+      "Elena + 432Hz Bowls · Voice 70% · Chimes 30%",
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,13 +117,15 @@ export function ClassEditorDialog({
         access,
         status,
         replayPracticeSlug: replayPracticeSlug || null,
-        coverImage: liveClass?.coverImage ?? "/images/classes/kyoto-pavilion-stage.jpg",
+        coverImage:
+          liveClass?.coverImage ?? "/images/classes/kyoto-pavilion-stage.jpg",
         soundscapeDetails: soundscapeDetails || null,
       };
 
-      const res = isEditing && liveClass
-        ? await updateLiveClassAction(liveClass.id, payload)
-        : await createLiveClassAction(payload);
+      const res =
+        isEditing && liveClass
+          ? await updateLiveClassAction(liveClass.id, payload)
+          : await createLiveClassAction(payload);
 
       if (res.ok) {
         toast.success(isEditing ? t("successUpdate") : t("successCreate"));
@@ -115,13 +142,13 @@ export function ClassEditorDialog({
       <ResponsiveDialogTrigger asChild>
         {trigger ?? (
           <Button size="sm">
-            <PlusIcon className="size-4 me-1.5" />
+            <PlusIcon className="me-1.5 size-4" />
             <span>{t("newClass")}</span>
           </Button>
         )}
       </ResponsiveDialogTrigger>
 
-      <ResponsiveDialogContent className="max-w-2xl">
+      <ResponsiveDialogContent className="!max-w-3xl">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
             {isEditing ? t("editClass") : t("newClass")}
@@ -133,11 +160,7 @@ export function ClassEditorDialog({
 
         <form onSubmit={handleSubmit} className="space-y-space-md py-space-xs">
           {/* Title in both languages */}
-          <LocalizedField
-            label="Title"
-            value={title}
-            onChange={setTitle}
-          />
+          <LocalizedField label="Title" value={title} onChange={setTitle} />
 
           {/* Description in both languages */}
           <LocalizedField
@@ -156,9 +179,9 @@ export function ClassEditorDialog({
           />
 
           {/* Date, Duration & Capacity */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+          <div className="gap-space-sm grid grid-cols-1 md:grid-cols-3">
             <div>
-              <label className="font-label-sm text-label-sm text-clay block mb-1">
+              <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("scheduledAt")}
               </label>
               <Input
@@ -170,7 +193,7 @@ export function ClassEditorDialog({
             </div>
 
             <div>
-              <label className="font-label-sm text-label-sm text-clay block mb-1">
+              <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("durationMinutes")}
               </label>
               <Input
@@ -184,7 +207,7 @@ export function ClassEditorDialog({
             </div>
 
             <div>
-              <label className="font-label-sm text-label-sm text-clay block mb-1">
+              <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("capacity")}
               </label>
               <Input
@@ -198,9 +221,9 @@ export function ClassEditorDialog({
           </div>
 
           {/* Meeting Link & Soundscape */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+          <div className="gap-space-sm grid grid-cols-1 md:grid-cols-2">
             <div>
-              <label className="font-label-sm text-label-sm text-clay block mb-1">
+              <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("joinUrl")}
               </label>
               <Input
@@ -213,7 +236,7 @@ export function ClassEditorDialog({
             </div>
 
             <div>
-              <label className="font-label-sm text-label-sm text-clay block mb-1">
+              <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("soundscapeDetails")}
               </label>
               <Input
@@ -226,15 +249,15 @@ export function ClassEditorDialog({
           </div>
 
           {/* Access, Status & Replay Attachment */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+          <div className="gap-space-sm grid grid-cols-1 md:grid-cols-3">
             <div>
-              <label className="font-label-sm text-label-sm text-clay block mb-1">
+              <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("access")}
               </label>
               <select
                 value={access}
                 onChange={(e) => setAccess(e.target.value as LiveClassAccess)}
-                className="w-full h-10 px-3 rounded-lg bg-surface-container border border-outline-variant/40 text-on-surface text-body-sm font-body-sm focus:outline-none"
+                className="bg-surface-container border-outline-variant/40 text-on-surface text-body-sm font-body-sm h-10 w-full rounded-lg border px-3 focus:outline-none"
               >
                 <option value="members_only">{t("accessMembers")}</option>
                 <option value="open">{t("accessOpen")}</option>
@@ -242,13 +265,13 @@ export function ClassEditorDialog({
             </div>
 
             <div>
-              <label className="font-label-sm text-label-sm text-clay block mb-1">
+              <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("status")}
               </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as LiveClassStatus)}
-                className="w-full h-10 px-3 rounded-lg bg-surface-container border border-outline-variant/40 text-on-surface text-body-sm font-body-sm focus:outline-none"
+                className="bg-surface-container border-outline-variant/40 text-on-surface text-body-sm font-body-sm h-10 w-full rounded-lg border px-3 focus:outline-none"
               >
                 <option value="scheduled">Scheduled</option>
                 <option value="live">Live in Broadcast</option>
@@ -258,13 +281,13 @@ export function ClassEditorDialog({
             </div>
 
             <div>
-              <label className="font-label-sm text-label-sm text-clay block mb-1">
+              <label className="font-label-sm text-label-sm text-clay mb-1 block">
                 {t("replayPractice")}
               </label>
               <select
                 value={replayPracticeSlug}
                 onChange={(e) => setReplayPracticeSlug(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-surface-container border border-outline-variant/40 text-on-surface text-body-sm font-body-sm focus:outline-none"
+                className="bg-surface-container border-outline-variant/40 text-on-surface text-body-sm font-body-sm h-10 w-full rounded-lg border px-3 focus:outline-none"
               >
                 <option value="">{t("noneReplay")}</option>
                 {availablePractices.map((p) => (
@@ -276,14 +299,16 @@ export function ClassEditorDialog({
             </div>
           </div>
 
-          <ResponsiveDialogFooter className="pt-space-sm border-t border-outline-variant/30">
+          <ResponsiveDialogFooter className="pt-space-sm border-outline-variant/30 border-t">
             <ResponsiveDialogClose asChild>
               <Button type="button" variant="outline">
                 Cancel
               </Button>
             </ResponsiveDialogClose>
             <Button type="submit" disabled={isPending}>
-              {isPending && <Loader2Icon className="size-4 animate-spin me-2" />}
+              {isPending && (
+                <Loader2Icon className="me-2 size-4 animate-spin" />
+              )}
               <span>{isPending ? t("saving") : t("save")}</span>
             </Button>
           </ResponsiveDialogFooter>

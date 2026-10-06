@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { CompassIcon, HeartIcon, SparklesIcon, TimerIcon } from "lucide-react";
+import { CompassIcon } from "lucide-react";
 import type { OnboardingAggregate, PrimaryGoal } from "@/modules/onboarding/types";
 
 export function InsightsOnboardingTile({

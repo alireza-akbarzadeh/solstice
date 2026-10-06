@@ -28,6 +28,8 @@ export async function getPlanDisplay(locale: Locale, currency?: Currency) {
     const billed = t(byHand ? "paidEvery" : "billedEvery", { months: plan.intervalMonths });
     return {
       id: plan.id,
+      rawPrice: plan.price,
+      currency: catalog.currency,
       name: localize(plan.name, locale),
       description: localize(plan.description, locale),
       badge: localize(plan.badge, locale),
