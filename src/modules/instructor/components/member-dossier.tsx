@@ -32,6 +32,8 @@ import {
 } from "@/modules/instructor/actions";
 import { giftPassMonths, giftPassSchema, type GiftPassValues } from "@/modules/instructor/schemas";
 import type { MemberDossier } from "@/modules/instructor/server/members";
+import { DossierOnboardingCard } from "./dossier/dossier-onboarding-card";
+import { DossierNotesSection } from "./dossier/dossier-notes-section";
 
 import type { StudioPlanOption } from "./member-directory";
 
@@ -113,6 +115,8 @@ export function MemberDossierPanel({ dossier, isSelf, plans }: { dossier: Member
           </div>
         ))}
       </dl>
+
+      <DossierOnboardingCard onboarding={dossier.onboarding} />
 
       <GiftPassForm key={account.id} userId={account.id} plans={plans} />
 
@@ -249,6 +253,8 @@ export function MemberDossierPanel({ dossier, isSelf, plans }: { dossier: Member
           </ul>
         </section>
       )}
+
+      <DossierNotesSection userId={account.id} initialNotes={dossier.notes} />
     </aside>
   );
 }

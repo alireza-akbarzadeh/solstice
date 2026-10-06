@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { unstable_rethrow } from "next/navigation";
 
 import { testModeEnabled } from "@/modules/memberships/server/test-mode";
 import { getViewer } from "@/modules/memberships/server/viewer";
@@ -31,6 +32,8 @@ export async function AssistantDock() {
       </Suspense>
     );
   } catch (error) {
+    // Next signals "this page reads the request" by throwing; let that through.
+    unstable_rethrow(error);
     // No conversations table yet (migration not run): no widget, page unaffected.
     console.error("Quick help could not load.", error);
     return null;

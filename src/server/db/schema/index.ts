@@ -10,3 +10,5 @@ export * from "./memberships.ts";
 export * from "./payments.ts";
 export * from "./conversations.ts";
 export * from "./classes.ts";
+export * from "./member-notes.ts";
+export * from "./onboarding.ts";

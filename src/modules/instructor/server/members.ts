@@ -4,6 +4,8 @@ import type { Locale } from "@/i18n/routing";
 import { localize } from "@/lib/localized";
 import { db } from "@/server/db";
 import { comments, favorites, memberships, practiceCompletions, practices, user } from "@/server/db/schema";
+import { getMemberNotes } from "@/modules/onboarding/server/notes";
+import { getMemberOnboarding } from "@/modules/onboarding/server/onboarding";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -62,7 +64,7 @@ export async function getMemberDossier(locale: Locale, userId: string) {
     .limit(1);
   if (!account) return null;
 
-  const [membership, totals, sessions, reflections] = await Promise.all([
+  const [membership, totals, sessions, reflections, notes, onboarding] = await Promise.all([
     db.select().from(memberships).where(eq(memberships.userId, userId)).limit(1),
     db
       .select({
@@ -89,6 +91,8 @@ export async function getMemberDossier(locale: Locale, userId: string) {
       .where(eq(comments.userId, userId))
       .orderBy(desc(comments.createdAt))
       .limit(4),
+    getMemberNotes(userId),
+    getMemberOnboarding(userId),
   ]);
 
   const [saves] = await db.select({ n: sql<number>`count(*)::int` }).from(favorites).where(eq(favorites.userId, userId));
@@ -101,5 +105,7 @@ export async function getMemberDossier(locale: Locale, userId: string) {
     saves: saves?.n ?? 0,
     recent: sessions.map((s) => ({ ...s, title: s.title ? localize(s.title, locale) : s.practiceSlug })),
     reflections,
+    notes,
+    onboarding,
   };
 }

@@ -26,6 +26,8 @@ import { DeleteAccount, PasswordForm, ProfileForm } from "@/modules/users/compon
 import { ProfileAppearanceSection } from "@/components/theme/theme-toggle";
 import { type PracticeRhythm, practiceRhythms } from "@/modules/users/types";
 import { getSession } from "@/server/better-auth/server";
+import { getMemberOnboarding } from "@/modules/onboarding/server/onboarding";
+import { ProfileOnboardingSection } from "@/modules/onboarding/components/profile-onboarding-section";
 
 const tabs = ["membership", "details", "security", "privacy"] as const;
 type Tab = (typeof tabs)[number];
@@ -50,7 +52,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
 
   // Prices show in the currency the member pays in (their gateway's), which is what a switch costs.
   const currency = await getProviderCurrency(viewer.membership?.provider);
-  const [t, tMembership, tAuth, format, session, completions, display, allPlans, payments] = await Promise.all([
+  const [t, tMembership, tAuth, format, session, completions, display, allPlans, payments, onboarding] = await Promise.all([
     getTranslations("Profile"),
     getTranslations("Membership"),
     getTranslations("Auth.signUp"),
@@ -60,6 +62,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
     getPlanDisplay(locale, currency),
     getAllPlans(),
     getMemberPayments(viewer.user.id).catch(() => []),
+    getMemberOnboarding(viewer.user.id),
   ]);
   const fullPlans = await getFullPlanIds();
   const user = session!.user;
@@ -289,6 +292,8 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
 
       {tab === "details" && (
         <div className="space-y-space-lg">
+          <ProfileOnboardingSection onboarding={onboarding} />
+
           <section className="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm">
             <h2 className="mb-space-md font-headline-sm text-headline-sm text-primary">{t("details.title")}</h2>
             <ProfileForm initial={{ name: user.name, email: user.email, practiceRhythm: rhythm, marketingOptIn: !!user.marketingOptIn }} />

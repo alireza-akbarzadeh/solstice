@@ -1708,7 +1708,21 @@
         "streamTitle": "Practice stream",
         "sessionLine": "{minutes, number} min · {when}",
         "reflectionsTitle": "Recent reflections",
-        "private": "Private"
+        "private": "Private",
+        "onboardingTitle": "Sanctuary Profile",
+        "noOnboarding": "No onboarding questionnaire completed yet.",
+        "physicalLimits": "Physical considerations & sensitivities",
+        "notesTitle": "Private Instructor Notes",
+        "notesPrivate": "Private — only visible to studio instructors",
+        "addNote": "Add Note",
+        "cancel": "Cancel",
+        "saveNote": "Save Note",
+        "notePlaceholder": "Record personal alignment tips, injury cautions, or guidance milestones...",
+        "noNotes": "No private notes recorded for this member yet.",
+        "noteAdded": "Private note saved.",
+        "noteDeleted": "Private note deleted.",
+        "deleteNoteConfirm": "Are you sure you want to delete this instructor note?",
+        "deleteNote": "Delete note"
       }
     },
     "revenue": {
@@ -2954,7 +2968,9 @@
         "never": "No practice yet · joined {date}",
         "trialEnds": "trial ends {date}"
       },
-      "empty": "Nothing in this period yet."
+      "empty": "Nothing in this period yet.",
+      "onboardingTitle": "Student Intentions & Experience",
+      "onboardingResponses": "{count} member profiles"
     },
     "payments": {
       "metaTitle": "Payments · Studio",
@@ -3838,5 +3854,47 @@
     "classFullError": "This live session is fully booked.",
     "rsvpSuccess": "Mat reserved successfully.",
     "cancelRsvpSuccess": "Mat reservation canceled."
+  },
+  "Onboarding": {
+    "dialogTitle": "Personalize Your Practice",
+    "dialogDesc": "Share your experience and intentions so we can tailor sessions to your rhythm and well-being.",
+    "beginCta": "Set Practice Intentions",
+    "levelLabel": "Experience Level",
+    "levels": {
+      "beginner": "Gentle Beginning (New to yoga)",
+      "intermediate": "Flow & Foundation (Some experience)",
+      "advanced": "Deep & Dynamic (Experienced practitioner)"
+    },
+    "goalsLabel": "Primary Intentions & Focus",
+    "goals": {
+      "flexibility": "Flexibility & Ease",
+      "strength": "Core & Full-Body Strength",
+      "stress_relief": "Stress Relief & Calm",
+      "spine_health": "Spine & Posture Care",
+      "breathwork": "Pranayama & Breath Awareness",
+      "meditation": "Mindfulness & Stillness",
+      "restoration": "Restorative & Deep Rest"
+    },
+    "timeLabel": "Preferred Session Rhythm",
+    "times": {
+      "15_mins": "15 minutes (Quick reset)",
+      "30_mins": "30 minutes (Balanced daily flow)",
+      "45_plus": "45+ minutes (Deep immersion)"
+    },
+    "injuriesLabel": "Physical Considerations & Limits",
+    "injuriesPlaceholder": "e.g., Lower back sensitivity, knee strain, wrist comfort, pregnancy (optional)...",
+    "saveButton": "Save Practice Profile",
+    "savedSuccess": "Your practice intentions have been saved.",
+    "saveError": "Could not save your preferences. Please try again.",
+    "profileSectionTitle": "Your Sanctuary Rhythm & Intentions",
+    "profileSectionDesc": "Keep your intentions and physical sensitivities updated anytime for personalized practice guidance.",
+    "uncompletedTitle": "Personalize Your Sanctuary Practice",
+    "uncompletedSubtitle": "Set your rhythm, intentions, and physical sensitivities in one minute.",
+    "curatedForYou": "Curated For Your Rhythm",
+    "editPreferences": "Adjust intentions",
+    "startCurated": "Begin practice",
+    "minutesBadge": "{count} mins",
+    "optional": "(optional)",
+    "injuriesHint": "Share anything you would like your instructors to keep in mind."
   }
 }

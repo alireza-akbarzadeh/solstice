@@ -26,6 +26,8 @@ import { StudioFilterPills } from "@/modules/instructor/components/studio-filter
 import { StudioPageHeader } from "@/modules/instructor/components/studio-page-header";
 import { getStudioInsights, insightRanges, type InsightRange, type Totals } from "@/modules/instructor/server/insights";
 import { requireInstructor } from "@/modules/memberships/server/viewer";
+import { getOnboardingAggregate } from "@/modules/onboarding/server/onboarding";
+import { InsightsOnboardingTile } from "@/modules/instructor/components/insights-onboarding-tile";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/instructor/insights">): Promise<Metadata> {
   const { locale } = await params;
@@ -58,11 +60,12 @@ export default async function StudioInsightsPage({ params, searchParams }: PageP
   const raw = Number(Array.isArray(query.weeks) ? query.weeks[0] : query.weeks);
   const weeks: InsightRange = insightRanges.includes(raw as InsightRange) ? (raw as InsightRange) : insightRanges[0];
 
-  const [t, format, categoryName, data] = await Promise.all([
+  const [t, format, categoryName, data, onboardingAggregate] = await Promise.all([
     getTranslations("Studio.insights"),
     getFormatter(),
     getCategoryName("practice"),
     getStudioInsights(weeks),
+    getOnboardingAggregate(),
   ]);
   const n = (value: number) => format.number(value);
   const week = (iso: string) => format.dateTime(new Date(iso), { month: "short", day: "numeric", timeZone: "UTC" });
@@ -183,6 +186,8 @@ export default async function StudioInsightsPage({ params, searchParams }: PageP
           <ColumnChart points={active} label={t("active.title")} />
         </section>
       </div>
+
+      <InsightsOnboardingTile aggregate={onboardingAggregate} />
 
       {/* When members practise */}
       <section className={card}>

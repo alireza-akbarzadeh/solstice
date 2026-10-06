@@ -23,6 +23,8 @@ import { getFavoriteSlugs } from "@/modules/progress/server/favorites";
 import { findProgramDay, getProgram } from "@/modules/programs/server/get-program";
 import { getEnrolledProgramSlugs, getProgramProgress } from "@/modules/programs/server/progress";
 import { getCategoryName } from "@/modules/categories/server/names";
+import { getMemberOnboarding } from "@/modules/onboarding/server/onboarding";
+import { DashboardCuratedRhythm } from "@/modules/onboarding/components/dashboard-curated-rhythm";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -42,7 +44,7 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
 
   const viewer = await requireUser(locale, "/dashboard");
   const userId = viewer.user.id;
-  const [t, tPractice, format, completions, favorites, programSlugs, library, journal] = await Promise.all([
+  const [t, tPractice, format, completions, favorites, programSlugs, library, journal, onboarding] = await Promise.all([
     getTranslations("Dashboard"),
     getTranslations("Practice"),
     getFormatter(),
@@ -51,6 +53,7 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
     getEnrolledProgramSlugs(userId),
     getAllPracticeSummaries(locale),
     getJournal(locale, { page: 1 }),
+    getMemberOnboarding(userId),
   ]);
 
   // Programs the member follows, with where they are in each.
@@ -131,6 +134,8 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
               </Link>
             </div>
           )}
+
+          <DashboardCuratedRhythm onboarding={onboarding} library={library} />
 
           <section className="overflow-hidden rounded-xl bg-surface-container-low shadow-sm">
             <Link href={hero.href} className="group block">
