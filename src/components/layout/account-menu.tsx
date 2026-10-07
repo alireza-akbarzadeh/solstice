@@ -96,9 +96,9 @@ export function AccountMenu({
       aria-label={t("menu")}
       className="rounded-full transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95"
     >
-      <Avatar className="size-10 border border-outline-variant/30 ring-2 ring-transparent transition-all hover:ring-primary/40">
+      <Avatar className="size-9 sm:size-9.5 border border-outline-variant/25 ring-2 ring-primary/20 hover:ring-primary/50 shadow-xs transition-all">
         {user.image && <AvatarImage src={user.image} alt="" />}
-        <AvatarFallback className="bg-primary-container font-headline-sm text-sm font-semibold text-on-primary">
+        <AvatarFallback className="bg-primary font-sans text-xs font-semibold tracking-wider text-on-primary">
           {initial}
         </AvatarFallback>
       </Avatar>

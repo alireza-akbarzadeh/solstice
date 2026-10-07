@@ -111,7 +111,7 @@ export function PushToggle() {
           type="button"
           disabled={isPending}
           aria-label={status === "on" ? t("disable") : t("enable")}
-          className="relative inline-flex size-10 items-center justify-center rounded-full border border-outline-variant/30 bg-surface-container-low/60 text-on-surface-variant backdrop-blur-sm transition-all hover:bg-surface-container hover:text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:bg-surface-container-high/40 dark:hover:bg-surface-container-highest/80"
+          className="relative inline-flex size-8 items-center justify-center rounded-full text-on-surface-variant transition-all hover:bg-surface-container/80 hover:text-on-surface focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:hover:bg-surface-container-highest/60"
         >
           {isPending ? (
             <Loader2Icon className="size-4 animate-spin text-on-surface-variant" />

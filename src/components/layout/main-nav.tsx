@@ -18,7 +18,7 @@ export function MainNav({
   return (
     <nav
       aria-label={t("primary")}
-      className="hidden min-w-0 flex-1 items-center gap-5 overflow-x-auto lg:flex"
+      className="hidden min-w-0 flex-1 items-center justify-center gap-1 xl:gap-1.5 overflow-x-auto lg:flex"
     >
       {[
         ...publicNavItems.map((item) => ({
@@ -34,13 +34,16 @@ export function MainNav({
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "font-label-lg text-label-lg max-w-44 shrink-0 truncate border-b border-transparent py-1 tracking-wider transition-colors duration-300",
+              "group relative inline-flex shrink-0 items-center justify-center rounded-full px-3.5 py-1.5 text-[13px] xl:text-[13.5px] font-medium tracking-normal transition-all duration-200 select-none",
               active
-                ? "border-primary text-primary font-bold"
-                : "text-on-surface-variant hover:text-primary",
+                ? "bg-primary/10 text-primary font-semibold shadow-[inset_0_1px_2px_rgba(47,79,65,0.06)] dark:bg-primary/20 dark:text-primary-fixed"
+                : "text-on-surface-variant/85 hover:bg-surface-container-high/50 hover:text-on-surface active:scale-[0.97]",
             )}
           >
-            {item.label}
+            <span>{item.label}</span>
+            {active && (
+              <span className="absolute bottom-1 inset-x-0 mx-auto size-1 rounded-full bg-primary dark:bg-primary-fixed shadow-xs" />
+            )}
           </Link>
         );
       })}

@@ -27,6 +27,7 @@ import {
 } from "@/modules/pages/defaults";
 import { getPageInventory, getSitePage } from "@/modules/pages/server/library";
 import { getHomeSections } from "@/modules/home/server/sections";
+import { HomeSectionsEditor } from "@/modules/instructor/components/home-sections-editor";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -54,7 +55,7 @@ export default async function StudioPages({ params, searchParams }: Props) {
     getTranslations("Studio.pages"),
     getPageInventory(),
     slug ? getSitePage(slug) : Promise.resolve(null),
-    slug === "home" ? getHomeSections() : Promise.resolve(undefined),
+    getHomeSections(),
   ]);
   if (slug && !row && !creating) notFound();
   const inventory = rows.map((page) => ({
@@ -117,6 +118,11 @@ export default async function StudioPages({ params, searchParams }: Props) {
           live={!!row?.publishedContent}
           homeSections={homeSections}
         />
+      )}
+      {!slug && !creating && (
+        <section className="flex flex-col gap-3">
+          <HomeSectionsEditor initialSections={homeSections} />
+        </section>
       )}
       <section className="flex flex-col gap-4">
         <h2 className="font-headline-sm text-headline-sm">

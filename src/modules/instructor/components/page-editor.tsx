@@ -187,6 +187,9 @@ export function PageEditor({
       <Alert>
         <AlertDescription>{t("draftHint")}</AlertDescription>
       </Alert>
+      {savedSlug === "home" && homeSections && (
+        <HomeSectionsEditor initialSections={homeSections} />
+      )}
       {!builtin && (
         <FieldGroup>
           <Controller
@@ -275,9 +278,6 @@ export function PageEditor({
       )}
       {definition && template && (
         <>
-          {savedSlug === "home" && homeSections && (
-            <HomeSectionsEditor initialSections={homeSections} />
-          )}
           {definition.manage && (
             <p className="text-on-surface-variant text-sm">
               {t("collectionHint")}{" "}

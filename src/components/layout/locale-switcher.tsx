@@ -41,12 +41,12 @@ export function LocaleSwitcher() {
           type="button"
           disabled={isPending}
           aria-label={t("label")}
-          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-outline-variant/30 bg-surface-container-low/60 px-3 font-mono text-xs font-semibold uppercase text-on-surface-variant backdrop-blur-sm transition-all hover:bg-surface-container hover:text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:bg-surface-container-high/40 dark:hover:bg-surface-container-highest/80"
+          className="inline-flex h-8 items-center gap-1.5 rounded-full px-2.5 font-mono text-[11px] font-bold uppercase tracking-wider text-on-surface-variant transition-all hover:bg-surface-container/80 hover:text-on-surface focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:hover:bg-surface-container-highest/60"
         >
           {isPending ? (
-            <Loader2Icon className="size-4 animate-spin text-on-surface-variant" />
+            <Loader2Icon className="size-3.5 animate-spin text-on-surface-variant" />
           ) : (
-            <GlobeIcon className="size-4 text-on-surface-variant" />
+            <GlobeIcon className="size-3.5 text-on-surface-variant" />
           )}
           <span>{locale}</span>
         </button>
