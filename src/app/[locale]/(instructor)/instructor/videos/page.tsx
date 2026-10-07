@@ -120,6 +120,7 @@ export default async function StudioPracticesPage({
     poster: null,
     videoAssetId: null,
     videoProvider: null,
+    chapters: [],
   };
 
   const tCategories = await getTranslations("Studio.categories");
@@ -213,6 +214,7 @@ export default async function StudioPracticesPage({
                   poster: editRow.poster,
                   videoAssetId: editRow.videoAssetId,
                   videoProvider: editRow.videoProvider,
+                  chapters: editRow.chapters ?? [],
                 }
               : blank
           }

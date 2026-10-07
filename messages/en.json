@@ -1593,6 +1593,24 @@
             "mock": "Video file"
           }
         },
+        "chapters": {
+          "eyebrow": "Timeline & navigation",
+          "title": "Practice chapters",
+          "lede": "Divide this session into moments on the video timeline. Members can skip between chapters and follow along.",
+          "add": "Add chapter",
+          "addFirst": "Add first chapter",
+          "sortByTime": "Sort by time",
+          "empty": "No chapters yet",
+          "emptyHint": "Add chapters with timestamps (e.g. 00:00 Warm up, 12:30 Solar Flow, 25:00 Savasana) to guide members along the timeline.",
+          "timestamp": "Start time",
+          "timestampHint": "mm:ss or seconds (e.g. 04:30)",
+          "titleLabel": "Chapter title",
+          "descLabel": "Description (optional)",
+          "moveUp": "Move up",
+          "moveDown": "Move down",
+          "remove": "Remove chapter",
+          "count": "{count, number} {count, plural, one {chapter} other {chapters}}"
+        },
         "create": "Create practice",
         "created": "Practice saved as a draft.",
         "invalid": "Some fields still need filling — a title, summary, series line and cover image, in both languages.",

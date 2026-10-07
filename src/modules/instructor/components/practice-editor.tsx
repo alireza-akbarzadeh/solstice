@@ -38,9 +38,11 @@ import {
   type PracticeAccess,
   type PracticeCategory,
   type PropSetup,
+  type StoredPracticeChapter,
 } from "@/modules/practices/types";
 
 import { LocalizedField } from "./localized-field";
+import { PracticeChaptersEditor } from "./practice-chapters-editor";
 
 export type EditablePractice = {
   /** Null while writing a new practice; saving mints one from the English title. */
@@ -61,6 +63,7 @@ export type EditablePractice = {
   videoAssetId: string | null;
   videoProvider: string | null;
   status: "draft" | "published";
+  chapters: StoredPracticeChapter[];
 };
 
 const videoLink = (practice: EditablePractice) =>
@@ -114,6 +117,7 @@ export function PracticeEditor({
       imageAlt: practice.imageAlt,
       poster: practice.poster ?? "",
       videoUrl: videoLink(practice),
+      chapters: practice.chapters ?? [],
     },
   });
   const videoUrl = useWatch({ control: form.control, name: "videoUrl" });
@@ -485,6 +489,11 @@ export function PracticeEditor({
           </Button>
         </div>
       </section>
+
+      {/* Chapters column (12 of 12) */}
+      <div className="xl:col-span-12">
+        <PracticeChaptersEditor control={form.control} disabled={busy} />
+      </div>
     </form>
   );
 }

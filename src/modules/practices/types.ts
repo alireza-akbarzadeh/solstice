@@ -38,6 +38,8 @@ export type PracticeChapter = {
   startSeconds: number;
 };
 
+export type { StoredPracticeChapter } from "./chapters";
+
 export type PracticeDetail = PracticeSummary & {
   status: "draft" | "published";
   /** The video at its VideoProvider (a URL, a YouTube id, an Aparat hash); null until attached. */

@@ -52,7 +52,7 @@ export async function getContentInventory(
       durationMinutes: practices.durationMinutes,
       previewSeconds: practices.previewSeconds,
       videoAssetId: practices.videoAssetId,
-      chapters: sql<number>`jsonb_array_length(${practices.chapters})`,
+      chapters: sql<number>`coalesce(jsonb_array_length(${practices.chapters}), 0)::int`,
       updatedAt: practices.updatedAt,
       publishedAt: practices.publishedAt,
       sessions: sql<number>`(select count(*)::int from ${practiceCompletions} where ${practiceCompletions.practiceSlug} = ${practices.slug})`,

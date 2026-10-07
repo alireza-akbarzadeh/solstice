@@ -6,6 +6,7 @@ import type {
   PracticeAccess,
   PracticeCategory,
   PropSetup,
+  StoredPracticeChapter,
 } from "@/modules/practices/types";
 import { db } from "@/server/db";
 import {
@@ -96,6 +97,7 @@ export async function updatePracticeMeta(
     // A preview length only means anything on a members-only practice.
     .set({
       ...fields,
+      ...(fields.chapters !== undefined ? { chapters: fields.chapters } : {}),
       ...(fields.videoAssetId === null ? { status: "draft" as const } : {}),
       previewSeconds:
         fields.access === "members" ? fields.previewSeconds : null,
@@ -142,6 +144,7 @@ export type NewPracticeFields = {
   poster: string | null;
   videoAssetId?: string | null;
   videoProvider?: string | null;
+  chapters?: StoredPracticeChapter[];
 };
 
 /** A new practice starts as a draft, optionally with its video already attached. */
@@ -156,8 +159,8 @@ export async function createPractice(slug: string, fields: NewPracticeFields) {
       reviewCount: 0,
       focus: [],
       implements: [],
-      chapters: [],
       ...fields,
+      chapters: fields.chapters ?? [],
       previewSeconds:
         fields.access === "members" ? fields.previewSeconds : null,
     })

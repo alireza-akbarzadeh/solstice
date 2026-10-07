@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-import { parseVideoAsset } from "@/infrastructure/video/assets";
-
-import { isCategorySlug } from "@/modules/categories/types";
+import { parseVideoAsset } from "../../infrastructure/video/assets.ts";
+import { isCategorySlug } from "../categories/types.ts";
+import { sortChapters } from "./chapters.ts";
 
 /** A cover or poster: a local `/images/…` path or an https:// address. */
 export const isCoverUrl = (value: string) => {
@@ -17,6 +17,19 @@ export const isCoverUrl = (value: string) => {
 const required = (max: number) =>
   z.object({ en: z.string().trim().min(1).max(max), fa: z.string().trim().min(1).max(max) });
 const optional = (max: number) => z.object({ en: z.string().trim().max(max), fa: z.string().trim().max(max) });
+
+/** A chapter within a practice timeline. */
+export const chapterSchema = z.object({
+  title: required(200),
+  description: optional(500),
+  startSeconds: z.number().int().min(0).max(86400),
+});
+
+export const chapterFormSchema = z.object({
+  title: optional(200),
+  description: optional(500),
+  startSeconds: z.number().min(0).default(0),
+});
 
 /** A practice's metadata as the server stores it (the studio actions validate with this). */
 export const practiceFieldsSchema = z.object({
@@ -38,6 +51,7 @@ export const practiceFieldsSchema = z.object({
     .max(2000)
     .refine((value) => !value || isCoverUrl(value))
     .nullable(),
+  chapters: z.array(chapterSchema),
 });
 
 /**
@@ -62,11 +76,25 @@ export const practiceFormSchema = z
     imageAlt: optional(300),
     poster: z.string(),
     videoUrl: z.string(),
+    chapters: z.array(chapterFormSchema).default([]),
   })
-  .transform(({ videoUrl, ...form }) => {
+  .transform(({ videoUrl, chapters, ...form }) => {
     const video = parseVideoAsset(videoUrl);
+    const normalizedChapters = (chapters ?? []).map((c) => ({
+      title: {
+        en: c.title?.en?.trim() ?? "",
+        fa: c.title?.fa?.trim() ?? "",
+      },
+      description: {
+        en: c.description?.en?.trim() ?? "",
+        fa: c.description?.fa?.trim() ?? "",
+      },
+      startSeconds: Math.floor(c.startSeconds ?? 0),
+    }));
+
     return {
       ...form,
+      chapters: sortChapters(normalizedChapters),
       previewSeconds: form.access === "members" ? form.previewSeconds : null,
       image:
         form.image.trim() || (video?.providerId === "youtube" ? `https://i.ytimg.com/vi/${video.assetId}/hqdefault.jpg` : ""),
