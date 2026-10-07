@@ -26,6 +26,7 @@ import {
   editableContentFor,
 } from "@/modules/pages/defaults";
 import { getPageInventory, getSitePage } from "@/modules/pages/server/library";
+import { getHomeSections } from "@/modules/home/server/sections";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -49,10 +50,11 @@ export default async function StudioPages({ params, searchParams }: Props) {
   const query = await searchParams;
   const creating = query.new === "1";
   const slug = typeof query.edit === "string" ? query.edit : undefined;
-  const [t, rows, row] = await Promise.all([
+  const [t, rows, row, homeSections] = await Promise.all([
     getTranslations("Studio.pages"),
     getPageInventory(),
     slug ? getSitePage(slug) : Promise.resolve(null),
+    slug === "home" ? getHomeSections() : Promise.resolve(undefined),
   ]);
   if (slug && !row && !creating) notFound();
   const inventory = rows.map((page) => ({
@@ -113,6 +115,7 @@ export default async function StudioPages({ params, searchParams }: Props) {
           definition={row?.builtin ? (pageDefinition(row.slug) ?? null) : null}
           template={row?.builtin ? defaultContentFor(row.slug) : null}
           live={!!row?.publishedContent}
+          homeSections={homeSections}
         />
       )}
       <section className="flex flex-col gap-4">

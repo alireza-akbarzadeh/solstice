@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -9,6 +10,8 @@ import { InstructorFeature } from "@/components/marketing/home/instructor-featur
 import { MembershipBanner } from "@/components/marketing/home/membership-banner";
 import { Testimonials } from "@/components/marketing/home/testimonials";
 import { routing } from "@/i18n/routing";
+import type { HomeSectionId } from "@/modules/home/sections";
+import { getHomeSections } from "@/modules/home/server/sections";
 
 // Stitch: design/stitch/screens/solstice-studio-desktop-home.html
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
@@ -16,14 +19,20 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
+  const sections = await getHomeSections();
+
+  const sectionComponents: Record<HomeSectionId, ReactNode> = {
+    hero: <Hero key="hero" />,
+    featuredPractices: <FeaturedPractices key="featuredPractices" locale={locale} />,
+    featuredPrograms: <FeaturedPrograms key="featuredPrograms" locale={locale} />,
+    instructor: <InstructorFeature key="instructor" />,
+    testimonials: <Testimonials key="testimonials" />,
+    membership: <MembershipBanner key="membership" />,
+  };
+
   return (
     <>
-      <Hero />
-      <FeaturedPractices locale={locale} />
-      <FeaturedPrograms locale={locale} />
-      <InstructorFeature />
-      <Testimonials />
-      <MembershipBanner />
+      {sections.filter((s) => s.enabled).map((s) => sectionComponents[s.id])}
     </>
   );
 }

@@ -2158,6 +2158,49 @@
         }
       }
     },
+    "homeSections": {
+      "title": "Homepage sections & layout",
+      "description": "Reorder sections or hide any part of the homepage. Changes appear immediately on the public site.",
+      "sections": {
+        "hero": {
+          "title": "Hero banner & introduction",
+          "description": "Top sanctuary photograph, mindful headline, and primary buttons."
+        },
+        "featuredPractices": {
+          "title": "Featured practices",
+          "description": "Curated practice cards with duration pills and video thumbnails."
+        },
+        "featuredPrograms": {
+          "title": "Featured programs & journeys",
+          "description": "Immersive multi-day journey highlight banners."
+        },
+        "instructor": {
+          "title": "Instructor story",
+          "description": "Elena's portrait, personal note, and sanctuary philosophy."
+        },
+        "testimonials": {
+          "title": "Practitioner words & testimonials",
+          "description": "Reflections and heartfelt words from community members."
+        },
+        "membership": {
+          "title": "Membership invitation banner",
+          "description": "Closing sanctuary invitation with membership benefits."
+        }
+      },
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "visible": "Visible",
+      "hidden": "Hidden",
+      "save": "Save section layout",
+      "saved": "Homepage section layout saved",
+      "reset": "Reset layout",
+      "resetConfirm": "Reset homepage sections to their default order and visibility?",
+      "resetSuccess": "Homepage sections restored to default",
+      "errors": {
+        "saveFailed": "Failed to save section layout.",
+        "resetFailed": "Failed to reset layout."
+      }
+    },
     "pages": {
       "title": "Pages",
       "eyebrow": "Website content",

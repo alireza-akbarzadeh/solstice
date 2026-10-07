@@ -29,6 +29,8 @@ import { LocalizedField } from "./localized-field";
 import { JournalBlockEditor } from "./journal-block-editor";
 import { PageCopyFields } from "./page-copy-fields";
 import { DeleteContentButton } from "./delete-content-button";
+import type { HomeSectionConfig } from "@/modules/home/sections";
+import { HomeSectionsEditor } from "./home-sections-editor";
 
 type PageForm = { slug: string; content: PageContent };
 
@@ -43,12 +45,14 @@ export function PageEditor({
   definition,
   template,
   live,
+  homeSections,
 }: {
   initial: PageContent;
   initialSlug: string | null;
   definition: PageDefinition | null;
   template: PageContent | null;
   live: boolean;
+  homeSections?: HomeSectionConfig[];
 }) {
   const t = useTranslations("Studio.pages");
   const labels = (
@@ -271,6 +275,9 @@ export function PageEditor({
       )}
       {definition && template && (
         <>
+          {savedSlug === "home" && homeSections && (
+            <HomeSectionsEditor initialSections={homeSections} />
+          )}
           {definition.manage && (
             <p className="text-on-surface-variant text-sm">
               {t("collectionHint")}{" "}
