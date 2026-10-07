@@ -5,7 +5,6 @@ import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useFormStatus } from "react-dom";
 import { CheckIcon, GiftIcon, LoaderCircleIcon, SparklesIcon } from "lucide-react";
 
-import type { Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { formatMoney, type Currency, type MembershipPlan } from "@/modules/memberships/plans";
 import { startGiftCheckout } from "../actions";
@@ -35,7 +34,7 @@ export function GiftPurchaseForm({
 }) {
   const t = useTranslations("Promotions");
   const format = useFormatter();
-  const locale = useLocale() as Locale;
+  const locale = useLocale();
   const [selectedMonths, setSelectedMonths] = useState<number>(3);
 
   const basePrice = plan.prices[currency] ?? plan.price;

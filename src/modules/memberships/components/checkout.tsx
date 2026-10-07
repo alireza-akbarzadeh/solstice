@@ -22,7 +22,6 @@ import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { cn } from "@/lib/utils";
-import type { Locale } from "@/i18n/routing";
 import { formatMoney, type Currency } from "../plans";
 import { validateCouponAction } from "@/modules/promotions/actions";
 
@@ -103,7 +102,7 @@ export function Checkout({
 }) {
   const t = useTranslations("Membership");
   const format = useFormatter();
-  const locale = useLocale() as Locale;
+  const locale = useLocale();
   const [methodId, setMethodId] = useState(initialMethod);
   const [planId, setPlanId] = useState(initialPlan);
   const [couponInput, setCouponInput] = useState(initialCoupon ?? "");
@@ -142,11 +141,19 @@ export function Checkout({
         });
       } else {
         setCouponResult(null);
-        setCouponError(t(`checkout.couponErrors.${res.error}` as any));
+        const map: Record<string, string> = {
+          notFound: t("checkout.couponErrors.notFound"),
+          inactive: t("checkout.couponErrors.inactive"),
+          expired: t("checkout.couponErrors.expired"),
+          maxUsesReached: t("checkout.couponErrors.maxUsesReached"),
+          invalidPlan: t("checkout.couponErrors.invalidPlan"),
+          invalidInput: t("checkout.couponErrors.invalidInput"),
+        };
+        setCouponError(map[res.error] ?? t("checkout.couponErrors.failed"));
       }
     } catch (err) {
       console.error("Coupon check failed:", err);
-      setCouponError(t("checkout.couponErrors.failed" as any));
+      setCouponError(t("checkout.couponErrors.failed"));
     } finally {
       setIsValidatingCoupon(false);
     }

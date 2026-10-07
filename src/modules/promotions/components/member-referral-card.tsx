@@ -42,7 +42,7 @@ export function MemberReferralCard({
         // User canceled or failed
       }
     } else {
-      handleCopy();
+      await handleCopy();
     }
   };
 

@@ -29,8 +29,10 @@ export async function startCheckout(formData: FormData) {
   const plan = await activePlan(formData.get("plan"));
   const next = safeNextPath(formData.get("next"));
   const asked = formData.get("method");
-  const rawCoupon = formData.get("coupon")?.toString().trim();
-  const rawRef = formData.get("ref")?.toString().trim();
+  const couponEntry = formData.get("coupon");
+  const rawCoupon = typeof couponEntry === "string" ? couponEntry.trim() : undefined;
+  const refEntry = formData.get("ref");
+  const rawRef = typeof refEntry === "string" ? refEntry.trim() : undefined;
   const viewer = await getViewer();
 
   // Account first, then payment: come back here with the same plan, method and destination.

@@ -31,21 +31,23 @@ export default async function InstructorLayout({ children, params }: LayoutProps
   return (
     // The sidebar shows tooltips for its icons once collapsed, so it needs a TooltipProvider.
     <TooltipProvider>
-      <SidebarProvider>
-        <StudioSidebar badges={badges} />
-        <SidebarInset className="min-w-0 bg-surface">
-          {/* Pages extend the header breadcrumb with <StudioCrumb>, so both share this provider. */}
-          <StudioBreadcrumbProvider>
-            <StudioHeader>
-              <LocaleSwitcher />
-              {isPushConfigured() && <PushToggle />}
-              <AccountMenu user={viewer.user} status="instructor" />
-            </StudioHeader>
-            <div className="min-w-0 flex-1 px-margin-mobile py-space-lg md:px-space-lg md:py-space-xl">{children}</div>
-          </StudioBreadcrumbProvider>
-        </SidebarInset>
-        <TestPanel />
-      </SidebarProvider>
+      <div className="studio-shell font-sans min-h-screen">
+        <SidebarProvider>
+          <StudioSidebar badges={badges} />
+          <SidebarInset className="min-w-0 bg-surface">
+            {/* Pages extend the header breadcrumb with <StudioCrumb>, so both share this provider. */}
+            <StudioBreadcrumbProvider>
+              <StudioHeader>
+                <LocaleSwitcher />
+                {isPushConfigured() && <PushToggle />}
+                <AccountMenu user={viewer.user} status="instructor" />
+              </StudioHeader>
+              <div className="min-w-0 flex-1 px-margin-mobile py-space-lg md:px-space-lg md:py-space-xl">{children}</div>
+            </StudioBreadcrumbProvider>
+          </SidebarInset>
+          <TestPanel />
+        </SidebarProvider>
+      </div>
     </TooltipProvider>
   );
 }

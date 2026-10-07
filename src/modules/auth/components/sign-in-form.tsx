@@ -10,7 +10,11 @@ import { Checkbox } from "@/components/shared/checkbox";
 import { FieldError } from "@/components/ui/field";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { signInSchema, validationKey, type SignInValues } from "@/modules/auth/schemas";
+import {
+  signInSchema,
+  validationKey,
+  type SignInValues,
+} from "@/modules/auth/schemas";
 import { authClient } from "@/server/better-auth/client";
 
 import { PasswordField } from "./password-field";
@@ -33,9 +37,17 @@ export function SignInForm({ next }: { next: string }) {
 
   const onSubmit = form.handleSubmit(async (values) => {
     setError(null);
-    const { error } = await authClient.signIn.email({ email: values.email, password: values.password, rememberMe: values.remember });
+    const { error } = await authClient.signIn.email({
+      email: values.email,
+      password: values.password,
+      rememberMe: values.remember,
+    });
     if (error) {
-      setError(error.code === "INVALID_EMAIL_OR_PASSWORD" ? t("errors.invalidCredentials") : t("errors.generic"));
+      setError(
+        error.code === "INVALID_EMAIL_OR_PASSWORD"
+          ? t("errors.invalidCredentials")
+          : t("errors.generic"),
+      );
       return;
     }
     router.replace(next);
@@ -49,16 +61,23 @@ export function SignInForm({ next }: { next: string }) {
         name="email"
         render={({ field, fieldState }) => (
           <div className="space-y-1.5">
-            <label htmlFor="email" className="block font-label-md text-label-md text-on-surface">
+            <label
+              htmlFor="email"
+              className="font-label-md text-label-md text-on-surface block"
+            >
               {t("email")}
             </label>
             <div
               className={cn(
-                "relative rounded-lg bg-surface-container transition-all duration-200 focus-within:bg-surface-container-lowest focus-within:ring-2 focus-within:ring-primary/20",
-                fieldState.invalid && "ring-2 ring-error/50 focus-within:ring-error/50",
+                "bg-surface-container focus-within:bg-surface-container-lowest focus-within:ring-primary/20 relative rounded-lg transition-all duration-200 focus-within:ring-2",
+                fieldState.invalid &&
+                  "ring-error/50 focus-within:ring-error/50 ring-2",
               )}
             >
-              <AtSignIcon aria-hidden className="pointer-events-none absolute start-3.5 top-1/2 size-5 -translate-y-1/2 text-on-surface-variant" />
+              <AtSignIcon
+                aria-hidden
+                className="text-on-surface-variant pointer-events-none absolute start-3.5 top-1/2 size-5 -translate-y-1/2"
+              />
               <input
                 {...field}
                 id="email"
@@ -67,11 +86,17 @@ export function SignInForm({ next }: { next: string }) {
                 dir="ltr"
                 placeholder={t("emailPlaceholder")}
                 aria-invalid={fieldState.invalid || undefined}
-                aria-describedby={fieldState.invalid ? "email-error" : undefined}
-                className="w-full rounded-lg bg-transparent py-3.5 ps-11 pe-4 text-start font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none rtl:text-end"
+                aria-describedby={
+                  fieldState.invalid ? "email-error" : undefined
+                }
+                className="font-body-md text-body-md text-on-surface placeholder:text-outline w-full rounded-lg bg-transparent py-3.5 ps-11 pe-4 text-start focus:outline-none rtl:text-end"
               />
             </div>
-            {fieldState.invalid && <FieldError id="email-error">{message(fieldState.error?.message)}</FieldError>}
+            {fieldState.invalid && (
+              <FieldError id="email-error">
+                {message(fieldState.error?.message)}
+              </FieldError>
+            )}
           </div>
         )}
       />
@@ -87,9 +112,16 @@ export function SignInForm({ next }: { next: string }) {
             value={field.value}
             onChange={field.onChange}
             onBlur={field.onBlur}
-            error={fieldState.invalid ? message(fieldState.error?.message) : undefined}
+            error={
+              fieldState.invalid
+                ? message(fieldState.error?.message)
+                : undefined
+            }
             trailing={
-              <Link href="/forgot-password" className="font-label-sm text-label-sm text-clay underline-offset-4 hover:underline">
+              <Link
+                href="/forgot-password"
+                className="font-label-sm text-label-sm text-clay underline-offset-4 hover:underline"
+              >
                 {t("signIn.forgot")}
               </Link>
             }
@@ -101,14 +133,21 @@ export function SignInForm({ next }: { next: string }) {
         control={form.control}
         name="remember"
         render={({ field }) => (
-          <Checkbox checked={field.value} onChange={field.onChange} containerClassName="pt-1">
+          <Checkbox
+            checked={field.value}
+            onChange={field.onChange}
+            containerClassName="pt-1"
+          >
             {t("signIn.remember")}
           </Checkbox>
         )}
       />
 
       {error && (
-        <p role="alert" className="rounded-lg bg-error-container px-4 py-3 font-body-sm text-body-sm text-on-error-container">
+        <p
+          role="alert"
+          className="bg-error-container font-body-sm text-body-sm text-on-error-container rounded-lg px-4 py-3"
+        >
           {error}
         </p>
       )}
@@ -116,7 +155,7 @@ export function SignInForm({ next }: { next: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="group flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary-container font-label-lg text-label-lg text-surface shadow-sm transition-all duration-300 hover:bg-primary active:scale-[0.99] disabled:opacity-80"
+        className="group bg-primary-container font-label-lg text-label-lg text-surface hover:bg-primary flex h-12 w-full items-center justify-center gap-2 rounded-lg shadow-sm transition-all duration-300 active:scale-[0.99] disabled:opacity-80"
       >
         {pending ? (
           <>

@@ -93,12 +93,12 @@ export async function createCoupon(values: CouponFormValues): Promise<Coupon | n
       code: normalizedCode,
       discountType: values.discountType,
       discountValue: Number(values.discountValue),
-      duration: (values.duration as "once" | "repeating") ?? "once",
-      planId: values.planId || null,
+      duration: values.duration ?? "once",
+      planId: values.planId ?? null,
       maxUses,
       expiresAt,
       active: values.active ?? true,
-      description: values.description?.trim() || null,
+      description: values.description?.trim() ?? null,
     })
     .returning();
 

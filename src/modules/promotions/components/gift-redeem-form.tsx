@@ -39,8 +39,14 @@ export function GiftRedeemForm({
         setRedeemedGift(res.data as GiftMembership);
         toast.success(t("redeemSuccess"));
       } else {
+        const errMap: Record<string, string> = {
+          not_found: t("redeemErrors.not_found"),
+          already_redeemed: t("redeemErrors.already_redeemed"),
+          unpaid: t("redeemErrors.unpaid"),
+          failed: t("redeemErrors.failed"),
+        };
         const errKey = !res.ok ? res.error : "failed";
-        setError(t(`redeemErrors.${errKey}` as any));
+        setError(errMap[errKey] ?? t("redeemErrors.failed"));
       }
     } catch (err) {
       console.error(err);

@@ -208,7 +208,7 @@ export function StudioPromotionsView({
                     </div>
 
                     <div className="font-body-sm text-body-sm text-on-surface-variant col-span-2">
-                      {coupon.planId ? coupon.planId : t("allPlans")}
+                      {coupon.planId ?? t("allPlans")}
                     </div>
 
                     <div className="col-span-2 flex items-center gap-2">
@@ -308,7 +308,7 @@ export function StudioPromotionsView({
 
                     <div className="col-span-3 flex flex-col">
                       <span className="font-label-md text-label-md text-on-surface font-medium">
-                        {gift.recipientName || t("anonymousRecipient")}
+                        {gift.recipientName ?? t("anonymousRecipient")}
                       </span>
                       {gift.recipientEmail && (
                         <span className="font-body-sm text-body-sm text-on-surface-variant">
@@ -406,7 +406,7 @@ export function StudioPromotionsView({
                   >
                     <div className="col-span-4 flex flex-col">
                       <span className="font-label-md text-label-md text-on-surface font-medium">
-                        {r.referrerName || r.referrerEmail || r.referrerId}
+                        {r.referrerName ?? r.referrerEmail ?? r.referrerId}
                       </span>
                       {r.referrerEmail && (
                         <span className="font-body-sm text-body-sm text-outline">
@@ -417,8 +417,8 @@ export function StudioPromotionsView({
 
                     <div className="col-span-4 flex flex-col">
                       <span className="font-label-md text-label-md text-on-surface font-medium">
-                        {r.referredUserName ||
-                          r.referredUserEmail ||
+                        {r.referredUserName ??
+                          r.referredUserEmail ??
                           r.referredUserId}
                       </span>
                       {r.referredUserEmail && (

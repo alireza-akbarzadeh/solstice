@@ -136,13 +136,20 @@ export async function recordReferralSignupAction(
 
 export async function startGiftCheckout(formData: FormData) {
   const locale = await getLocale();
-  const months = Number(formData.get("months") || 1);
-  const planId = formData.get("planId")?.toString() || "monthly";
-  const purchaserEmail = formData.get("purchaserEmail")?.toString().trim();
-  const purchaserName = formData.get("purchaserName")?.toString().trim() || null;
-  const recipientEmail = formData.get("recipientEmail")?.toString().trim() || null;
-  const recipientName = formData.get("recipientName")?.toString().trim() || null;
-  const personalMessage = formData.get("personalMessage")?.toString().trim() || null;
+  const rawMonths = formData.get("months");
+  const months = typeof rawMonths === "string" ? Number(rawMonths) : 1;
+  const rawPlanId = formData.get("planId");
+  const planId = typeof rawPlanId === "string" && rawPlanId ? rawPlanId : "monthly";
+  const rawPurchaserEmail = formData.get("purchaserEmail");
+  const purchaserEmail = typeof rawPurchaserEmail === "string" && rawPurchaserEmail.trim() ? rawPurchaserEmail.trim() : null;
+  const rawPurchaserName = formData.get("purchaserName");
+  const purchaserName = typeof rawPurchaserName === "string" && rawPurchaserName.trim() ? rawPurchaserName.trim() : null;
+  const rawRecipientEmail = formData.get("recipientEmail");
+  const recipientEmail = typeof rawRecipientEmail === "string" && rawRecipientEmail.trim() ? rawRecipientEmail.trim() : null;
+  const rawRecipientName = formData.get("recipientName");
+  const recipientName = typeof rawRecipientName === "string" && rawRecipientName.trim() ? rawRecipientName.trim() : null;
+  const rawPersonalMessage = formData.get("personalMessage");
+  const personalMessage = typeof rawPersonalMessage === "string" && rawPersonalMessage.trim() ? rawPersonalMessage.trim() : null;
 
   const viewer = await getViewer();
   if (!viewer.user) {
@@ -169,8 +176,8 @@ export async function startGiftCheckout(formData: FormData) {
     {
       months,
       planId: plan.id,
-      purchaserEmail: purchaserEmail || viewer.user.email,
-      purchaserName: purchaserName || viewer.user.name,
+      purchaserEmail: purchaserEmail ?? viewer.user.email,
+      purchaserName: purchaserName ?? viewer.user.name,
       recipientEmail,
       recipientName,
       personalMessage,

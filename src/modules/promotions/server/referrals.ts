@@ -71,7 +71,7 @@ export async function recordReferral(
 
 export async function rewardReferralIfEligible(
   referredUserId: string,
-  planId: string = "monthly",
+  planId = "monthly",
 ): Promise<boolean> {
   const [existing] = await db
     .select()

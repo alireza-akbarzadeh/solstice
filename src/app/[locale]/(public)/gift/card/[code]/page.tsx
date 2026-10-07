@@ -3,7 +3,6 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { PrinterIcon, SparklesIcon } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
@@ -86,7 +85,7 @@ export default async function GiftCardPage({
                 {t("presentedTo")}
               </span>
               <h1 className="font-headline-lg text-headline-lg text-primary">
-                {gift.recipientName || t("belovedPractitioner")}
+                {gift.recipientName ?? t("belovedPractitioner")}
               </h1>
               <p className="font-headline-md text-headline-md text-clay">
                 {t("monthsSanctuaryAccess", { months: gift.months })}

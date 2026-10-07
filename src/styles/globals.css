@@ -181,7 +181,8 @@
 }
 
 :root {
-  --app-font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --app-font-sans: "Inter", "Geist", var(--font-manrope, 'Manrope'), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --studio-font-sans: "Inter", "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --app-font-heading: var(--font-cormorant), ui-serif, Georgia, serif;
 
   --radius: 0.5rem;
@@ -373,7 +374,8 @@
  */
 html:lang(fa) {
   --app-font-sans: var(--font-vazirmatn), ui-sans-serif, system-ui, sans-serif;
-  --app-font-heading: var(--font-vazirmatn), ui-sans-serif, system-ui, sans-serif;
+  --app-font-heading: var(--font-vazirmatn, "Vazirmatn"), Tahoma, Arial, sans-serif;
+  --studio-font-sans: var(--font-vazirmatn, "Vazirmatn"), Tahoma, Arial, sans-serif;
 }
 
 /* All editable controls use Vazirmatn, including Persian content inside English forms.
@@ -424,3 +426,44 @@ html:lang(fa) {
     display: none !important;
   }
 }
+
+/*
+ * Studio / Admin Console Typography
+ * Modern, survey-backed dashboard typography: Inter / Geist / system UI with tabular numbers (tnum).
+ * Ensures crisp, highly-readable metrics, tables, filters, and cards without editorial serif fonts.
+ */
+.studio-shell,
+[data-slot="sidebar-wrapper"] {
+  --app-font-heading: var(--studio-font-sans);
+  --font-heading: var(--studio-font-sans);
+  --font-display: var(--studio-font-sans);
+  --font-display-mobile: var(--studio-font-sans);
+  --font-headline-lg: var(--studio-font-sans);
+  --font-headline-lg-mobile: var(--studio-font-sans);
+  --font-headline-md: var(--studio-font-sans);
+  --font-headline-sm: var(--studio-font-sans);
+  font-family: var(--studio-font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+}
+
+.studio-shell h1,
+.studio-shell h2,
+.studio-shell h3,
+.studio-shell h4,
+.studio-shell .font-heading,
+.studio-shell .font-display,
+.studio-shell [class*="font-headline"] {
+  font-family: var(--studio-font-sans) !important;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.studio-shell .font-headline-lg,
+.studio-shell .text-headline-lg,
+.studio-shell .font-headline-lg-mobile,
+.studio-shell .text-headline-lg-mobile {
+  font-family: var(--studio-font-sans) !important;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
