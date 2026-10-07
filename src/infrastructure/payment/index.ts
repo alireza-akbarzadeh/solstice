@@ -1,5 +1,6 @@
 import { gateways, type GatewayId, type GatewayMode } from "./gateways";
 import { createTestProvider, mockPaymentProvider } from "./providers/mock";
+import { stripeProvider } from "./providers/stripe";
 import { zarinpalProvider } from "./providers/zarinpal";
 import type { PaymentProvider } from "./types";
 
@@ -15,6 +16,7 @@ const providers: Record<string, PaymentProvider> = {
   "test-zarinpal": createTestProvider("test-zarinpal", gateways.zarinpal.recurring),
   "test-stripe": createTestProvider("test-stripe", gateways.stripe.recurring),
   zarinpal: zarinpalProvider,
+  stripe: stripeProvider,
 };
 
 /** The provider that manages a membership or payment; undefined for "studio" (comped) and unknown ids. */
