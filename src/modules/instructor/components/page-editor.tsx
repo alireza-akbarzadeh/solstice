@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EyeIcon, SaveIcon } from "lucide-react";
+import { EyeIcon, SaveIcon, SlidersHorizontalIcon } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useMessages, useTranslations } from "next-intl";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -31,6 +31,8 @@ import { PageCopyFields } from "./page-copy-fields";
 import { DeleteContentButton } from "./delete-content-button";
 import type { HomeSectionConfig } from "@/modules/home/sections";
 import { HomeSectionsEditor } from "./home-sections-editor";
+
+import { MICROCOPY_NAMESPACES } from "@/modules/pages/microcopy";
 
 type PageForm = { slug: string; content: PageContent };
 
@@ -65,6 +67,7 @@ export function PageEditor({
   const [customSlug, setCustomSlug] = useState(false);
   const [publishing, startPublish] = useTransition();
   const [published, setPublished] = useState(live);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const isNew = savedSlug === null;
   const builtin = !!definition;
   useEffect(() => setPublished(live), [live]);
@@ -322,29 +325,121 @@ export function PageEditor({
           <Controller
             control={form.control}
             name="content.copy"
-            render={({ field }) => (
-              <>
-                {definition.namespaces.map((namespace) => (
-                  <section key={namespace} className="flex flex-col gap-5">
-                    <h3 className="font-headline-sm text-headline-sm">{labels.namespaceLabels[namespace.replaceAll(".", "_")] ?? namespace}</h3>
-                    <PageCopyFields
-                      en={field.value.en[namespace] as CopyTree}
-                      fa={field.value.fa[namespace] as CopyTree}
-                      templateEn={template.copy.en[namespace]!}
-                      templateFa={template.copy.fa[namespace]!}
-                      label={namespace}
-                      disabled={busy}
-                      onChange={(en, fa) =>
-                        field.onChange({
-                          en: { ...field.value.en, [namespace]: en },
-                          fa: { ...field.value.fa, [namespace]: fa },
-                        })
-                      }
-                    />
-                  </section>
-                ))}
-              </>
-            )}
+            render={({ field }) => {
+              const marketingNamespaces = definition.namespaces.filter(
+                (ns) => !MICROCOPY_NAMESPACES.has(ns),
+              );
+              const advancedNamespaces = definition.namespaces.filter(
+                (ns) => MICROCOPY_NAMESPACES.has(ns),
+              );
+              const hasMarketing = marketingNamespaces.length > 0;
+              const primaryNamespaces = hasMarketing
+                ? marketingNamespaces
+                : definition.namespaces;
+              const secondaryNamespaces = hasMarketing
+                ? advancedNamespaces
+                : [];
+
+              return (
+                <div className="flex flex-col gap-8">
+                  {/* Advanced microcopy toggle */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-outline-variant/30 bg-surface-container-low/60 p-4 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <SlidersHorizontalIcon className="size-4" />
+                      </div>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-semibold text-on-surface">
+                          {t("advancedToggleTitle")}
+                        </span>
+                        <span className="text-xs text-on-surface-variant">
+                          {t("advancedToggleHint")}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        id="advanced-copy-toggle"
+                        checked={showAdvanced}
+                        onCheckedChange={setShowAdvanced}
+                        aria-label={t("advancedToggleTitle")}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Primary / Marketing namespaces */}
+                  {primaryNamespaces.map((namespace) => (
+                    <section key={namespace} className="flex flex-col gap-5">
+                      <h3 className="font-headline-sm text-headline-sm">
+                        {labels.namespaceLabels[namespace.replaceAll(".", "_")] ??
+                          namespace}
+                      </h3>
+                      <PageCopyFields
+                        en={field.value.en[namespace] as CopyTree}
+                        fa={field.value.fa[namespace] as CopyTree}
+                        templateEn={template.copy.en[namespace]!}
+                        templateFa={template.copy.fa[namespace]!}
+                        label={namespace}
+                        disabled={busy}
+                        showAdvanced={showAdvanced}
+                        onChange={(en, fa) =>
+                          field.onChange({
+                            en: { ...field.value.en, [namespace]: en },
+                            fa: { ...field.value.fa, [namespace]: fa },
+                          })
+                        }
+                      />
+                    </section>
+                  ))}
+
+                  {/* Dedicated container for advanced / microcopy namespaces when enabled */}
+                  {showAdvanced && secondaryNamespaces.length > 0 && (
+                    <div className="flex flex-col gap-6 rounded-2xl border border-clay/30 bg-surface-container-low/30 p-5">
+                      <div className="flex flex-col gap-1 border-b border-outline-variant/20 pb-4">
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant="outline"
+                            className="border-clay/40 bg-clay/10 text-clay text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                          >
+                            {t("advancedBadge")}
+                          </Badge>
+                          <h4 className="font-semibold text-on-surface text-base">
+                            {t("advancedMicrocopySection")}
+                          </h4>
+                        </div>
+                        <p className="text-xs text-on-surface-variant">
+                          {t("advancedMicrocopyDesc")}
+                        </p>
+                      </div>
+                      {secondaryNamespaces.map((namespace) => (
+                        <section key={namespace} className="flex flex-col gap-4">
+                          <h3 className="font-headline-sm text-headline-sm">
+                            {labels.namespaceLabels[
+                              namespace.replaceAll(".", "_")
+                            ] ?? namespace}
+                          </h3>
+                          <PageCopyFields
+                            en={field.value.en[namespace] as CopyTree}
+                            fa={field.value.fa[namespace] as CopyTree}
+                            templateEn={template.copy.en[namespace]!}
+                            templateFa={template.copy.fa[namespace]!}
+                            label={namespace}
+                            disabled={busy}
+                            showAdvanced={showAdvanced}
+                            onChange={(en, fa) =>
+                              field.onChange({
+                                en: { ...field.value.en, [namespace]: en },
+                                fa: { ...field.value.fa, [namespace]: fa },
+                              })
+                            }
+                          />
+                        </section>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }}
           />
         </>
       )}

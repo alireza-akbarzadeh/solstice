@@ -1,7 +1,15 @@
 "use client";
 
-import { ArrowDownIcon, ArrowUpIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  PlusIcon,
+  SlidersHorizontalIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useMessages, useTranslations } from "next-intl";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { CopyTree } from "@/modules/pages/types";
 import { LocalizedField } from "./localized-field";
@@ -14,11 +22,16 @@ function blank(template: CopyTree): CopyTree {
     Object.entries(template).map(([key, value]) => [key, blank(value)]),
   );
 }
+
 const humanize = (key: string) =>
   key
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/[._-]/g, " ")
     .replace(/^./, (letter) => letter.toUpperCase());
+
+import { isMicrocopyKey } from "@/modules/pages/microcopy";
+
+export { isMicrocopyKey };
 
 /** Paired structured fields preserve both locales; repeatable items move together. */
 export function PageCopyFields({
@@ -29,6 +42,7 @@ export function PageCopyFields({
   label,
   onChange,
   disabled = false,
+  showAdvanced = false,
 }: {
   en: CopyTree;
   fa: CopyTree;
@@ -37,6 +51,7 @@ export function PageCopyFields({
   label: string;
   onChange: (en: CopyTree, fa: CopyTree) => void;
   disabled?: boolean;
+  showAdvanced?: boolean;
 }) {
   const t = useTranslations("Studio.pages");
   const labels = (
@@ -44,6 +59,7 @@ export function PageCopyFields({
       Studio: { pages: { copyLabels: Record<string, string> } };
     }
   ).Studio.pages.copyLabels;
+
   if (typeof en === "string" && typeof fa === "string") {
     const templated =
       en.includes("{") ||
@@ -54,6 +70,10 @@ export function PageCopyFields({
       <LocalizedField
         label={label}
         value={{ en, fa }}
+        template={{
+          en: typeof templateEn === "string" ? templateEn : en,
+          fa: typeof templateFa === "string" ? templateFa : fa,
+        }}
         multiline={
           en.length > 100 ||
           fa.length > 100 ||
@@ -69,6 +89,7 @@ export function PageCopyFields({
       />
     );
   }
+
   if (Array.isArray(en) && Array.isArray(fa)) {
     const enTemplates = Array.isArray(templateEn) ? templateEn : en;
     const faTemplates = Array.isArray(templateFa) ? templateFa : fa;
@@ -81,6 +102,7 @@ export function PageCopyFields({
       [b[index], b[index + by]] = [b[index + by]!, b[index]!];
       onChange(a, b);
     };
+
     return (
       <section className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -161,6 +183,7 @@ export function PageCopyFields({
                 templateFa={faTemplates[index] ?? exampleFa ?? value}
                 label={label}
                 disabled={disabled}
+                showAdvanced={showAdvanced}
                 onChange={(a, b) =>
                   onChange(
                     en.map((item, i) => (i === index ? a : item)),
@@ -174,6 +197,7 @@ export function PageCopyFields({
       </section>
     );
   }
+
   if (
     en &&
     fa &&
@@ -190,10 +214,21 @@ export function PageCopyFields({
       typeof templateFa === "object" && !Array.isArray(templateFa)
         ? templateFa
         : {};
+
+    const allKeys = Object.keys(a);
+    const marketingKeys = allKeys.filter((k) => !isMicrocopyKey(k));
+    const visibleKeys = showAdvanced
+      ? allKeys
+      : marketingKeys.length > 0
+        ? marketingKeys
+        : allKeys;
+    const hiddenCount = allKeys.length - visibleKeys.length;
+
     return (
       <div className="flex flex-col gap-5">
-        {Object.keys(a).map((key) => {
+        {visibleKeys.map((key) => {
           const value = en[key] ?? a[key]!;
+          const isMicro = isMicrocopyKey(key);
           const child = (
             <PageCopyFields
               en={value}
@@ -202,28 +237,62 @@ export function PageCopyFields({
               templateFa={b[key] ?? fa[key] ?? value}
               label={labels[key] ?? humanize(key)}
               disabled={disabled}
+              showAdvanced={showAdvanced}
               onChange={(nextEn, nextFa) =>
                 onChange({ ...en, [key]: nextEn }, { ...fa, [key]: nextFa })
               }
             />
           );
+
           return typeof value === "string" ? (
-            <div key={key}>{child}</div>
+            <div key={key} className="flex flex-col gap-1.5">
+              {isMicro && showAdvanced && (
+                <div className="flex items-center gap-1.5 self-start">
+                  <Badge
+                    variant="outline"
+                    className="border-clay/30 bg-clay/10 text-clay text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                  >
+                    {t("advancedBadge")}
+                  </Badge>
+                </div>
+              )}
+              {child}
+            </div>
           ) : (
             <details
               key={key}
-              className="border-hairline rounded-xl border p-4"
-              open={key === "hero"}
+              className={`rounded-xl border p-4 ${
+                isMicro
+                  ? "border-clay/30 bg-surface-container-low/40"
+                  : "border-hairline bg-surface"
+              }`}
+              open={key === "hero" || !isMicro}
             >
-              <summary className="cursor-pointer font-medium">
-                {labels[key] ?? humanize(key)}
+              <summary className="flex cursor-pointer items-center justify-between font-medium">
+                <span>{labels[key] ?? humanize(key)}</span>
+                {isMicro && showAdvanced && (
+                  <Badge
+                    variant="outline"
+                    className="border-clay/30 bg-clay/10 text-clay text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                  >
+                    {t("advancedBadge")}
+                  </Badge>
+                )}
               </summary>
               <div className="mt-5">{child}</div>
             </details>
           );
         })}
+
+        {hiddenCount > 0 && !showAdvanced && (
+          <div className="flex items-center gap-2 rounded-xl border border-outline-variant/20 bg-surface-container-low/50 px-3.5 py-2.5 text-xs text-on-surface-variant">
+            <SlidersHorizontalIcon className="size-3.5 text-primary shrink-0" />
+            <span>{t("hiddenMicrocopyNotice", { count: hiddenCount })}</span>
+          </div>
+        )}
       </div>
     );
   }
+
   return null;
 }

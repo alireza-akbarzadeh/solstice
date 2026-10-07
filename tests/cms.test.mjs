@@ -129,3 +129,57 @@ test("CMS rejects whitespace-only titles and unsafe cover URLs", () => {
     false,
   );
 });
+
+const {
+  extractIcuVariables,
+  getIcuVarName,
+  isMicrocopyKey,
+  isMicrocopyNamespace,
+} = await import(
+  new URL("../src/modules/pages/microcopy.ts", import.meta.url).href
+);
+
+test("ICU variable extraction discovers variables and extracts root identifiers", () => {
+  const sample = "Welcome {name}! You have completed {count, plural, one {# session} other {# sessions}} in {duration}.";
+  const vars = extractIcuVariables(sample);
+  assert.deepEqual(vars, ["{name}", "{count, plural, one {# session} other {# sessions}}", "{duration}"]);
+
+  assert.equal(getIcuVarName("{name}"), "name");
+  assert.equal(getIcuVarName("{count, plural, one {# session}}"), "count");
+  assert.equal(getIcuVarName("{number, number}"), "number");
+  assert.equal(getIcuVarName("invalid"), "invalid");
+
+  assert.deepEqual(extractIcuVariables("No variables in plain text"), []);
+});
+
+test("Microcopy classifier separates app interactive elements from marketing copy", () => {
+  // Microcopy keys
+  assert.equal(isMicrocopyKey("actions"), true);
+  assert.equal(isMicrocopyKey("buttons"), true);
+  assert.equal(isMicrocopyKey("errors"), true);
+  assert.equal(isMicrocopyKey("status"), true);
+  assert.equal(isMicrocopyKey("toast"), true);
+  assert.equal(isMicrocopyKey("saveButton"), true);
+  assert.equal(isMicrocopyKey("genericError"), true);
+  assert.equal(isMicrocopyKey("linkCopied"), true);
+
+  // Marketing keys
+  assert.equal(isMicrocopyKey("title"), false);
+  assert.equal(isMicrocopyKey("subtitle"), false);
+  assert.equal(isMicrocopyKey("hero"), false);
+  assert.equal(isMicrocopyKey("intro"), false);
+  assert.equal(isMicrocopyKey("philosophy"), false);
+  assert.equal(isMicrocopyKey("body"), false);
+
+  // Namespaces
+  assert.equal(isMicrocopyNamespace("Practice"), true);
+  assert.equal(isMicrocopyNamespace("PracticeDetail"), true);
+  assert.equal(isMicrocopyNamespace("PracticeActions"), true);
+  assert.equal(isMicrocopyNamespace("Program"), true);
+  assert.equal(isMicrocopyNamespace("Auth"), true);
+  assert.equal(isMicrocopyNamespace("About"), false);
+  assert.equal(isMicrocopyNamespace("Home"), false);
+  assert.equal(isMicrocopyNamespace("Membership"), false);
+  assert.equal(isMicrocopyNamespace("Journal"), false);
+});
+
