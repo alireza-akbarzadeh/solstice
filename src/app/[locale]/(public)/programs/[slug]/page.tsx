@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
+import { ProgramCourseJsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getViewer } from "@/modules/memberships/server/viewer";
@@ -46,6 +47,7 @@ export default async function ProgramPage({ params }: PageProps<"/[locale]/progr
 
   return (
     <>
+      <ProgramCourseJsonLd program={program} />
       <section className="relative w-full overflow-hidden bg-surface-container-low">
         <div aria-hidden className="pointer-events-none absolute end-0 -top-32 size-[580px] rounded-full bg-secondary-fixed/25 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute -start-20 top-1/2 size-[420px] rounded-full bg-primary-fixed/20 blur-3xl" />

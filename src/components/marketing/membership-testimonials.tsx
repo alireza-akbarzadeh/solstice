@@ -6,24 +6,24 @@ import { SectionHeading } from "@/components/marketing/section-heading";
 import { localize } from "@/lib/localized";
 import { getActiveTestimonials } from "@/modules/testimonials/server/testimonials";
 
-export async function Testimonials() {
+export async function MembershipTestimonials() {
   const [t, locale, testimonials] = await Promise.all([
-    getTranslations("Home.testimonials"),
+    getTranslations("Membership.testimonials"),
     getLocale(),
-    getActiveTestimonials("home"),
+    getActiveTestimonials("membership"),
   ]);
 
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="w-full bg-surface-container py-20 lg:py-24">
+    <section className="mt-space-2xl w-full border-t border-outline-variant/20 pt-space-2xl">
       <Container>
         <SectionHeading
           eyebrow={t("eyebrow")}
           title={t("title")}
           description={t("description")}
           align="center"
-          className="mb-16 max-w-xl"
+          className="mb-14 max-w-xl"
         />
         <div className="grid grid-cols-1 gap-gutter md:grid-cols-3">
           {testimonials.map((item) => {
@@ -32,18 +32,21 @@ export async function Testimonials() {
             const meta = localize(item.roleOrMeta, locale);
 
             return (
-              <figure key={item.id} className="flex flex-col justify-between rounded-2xl bg-surface p-8 shadow-sm">
+              <figure
+                key={item.id}
+                className="flex flex-col justify-between rounded-2xl border border-outline-variant/30 bg-surface-container-low/50 p-7 shadow-xs transition-colors hover:border-outline-variant/50"
+              >
                 <div className="space-y-4">
-                  <div role="img" aria-label={t("rating")} className="flex gap-1 text-clay">
+                  <div role="img" aria-label="5 stars" className="flex gap-1 text-clay">
                     {Array.from({ length: item.rating }, (_, i) => (
                       <StarIcon key={i} aria-hidden className="size-3.5 fill-current" />
                     ))}
                   </div>
-                  <blockquote className="font-body-md text-body-md text-on-surface italic rtl:not-italic">
+                  <blockquote className="font-body-md text-body-md italic text-on-surface rtl:not-italic">
                     {quote}
                   </blockquote>
                 </div>
-                <figcaption className="mt-6 flex items-center gap-3 pt-6">
+                <figcaption className="mt-6 flex items-center gap-3 border-t border-outline-variant/15 pt-5">
                   <span
                     aria-hidden
                     className={`flex size-10 items-center justify-center rounded-full font-heading font-bold ${item.avatarColor}`}

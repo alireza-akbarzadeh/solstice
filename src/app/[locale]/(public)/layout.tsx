@@ -5,7 +5,9 @@ import { notFound } from "next/navigation";
 import { BottomTabs } from "@/components/layout/bottom-tabs";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { StudioJsonLd } from "@/components/seo/json-ld";
 import { routing } from "@/i18n/routing";
+import { getStudioContact } from "@/modules/contact/server/contact";
 import { AssistantDock } from "@/modules/conversations/components/assistant-dock";
 import { TestPanel } from "@/modules/memberships/components/test-panel";
 import { getViewer } from "@/modules/memberships/server/viewer";
@@ -17,10 +19,11 @@ export default async function PublicLayout({ children, params }: LayoutProps<"/[
   setRequestLocale(locale);
 
   // Keep the mobile shell available to guests too, using public links until they sign in.
-  const { user } = await getViewer();
+  const [{ user }, contact] = await Promise.all([getViewer(), getStudioContact()]);
 
   return (
     <>
+      <StudioJsonLd locale={locale} contact={contact} />
       <SiteHeader />
       <main className="flex-1">{children}</main>
       <SiteFooter className="pb-safe-nav lg:pb-0" />

@@ -28,6 +28,8 @@ import {
 import { getPageInventory, getSitePage } from "@/modules/pages/server/library";
 import { getHomeSections } from "@/modules/home/server/sections";
 import { HomeSectionsEditor } from "@/modules/instructor/components/home-sections-editor";
+import { TestimonialsManager } from "@/modules/testimonials/components/testimonials-manager";
+import { getTestimonials } from "@/modules/testimonials/server/testimonials";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -51,11 +53,12 @@ export default async function StudioPages({ params, searchParams }: Props) {
   const query = await searchParams;
   const creating = query.new === "1";
   const slug = typeof query.edit === "string" ? query.edit : undefined;
-  const [t, rows, row, homeSections] = await Promise.all([
+  const [t, rows, row, homeSections, testimonials] = await Promise.all([
     getTranslations("Studio.pages"),
     getPageInventory(),
     slug ? getSitePage(slug) : Promise.resolve(null),
     getHomeSections(),
+    getTestimonials(),
   ]);
   if (slug && !row && !creating) notFound();
   const inventory = rows.map((page) => ({
@@ -120,9 +123,14 @@ export default async function StudioPages({ params, searchParams }: Props) {
         />
       )}
       {!slug && !creating && (
-        <section className="flex flex-col gap-3">
-          <HomeSectionsEditor initialSections={homeSections} />
-        </section>
+        <>
+          <section className="flex flex-col gap-3">
+            <HomeSectionsEditor initialSections={homeSections} />
+          </section>
+          <section className="flex flex-col gap-3">
+            <TestimonialsManager initialItems={testimonials} />
+          </section>
+        </>
       )}
       <section className="flex flex-col gap-4">
         <h2 className="font-headline-sm text-headline-sm">

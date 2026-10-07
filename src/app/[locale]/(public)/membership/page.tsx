@@ -7,6 +7,7 @@ import { Container } from "@/components/layout/container";
 import { routing } from "@/i18n/routing";
 import { safeNextPath } from "@/lib/safe-next";
 import { getGuidancePlaces, isFull } from "@/modules/conversations/server/guidance";
+import { MembershipTestimonials } from "@/components/marketing/membership-testimonials";
 import { Checkout, type CheckoutMethod } from "@/modules/memberships/components/checkout";
 import { MembershipStatus } from "@/modules/memberships/components/membership-status";
 import { getPlanDisplay } from "@/modules/memberships/server/plan-display";
@@ -142,6 +143,7 @@ export default async function MembershipPage({ params, searchParams }: PageProps
           initialCoupon={typeof query.coupon === "string" ? query.coupon : undefined}
           referralCode={typeof query.ref === "string" ? query.ref : undefined}
         />
+        <MembershipTestimonials />
       </Container>
     </div>
   );

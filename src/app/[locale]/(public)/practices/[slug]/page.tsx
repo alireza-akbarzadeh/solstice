@@ -19,6 +19,7 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { LockedPracticeStage } from "@/modules/practices/components/locked-practice-stage";
 import { PracticeChapters } from "@/modules/practices/components/practice-chapters";
+import { PracticeVideoJsonLd } from "@/components/seo/json-ld";
 import { EmbedPlayer } from "@/modules/practices/components/embed-player";
 import { PracticePlayer } from "@/modules/practices/components/practice-player";
 import { PracticeColumns, PracticeStage } from "@/modules/practices/components/practice-stage";
@@ -134,6 +135,7 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
 
   return (
     <Container className="py-space-lg">
+      <PracticeVideoJsonLd practice={practice} />
       <nav aria-label={t("breadcrumb")} className="mb-space-md">
         <ol className="flex flex-wrap items-center gap-space-xs text-on-surface-variant">
           <li>

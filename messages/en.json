@@ -566,6 +566,11 @@
       "full": "1:1 guidance · all {places, plural, one {# place is} other {# places are}} taken",
       "left": "1:1 guidance · {left} of {places} places left",
       "fullNotice": "Every 1:1 guidance place on that plan is taken right now. Choose another plan, or join its waitlist from the guidance page."
+    },
+    "testimonials": {
+      "eyebrow": "Practitioner Stories",
+      "title": "Life Inside the Sanctuary",
+      "description": "How regular practice transforms the nervous system, movement, and daily presence."
     }
   },
   "Account": {
@@ -1423,7 +1428,8 @@
       "email": "Email",
       "inbox": "Inbox",
       "classes": "Live classes",
-      "promotions": "Promotions & Gifts"
+      "promotions": "Promotions & Gifts",
+      "testimonials": "Testimonials"
     },
     "overview": {
       "metaTitle": "Studio overview",
@@ -2457,7 +2463,7 @@
         "journal": "Journal",
         "about": "About",
         "join": "Join button",
-        "save": "Save practice button",
+        "save": "Save button",
         "saved": "Saved status label",
         "savedToast": "Saved success toast",
         "signInToSave": "Sign in to save prompt",
@@ -2478,13 +2484,13 @@
         "copyLink": "Copy link button",
         "shortcuts": "Keyboard shortcuts title",
         "copied": "Link copied toast",
-        "errors": "Error alerts & validation",
+        "errors": "Error messages",
         "members": "Members-only error",
-        "generic": "General error message",
+        "generic": "General error",
         "actions": "Interactive actions",
         "buttons": "Buttons & triggers",
         "validation": "Validation messages",
-        "status": "Status badges",
+        "status": "Status",
         "placeholders": "Form placeholder text",
         "pulseDaily": "Daily progression badge",
         "pulseSelf": "Self-paced series badge",
@@ -2519,11 +2525,8 @@
         "signUp": "Sign up",
         "submit": "Submit button",
         "submitting": "Submitting label",
-        "save": "Save button",
         "cancel": "Cancel button",
         "continue": "Continue button",
-        "errors": "Error messages",
-        "generic": "General error",
         "recovery": "Account recovery",
         "strength": "Password strength",
         "rhythms": "Practice rhythms",
@@ -2541,7 +2544,6 @@
         "live": "Live session",
         "quoteLabel": "Quote label",
         "guideRole": "Instructor role",
-        "status": "Status",
         "details": "Details",
         "security": "Security",
         "plan": "Membership plan",
@@ -3558,6 +3560,61 @@
       "totalAttendees": "{count, number} attendees",
       "successCreate": "Live session created successfully",
       "successUpdate": "Live session updated successfully"
+    },
+    "testimonials": {
+      "title": "Member Testimonials & Quotes",
+      "eyebrow": "Social Proof & Community Reflections",
+      "description": "Add, edit, hide, and reorder member reflections shown across Home and Membership pages.",
+      "addTestimonial": "Add Testimonial",
+      "editTestimonial": "Edit Testimonial",
+      "dialogDescription": "Craft an authentic practitioner reflection in English and Persian.",
+      "resetToDefaults": "Reset to Defaults",
+      "resetConfirm": "Reset all testimonials back to the 3 default studio quotes?",
+      "resetSuccess": "Testimonials restored to default quotes.",
+      "deleteConfirm": "Are you sure you want to delete the testimonial for \"{name}\"?",
+      "deleted": "Testimonial removed.",
+      "emptyTitle": "No testimonials yet",
+      "empty": "Add your first member testimonial to inspire new visitors and provide warm social proof.",
+      "savedSingle": "Testimonial saved.",
+      "visibleNotice": "Testimonial is now visible to the public.",
+      "hiddenNotice": "Testimonial hidden from public view.",
+      "fields": {
+        "name": "Member Name",
+        "nameHint": "Full name or preferred practitioner name.",
+        "quote": "Quote / Reflection",
+        "quoteHint": "Warm, authentic reflection on the practice or instructor.",
+        "roleOrMeta": "Experience or Role",
+        "roleOrMetaHint": "e.g. \"Practicing 18 Months • Stockholm\" or profession.",
+        "rating": "Rating (Stars)",
+        "avatarColor": "Avatar Accent",
+        "placement": "Display Placement",
+        "placementHint": "Choose where this reflection should be displayed.",
+        "hidden": "Hidden from public view",
+        "hiddenHint": "When switched on, this reflection will not be shown on public pages."
+      },
+      "placementOptions": {
+        "all": "Home & Membership Pages",
+        "home": "Home Page Only",
+        "membership": "Membership Page Only"
+      },
+      "visibility": {
+        "visible": "Visible",
+        "hidden": "Hidden"
+      },
+      "actions": {
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "edit": "Edit",
+        "delete": "Delete",
+        "save": "Save testimonial",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "saveFailed": "Failed to save testimonial.",
+        "reorderFailed": "Failed to update order.",
+        "deleteFailed": "Failed to delete testimonial.",
+        "resetFailed": "Failed to reset testimonials."
+      }
     }
   },
   "Legal": {

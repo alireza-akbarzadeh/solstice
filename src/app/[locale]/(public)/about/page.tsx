@@ -23,6 +23,7 @@ import { getFormatter, getTranslations, setRequestLocale } from "next-intl/serve
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
+import { FaqJsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { SocialLinks } from "@/modules/contact/components/social-links";
@@ -83,6 +84,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
 
   return (
     <>
+      <FaqJsonLd faqs={faqs} />
       {/* Hero */}
       <Container className="relative pt-space-xl pb-space-2xl">
         <div className="grid grid-cols-1 items-center gap-gutter lg:grid-cols-12">

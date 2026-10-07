@@ -14,6 +14,12 @@ const { formatChapterTime, parseChapterTime, sortChapters } = await import(
 const { chapterSchema, practiceFormSchema } = await import(
   new URL("../src/modules/practices/schemas.ts", import.meta.url).href
 );
+const { DEFAULT_TESTIMONIALS } = await import(
+  new URL("../src/modules/testimonials/defaults.ts", import.meta.url).href
+);
+const { testimonialFormSchema, testimonialReorderSchema } = await import(
+  new URL("../src/modules/testimonials/schemas.ts", import.meta.url).href
+);
 
 test("YouTube links use the embed provider even when the default provider is a file player", () => {
   for (const link of [
@@ -297,4 +303,46 @@ test("Practice form schema validates and auto-sorts chapters", () => {
   });
   assert.equal(withMissingTitle.success, false);
 });
+
+test("Default testimonials and schema validation guard bilingual integrity", () => {
+  assert.equal(DEFAULT_TESTIMONIALS.length, 3);
+  for (const item of DEFAULT_TESTIMONIALS) {
+    assert.ok(item.id.length > 0);
+    assert.ok(item.name.en.length > 0);
+    assert.ok(item.name.fa.length > 0);
+    assert.ok(item.quote.en.length > 0);
+    assert.ok(item.quote.fa.length > 0);
+    assert.equal(item.rating, 5);
+    assert.equal(typeof item.order, "number");
+    assert.equal(item.hidden, false);
+
+    const validated = testimonialFormSchema.safeParse(item);
+    assert.equal(validated.success, true);
+  }
+
+  // Missing Persian name
+  const missingFaName = testimonialFormSchema.safeParse({
+    ...DEFAULT_TESTIMONIALS[0],
+    name: { en: "Clara", fa: "" },
+  });
+  assert.equal(missingFaName.success, false);
+
+  // Missing English quote
+  const missingEnQuote = testimonialFormSchema.safeParse({
+    ...DEFAULT_TESTIMONIALS[0],
+    quote: { en: "", fa: "«نقل قول»" },
+  });
+  assert.equal(missingEnQuote.success, false);
+
+  // Reorder schema
+  assert.equal(
+    testimonialReorderSchema.safeParse({ orderedIds: ["amina", "clara", "marcus"] }).success,
+    true
+  );
+  assert.equal(
+    testimonialReorderSchema.safeParse({ orderedIds: [] }).success,
+    false
+  );
+});
+
 
