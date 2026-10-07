@@ -32,3 +32,54 @@ export const emailSettingsSchema = z
 
 export type EmailSettingsInput = z.output<typeof emailSettingsSchema>;
 export type EmailSettingsFormValues = z.input<typeof emailSettingsSchema>;
+
+export const localizedTemplateSchema = z.object({
+  subject: z.string().trim().min(1, "required").max(200, "too_long"),
+  body: z.string().trim().min(1, "required").max(5000, "too_long"),
+});
+
+export const emailTemplateItemSchema = z.object({
+  en: localizedTemplateSchema,
+  fa: localizedTemplateSchema,
+});
+
+export const emailTemplatesFormSchema = z
+  .object({
+    verify: emailTemplateItemSchema,
+    reset: emailTemplateItemSchema,
+    welcome: emailTemplateItemSchema,
+  })
+  .superRefine((data, ctx) => {
+    // Verify requires {url} in both English and Persian body
+    if (!data.verify.en.body.includes("{url}")) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["verify", "en", "body"],
+        message: "missing_url",
+      });
+    }
+    if (!data.verify.fa.body.includes("{url}")) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["verify", "fa", "body"],
+        message: "missing_url",
+      });
+    }
+    // Reset requires {url} in both English and Persian body
+    if (!data.reset.en.body.includes("{url}")) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["reset", "en", "body"],
+        message: "missing_url",
+      });
+    }
+    if (!data.reset.fa.body.includes("{url}")) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["reset", "fa", "body"],
+        message: "missing_url",
+      });
+    }
+  });
+
+export type EmailTemplatesInput = z.infer<typeof emailTemplatesFormSchema>;

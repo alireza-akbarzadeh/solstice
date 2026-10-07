@@ -1379,6 +1379,10 @@
       "subject": "Confirm your email for Arte",
       "body": "Hello {name},\n\nWelcome to the sanctuary. Please confirm your email address:\n\n{url}\n\n— Elena & Arte Yoga Studio"
     },
+    "welcome": {
+      "subject": "Welcome to Arte Yoga Studio",
+      "body": "Hello {name},\n\nWe are so glad to welcome you into the sanctuary. May your practice bring presence, strength, and ease to your everyday rhythm.\n\nBegin exploring practices and programs anytime:\n\n{url}\n\nWith warmth,\nElena & Arte Yoga Studio"
+    },
     "renewal": {
       "period": {
         "subject": "Your membership ends on {date}",
@@ -3082,6 +3086,67 @@
       "eyebrow": "Studio",
       "title": "Email",
       "lede": "How the site sends mail: sign-up confirmations, password resets, renewal reminders and your newsletters.",
+      "tabs": {
+        "templates": "Email templates",
+        "delivery": "Delivery & SMTP"
+      },
+      "templates": {
+        "title": "Email templates",
+        "description": "Customize the subjects and messages sent to members for verification, password resets, and welcome notes in English and Persian.",
+        "types": {
+          "verify": {
+            "label": "Email verification",
+            "description": "Sent when a new member registers or changes their email address.",
+            "actionLabel": "Confirm Email Address"
+          },
+          "reset": {
+            "label": "Password reset",
+            "description": "Sent when someone requests a secure link to reset their password.",
+            "actionLabel": "Reset Password"
+          },
+          "welcome": {
+            "label": "Welcome note",
+            "description": "Sent when a member joins the sanctuary to introduce them to the studio.",
+            "actionLabel": "Enter Sanctuary"
+          }
+        },
+        "fields": {
+          "subject": "Subject line",
+          "body": "Email message body",
+          "variablesHint": "Variables (click to insert at cursor):",
+          "required": "Required",
+          "optional": "Optional",
+          "insertVariable": "Insert {variable} at cursor",
+          "urlProtected": "Protected: {url} included",
+          "requiredMissing": "The required variable {variable} is missing.",
+          "preview": "Live preview",
+          "previewRecipient": "Recipient",
+          "noSubject": "No subject entered",
+          "noBody": "No message body entered",
+          "save": "Save templates",
+          "sendTest": "Send preview to my inbox",
+          "testSent": "Preview email sent to {email}",
+          "resetDefault": "Reset to default",
+          "resetConfirm": "Reset this template to its default studio text?",
+          "resetSuccess": "Template reset to default"
+        },
+        "saved": "Email templates saved",
+        "resetConfirm": "Reset this template to its default studio text?",
+        "resetSuccess": "Template reset to default",
+        "testSent": "Preview email sent to {email}",
+        "requiredMissing": "The required variable {variable} is missing.",
+        "validation": {
+          "required": "This field is required.",
+          "too_long": "Text is too long.",
+          "missing_url": "The required link variable {url} is missing from the message body."
+        },
+        "errors": {
+          "saveFailed": "Failed to save email templates.",
+          "resetFailed": "Failed to reset template.",
+          "deliveryFailed": "Failed to send preview: {detail}",
+          "forbidden": "Only the instructor can modify email templates."
+        }
+      },
       "guide": {
         "title": "Common settings",
         "body": "Any mailbox that offers SMTP works. Use an address on your own domain if you can — mail from it is less likely to land in spam.",
