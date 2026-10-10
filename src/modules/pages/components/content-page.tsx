@@ -5,19 +5,31 @@ import type { Locale } from "@/i18n/routing";
 import { localize } from "@/lib/localized";
 import { EmbedPlayer } from "@/modules/practices/components/embed-player";
 import { parseYouTubeId } from "@/infrastructure/video/assets";
+import { getWorkshopAttendeeStats } from "@/modules/workshops/server/registrations";
+import { getViewer } from "@/modules/memberships/server/viewer";
+import { WorkshopEventBanner } from "@/modules/workshops/components/event-banner";
 import type { PageContent } from "../types";
 
 /** Content is rendered as React text/structured blocks; arbitrary HTML is never executed. */
 export async function ContentPage({
   content,
   locale,
+  pageSlug,
 }: {
   content: PageContent;
   locale: Locale;
+  pageSlug?: string;
 }) {
   const format = await getFormatter({ locale });
   const text = (value: { en: string; fa: string }) => localize(value, locale);
   const videoId = parseYouTubeId(content.videoUrl);
+
+  const eventStats =
+    content.event?.enabled && pageSlug
+      ? await getWorkshopAttendeeStats(pageSlug, content.event.capacity)
+      : null;
+  const viewer = content.event?.enabled ? await getViewer() : null;
+
   return (
     <article className="max-w-content px-margin-mobile py-space-xl md:px-margin md:py-space-2xl mx-auto w-full">
       <header className="mb-space-xl mx-auto max-w-3xl">
@@ -28,6 +40,20 @@ export async function ContentPage({
           {text(content.description)}
         </p>
       </header>
+
+      {content.event?.enabled && pageSlug && eventStats && (
+        <div className="mx-auto max-w-4xl">
+          <WorkshopEventBanner
+            pageSlug={pageSlug}
+            event={content.event}
+            locale={locale}
+            stats={eventStats}
+            viewerName={viewer?.user?.name}
+            viewerEmail={viewer?.user?.email}
+          />
+        </div>
+      )}
+
       <div className="gap-space-md font-body-lg text-body-lg mx-auto flex max-w-3xl flex-col leading-relaxed">
         {content.image && (
           <div className="relative mb-4 aspect-[16/10] overflow-hidden rounded-2xl">

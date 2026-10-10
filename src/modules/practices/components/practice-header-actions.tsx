@@ -72,7 +72,15 @@ export function PracticeHeaderActions({
 }: Props) {
   const t = useTranslations("PracticeActions");
   const format = useFormatter();
-  const { videoRef, hasVideo, limitSeconds, audioOnly, setAudioOnly, setShortcutsOpen } = usePracticeStage();
+  const {
+    videoRef,
+    hasVideo,
+    limitSeconds,
+    audioOnly,
+    setAudioOnly,
+    setShortcutsOpen,
+    subscribeEnded,
+  } = usePracticeStage();
 
   const [isCompleted, setIsCompleted] = useState(completed);
   const [pendingComplete, startComplete] = useTransition();
@@ -95,15 +103,19 @@ export function PracticeHeaderActions({
   const completedRef = useRef(isCompleted);
   completedRef.current = isCompleted;
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !hasVideo || signInHref || limitSeconds !== undefined) return;
+    if (!hasVideo || signInHref || limitSeconds !== undefined) return;
     const onEnded = () => {
       if (!completedRef.current) toggleComplete(true, t("autoCompleted"));
     };
-    video.addEventListener("ended", onEnded);
-    return () => video.removeEventListener("ended", onEnded);
+    const unsub = subscribeEnded(onEnded);
+    const video = videoRef.current;
+    if (video) video.addEventListener("ended", onEnded);
+    return () => {
+      unsub();
+      if (video) video.removeEventListener("ended", onEnded);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoRef, hasVideo, signInHref, limitSeconds]);
+  }, [videoRef, hasVideo, signInHref, limitSeconds, subscribeEnded]);
 
   const [liked, setLiked] = useState(likes.liked);
   const [likeCount, setLikeCount] = useState(likes.count);

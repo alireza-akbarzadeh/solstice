@@ -20,6 +20,15 @@ const { DEFAULT_TESTIMONIALS } = await import(
 const { testimonialFormSchema, testimonialReorderSchema } = await import(
   new URL("../src/modules/testimonials/schemas.ts", import.meta.url).href
 );
+const {
+  calculateRepeatFactor,
+  calculateSaveConversion,
+  calculateCohortCurve,
+  calculateHabitRhythm,
+  DAY_MS,
+} = await import(
+  new URL("../src/modules/instructor/retention.ts", import.meta.url).href
+);
 
 test("YouTube links use the embed provider even when the default provider is a file player", () => {
   for (const link of [
@@ -344,5 +353,134 @@ test("Default testimonials and schema validation guard bilingual integrity", () 
     false
   );
 });
+
+test("Workshop schemas and CSV export ensure data integrity", async () => {
+  const { workshopRegistrationSchema, workshopEventSchema } = await import(
+    new URL("../src/modules/workshops/schemas.ts", import.meta.url).href
+  );
+  const { workshopAttendeesToCsv } = await import(
+    new URL("../src/modules/workshops/csv.ts", import.meta.url).href
+  );
+
+  // Registration schema
+  const validReg = workshopRegistrationSchema.safeParse({
+    pageSlug: "spring-retreat-2027",
+    name: "Aria Sol",
+    email: "aria@example.com",
+    phone: "+989121234567",
+    notes: "Vegan meals please",
+  });
+  assert.equal(validReg.success, true);
+
+  const invalidEmail = workshopRegistrationSchema.safeParse({
+    pageSlug: "spring-retreat-2027",
+    name: "Aria",
+    email: "not-an-email",
+    phone: "123456",
+    notes: "",
+  });
+  assert.equal(invalidEmail.success, false);
+
+  const invalidPhone = workshopRegistrationSchema.safeParse({
+    pageSlug: "spring-retreat-2027",
+    name: "Aria",
+    email: "aria@example.com",
+    phone: "12",
+    notes: "",
+  });
+  assert.equal(invalidPhone.success, false);
+
+  // Workshop event schema
+  const validEvent = workshopEventSchema.safeParse({
+    enabled: true,
+    startDate: "2027-04-10T09:00",
+    endDate: "2027-04-12T18:00",
+    timezone: "Asia/Tehran",
+    locationType: "in_person",
+    location: { en: "Shemshak Sanctuary", fa: "پناهگاه شمشک" },
+    capacity: 20,
+    priceLabel: { en: "$250 / 12,000,000 Toman", fa: "۱۲,۰۰۰,۰۰۰ تومان" },
+    paymentInstructions: { en: "Transfer upon confirmation", fa: "واریز پس از تایید" },
+    registrationOpen: true,
+  });
+  assert.equal(validEvent.success, true);
+
+  // CSV export with formula injection sanitization and UTF-8 BOM
+  const csv = workshopAttendeesToCsv(
+    [
+      {
+        id: 101,
+        pageSlug: "spring-retreat-2027",
+        name: "=1+1",
+        email: "malicious@example.com",
+        phone: "+1234567890",
+        status: "confirmed",
+        notes: "@maliciousFormula",
+        createdAt: new Date("2027-01-01T10:00:00Z"),
+      },
+    ],
+    "Spring Retreat",
+  );
+  assert.ok(csv.startsWith("\uFEFF")); // UTF-8 BOM
+  assert.ok(csv.includes("'=1+1")); // Sanitized leading =
+  assert.ok(csv.includes("'@maliciousFormula")); // Sanitized leading @
+  assert.ok(csv.includes("malicious@example.com"));
+});
+
+test("Retention analytics: repeat factor, save conversion, cohort curve and habit rhythms", () => {
+  // Repeat factor
+  assert.equal(calculateRepeatFactor(10, 5), 2);
+  assert.equal(calculateRepeatFactor(14, 4), 3.5);
+  assert.equal(calculateRepeatFactor(0, 0), 1);
+
+  // Save conversion
+  assert.equal(calculateSaveConversion(4, 5), 80);
+  assert.equal(calculateSaveConversion(0, 10), 0);
+  assert.equal(calculateSaveConversion(5, 0), null);
+
+  // Cohort curve
+  const now = new Date("2026-10-10T12:00:00Z");
+  const member1Joined = new Date(now.getTime() - 35 * DAY_MS); // 35 days ago (eligible)
+  const member2Joined = new Date(now.getTime() - 40 * DAY_MS); // 40 days ago (eligible)
+  const member3Joined = new Date(now.getTime() - 10 * DAY_MS); // 10 days ago (too new, not 28d+)
+
+  const members = [
+    { id: "m1", createdAt: member1Joined },
+    { id: "m2", createdAt: member2Joined },
+    { id: "m3", createdAt: member3Joined },
+  ];
+
+  const completions = [
+    // m1 completed in W1, W2, W4
+    { userId: "m1", completedAt: new Date(member1Joined.getTime() + 2 * DAY_MS) },
+    { userId: "m1", completedAt: new Date(member1Joined.getTime() + 10 * DAY_MS) },
+    { userId: "m1", completedAt: new Date(member1Joined.getTime() + 25 * DAY_MS) },
+    // m2 completed in W1 and W2
+    { userId: "m2", completedAt: new Date(member2Joined.getTime() + 5 * DAY_MS) },
+    { userId: "m2", completedAt: new Date(member2Joined.getTime() + 12 * DAY_MS) },
+  ];
+
+  const { points, totalCohortMembers } = calculateCohortCurve(members, completions, now);
+  assert.equal(totalCohortMembers, 2); // m1 and m2 only
+  assert.equal(points.length, 4);
+  assert.equal(points[0].rate, 100); // W1: 2/2 = 100%
+  assert.equal(points[1].rate, 100); // W2: 2/2 = 100%
+  assert.equal(points[2].rate, 0);   // W3: 0/2 = 0%
+  assert.equal(points[3].rate, 50);  // W4: 1/2 = 50%
+
+  // Habit rhythm
+  const memberActivity = [
+    { userId: "m1", count: 12 }, // 12 in 4 weeks = 3/wk -> frequent
+    { userId: "m2", count: 6 },  // 6 in 4 weeks = 1.5/wk -> regular
+    { userId: "m3", count: 2 },  // 2 in 4 weeks = 0.5/wk -> occasional
+  ];
+  const habit = calculateHabitRhythm(5, memberActivity, 4); // 5 total active members
+  assert.equal(habit.frequent, 1);
+  assert.equal(habit.regular, 1);
+  assert.equal(habit.occasional, 1);
+  assert.equal(habit.dormant, 2); // 5 - (1+1+1) = 2 dormant
+  assert.equal(habit.total, 5);
+});
+
 
 

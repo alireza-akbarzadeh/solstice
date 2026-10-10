@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { parseYouTubeId } from "@/infrastructure/video/assets";
+import { workshopEventSchema } from "@/modules/workshops/schemas";
 import type { CopyTree, PageContent } from "./types";
 
 const text = (max: number) =>
@@ -94,6 +95,7 @@ export const pageContentSchema = z.object({
     fa: z.record(z.string(), copyTree),
   }),
   assets: z.record(z.string(), z.string().trim().max(2000)),
+  event: workshopEventSchema.optional(),
 });
 
 /** Preserve complete ICU expressions and rich-text tags, including nested plurals. */
@@ -168,7 +170,8 @@ export function validBuiltinContent(
     content.actionHref ||
     content.image ||
     content.showInFooter ||
-    content.showInNavigation
+    content.showInNavigation ||
+    content.event?.enabled
   )
     return false;
   if (!pairedCopyShape(content.copy.en, content.copy.fa)) return false;
@@ -199,7 +202,9 @@ export function validCustomContent(content: PageContent, publishing: boolean) {
     !filled(content.description) ||
     !content.body.length ||
     (content.image && !filled(content.imageAlt)) ||
-    (content.actionHref && !filled(content.actionLabel))
+    (content.actionHref && !filled(content.actionLabel)) ||
+    (content.event?.enabled &&
+      (!content.event.startDate.trim() || !filled(content.event.location)))
   )
     return false;
   return content.body.every((block) => {

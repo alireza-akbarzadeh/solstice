@@ -64,6 +64,20 @@
       "when": 1791283281991,
       "tag": "0008_solid_thunderbolts",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791611680468,
+      "tag": "0009_lively_thunderbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791613144884,
+      "tag": "0010_sharp_stranger",
+      "breakpoints": true
     }
   ]
 }

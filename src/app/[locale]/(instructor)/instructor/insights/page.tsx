@@ -28,6 +28,8 @@ import { getStudioInsights, insightRanges, type InsightRange, type Totals } from
 import { requireInstructor } from "@/modules/memberships/server/viewer";
 import { getOnboardingAggregate } from "@/modules/onboarding/server/onboarding";
 import { InsightsOnboardingTile } from "@/modules/instructor/components/insights-onboarding-tile";
+import { SendNudgeButton } from "@/modules/instructor/components/send-nudge-button";
+import { RetentionCurveChart, HabitRhythmCard } from "@/modules/instructor/components/retention-charts";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/instructor/insights">): Promise<Metadata> {
   const { locale } = await params;
@@ -187,6 +189,33 @@ export default async function StudioInsightsPage({ params, searchParams }: PageP
         </section>
       </div>
 
+      {/* Retention & Practice Habit Formation */}
+      <section className={card}>
+        <SectionTitle
+          eyebrow={t("retention.eyebrow")}
+          title={t("retention.title")}
+          note={t("retention.note")}
+        />
+        <div className="grid grid-cols-1 gap-gutter lg:grid-cols-2 xl:grid-cols-5">
+          <div className="xl:col-span-3">
+            <RetentionCurveChart
+              points={data.retention.cohortCurve}
+              thirtyDayRate={data.retention.thirtyDayRate}
+              cohortCount={data.retention.cohortCount}
+              eligibleMembers={data.retention.eligibleMembers}
+              retainedMembers={data.retention.retainedMembers}
+            />
+          </div>
+          <div className="rounded-lg bg-surface/50 p-space-sm xl:col-span-2">
+            <HabitRhythmCard
+              breakdown={data.retention.habitRhythm}
+              repeatRate={data.retention.repeatRate}
+              avgSessionsPerMember={data.retention.avgSessionsPerMember}
+            />
+          </div>
+        </div>
+      </section>
+
       <InsightsOnboardingTile aggregate={onboardingAggregate} />
 
       {/* When members practise */}
@@ -207,14 +236,17 @@ export default async function StudioInsightsPage({ params, searchParams }: PageP
             <p className="font-body-sm text-body-sm text-on-surface-variant">{t("empty")}</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[520px] text-start">
+              <table className="w-full min-w-[560px] text-start">
                 <thead>
                   <tr className="border-b border-outline-variant/40 font-label-sm text-label-sm text-on-surface-variant">
                     <th scope="col" className="py-2 pe-3 text-start font-normal">{t("top.practice")}</th>
-                    <th scope="col" className="w-2/5 py-2 pe-3 text-start font-normal">{t("top.sessions")}</th>
+                    <th scope="col" className="w-1/4 py-2 pe-3 text-start font-normal">{t("top.sessions")}</th>
                     <th scope="col" className="py-2 pe-3 text-end font-normal">{t("top.members")}</th>
+                    <th scope="col" className="py-2 pe-3 text-end font-normal">{t("top.repeat")}</th>
                     <th scope="col" className="py-2 pe-3 text-end font-normal">{t("top.minutes")}</th>
-                    <th scope="col" className="py-2 text-end font-normal">{t("top.saves")}</th>
+                    <th scope="col" className="py-2 pe-3 text-end font-normal">{t("top.avgLength")}</th>
+                    <th scope="col" className="py-2 pe-3 text-end font-normal">{t("top.saves")}</th>
+                    <th scope="col" className="py-2 text-end font-normal">{t("top.conversion")}</th>
                   </tr>
                 </thead>
                 <tbody className="font-body-sm text-body-sm tabular-nums">
@@ -232,8 +264,13 @@ export default async function StudioInsightsPage({ params, searchParams }: PageP
                         </div>
                       </td>
                       <td className="py-2.5 pe-3 text-end text-on-surface-variant">{n(p.members)}</td>
+                      <td className="py-2.5 pe-3 text-end font-medium text-primary">{p.repeatFactor}×</td>
                       <td className="py-2.5 pe-3 text-end text-on-surface-variant">{n(p.minutes)}</td>
-                      <td className="py-2.5 text-end text-on-surface-variant">{n(p.saves)}</td>
+                      <td className="py-2.5 pe-3 text-end text-on-surface-variant">{n(p.avgMinutes)} {t("units.min")}</td>
+                      <td className="py-2.5 pe-3 text-end text-on-surface-variant">{n(p.saves)}</td>
+                      <td className="py-2.5 text-end text-on-surface-variant">
+                        {p.saveConversion !== null ? `${p.saveConversion}%` : "—"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -321,24 +358,38 @@ export default async function StudioInsightsPage({ params, searchParams }: PageP
           <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             {quiet.members.map((m) => (
               <li key={m.id}>
-                <Link
-                  href={`/instructor/members?member=${encodeURIComponent(m.id)}`}
-                  className="flex h-full flex-col gap-1 rounded-lg bg-surface p-space-sm transition-colors hover:bg-surface-container"
-                >
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="truncate font-label-lg text-label-lg text-on-surface">{m.name}</span>
-                    <span className="shrink-0 rounded-full bg-surface-container-high px-2 py-0.5 font-label-sm text-label-sm text-on-surface-variant">
-                      {t(m.status === "trialing" ? "quiet.trial" : "quiet.member")}
+                <div className="flex h-full flex-col justify-between gap-3 rounded-lg bg-surface p-space-sm transition-colors hover:bg-surface-container">
+                  <Link
+                    href={`/instructor/members?member=${encodeURIComponent(m.id)}`}
+                    className="flex flex-col gap-1"
+                  >
+                    <span className="flex items-center justify-between gap-2">
+                      <span className="truncate font-label-lg text-label-lg text-on-surface">{m.name}</span>
+                      <span className="shrink-0 rounded-full bg-surface-container-high px-2 py-0.5 font-label-sm text-label-sm text-on-surface-variant">
+                        {t(m.status === "trialing" ? "quiet.trial" : "quiet.member")}
+                      </span>
                     </span>
-                  </span>
-                  <span className="truncate font-body-sm text-body-sm text-on-surface-variant" dir="ltr">
-                    {m.email}
-                  </span>
-                  <span className="font-body-sm text-body-sm text-on-surface-variant">
-                    {m.lastPracticeAt ? t("quiet.last", { date: date(m.lastPracticeAt) }) : t("quiet.never", { date: date(m.joinedAt) })}
-                    {m.status === "trialing" && m.trialEndsAt && <> · {t("quiet.trialEnds", { date: date(m.trialEndsAt) })}</>}
-                  </span>
-                </Link>
+                    <span className="truncate font-body-sm text-body-sm text-on-surface-variant" dir="ltr">
+                      {m.email}
+                    </span>
+                    <span className="font-body-sm text-body-sm text-on-surface-variant">
+                      {m.lastPracticeAt ? t("quiet.last", { date: date(m.lastPracticeAt) }) : t("quiet.never", { date: date(m.joinedAt) })}
+                      {m.status === "trialing" && m.trialEndsAt && <> · {t("quiet.trialEnds", { date: date(m.trialEndsAt) })}</>}
+                    </span>
+                  </Link>
+                  <div className="flex items-center justify-between border-t border-outline-variant/20 pt-2">
+                    <span className="text-[11px] text-on-surface-variant">
+                      {m.lastReminderAt
+                        ? t("quiet.reminded", { date: date(m.lastReminderAt) })
+                        : t("quiet.notReminded")}
+                    </span>
+                    <SendNudgeButton
+                      memberId={m.id}
+                      memberName={m.name}
+                      lastReminderAt={m.lastReminderAt}
+                    />
+                  </div>
+                </div>
               </li>
             ))}
           </ul>

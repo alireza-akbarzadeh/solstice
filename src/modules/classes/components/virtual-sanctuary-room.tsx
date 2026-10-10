@@ -35,15 +35,15 @@ export function VirtualSanctuaryRoom({
   const teacher = localize(liveClass.instructorName, locale);
 
   return (
-    <div className="flex flex-col w-full min-h-[calc(100vh-80px)] bg-surface text-on-surface">
+    <div className="bg-surface text-on-surface flex min-h-[calc(100vh-80px)] w-full flex-col">
       {/* Top Presence & Sacred Attendance Banner */}
       <SanctuaryBanner title={title} />
 
       {/* Main Sanctuary Grid */}
-      <section className="w-full px-margin-mobile md:px-margin py-space-md flex-1">
-        <div className="max-w-content mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+      <section className="px-margin-mobile md:px-margin py-space-md w-full flex-1">
+        <div className="max-w-content gap-gutter mx-auto grid grid-cols-1 items-start lg:grid-cols-12">
           {/* Main Broadcast Stage, Breathing Ribbon, & Silent Peer Circle (8 cols) */}
-          <div className="lg:col-span-8 flex flex-col gap-space-md">
+          <div className="gap-space-md flex flex-col lg:col-span-8">
             <SanctuaryStage
               coverImage={liveClass.coverImage}
               title={title}
@@ -59,7 +59,7 @@ export function VirtualSanctuaryRoom({
           </div>
 
           {/* Interactive Intentions & Somatic Inquiries Hub (4 cols) */}
-          <div className="lg:col-span-4 flex flex-col gap-4">
+          <div className="flex flex-col gap-4 lg:col-span-4">
             <SanghaHub joinUrl={liveClass.joinUrl} />
           </div>
         </div>

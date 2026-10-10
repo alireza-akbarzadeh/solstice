@@ -23,7 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: localize(content.description, locale),
     alternates: {
       canonical: getPathname({ locale, href: `/${pageSlug}` }),
-      languages: Object.fromEntries(routing.locales.map((language) => [language, getPathname({ locale: language, href: `/${pageSlug}` })])),
+      languages: Object.fromEntries(
+        routing.locales.map((language) => [
+          language,
+          getPathname({ locale: language, href: `/${pageSlug}` }),
+        ]),
+      ),
     },
     openGraph: content.image ? { images: [content.image] } : undefined,
   };
@@ -35,5 +40,11 @@ export default async function WebsitePage({ params }: Props) {
   setRequestLocale(locale);
   const page = await getPublishedCustomPage(pageSlug);
   if (!page?.publishedContent) notFound();
-  return <ContentPage locale={locale} content={page.publishedContent} />;
+  return (
+    <ContentPage
+      locale={locale}
+      content={page.publishedContent}
+      pageSlug={pageSlug}
+    />
+  );
 }

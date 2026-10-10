@@ -73,6 +73,9 @@ export default async function StudioPages({ params, searchParams }: Props) {
         JSON.stringify(page.publishedContent),
     navigation: !!page.publishedContent?.showInNavigation,
     footer: !!page.publishedContent?.showInFooter,
+    isEvent:
+      !!page.publishedContent?.event?.enabled ||
+      !!page.draftContent?.event?.enabled,
   }));
   const builtins = inventory
     .filter((page) => page.builtin)

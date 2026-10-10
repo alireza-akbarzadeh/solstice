@@ -24,6 +24,7 @@ export const youtubeProvider: VideoProvider = {
       rel: "0",
       modestbranding: "1",
       playsinline: "1",
+      enablejsapi: "1",
     });
     return {
       kind: "embed",

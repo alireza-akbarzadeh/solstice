@@ -102,21 +102,25 @@ export function CompleteButton({
   program?: { slug: string; day: number };
 }) {
   const t = useTranslations("PracticeActions");
-  const { videoRef, hasVideo, limitSeconds } = usePracticeStage();
+  const { videoRef, hasVideo, limitSeconds, subscribeEnded } = usePracticeStage();
   const { on, pending, toggle } = useToggle(completed, (next) => completePractice({ practiceSlug, on: next, program }));
 
   const onRef = useRef(on);
   onRef.current = on;
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !hasVideo || signInHref || limitSeconds !== undefined) return;
+    if (!hasVideo || signInHref || limitSeconds !== undefined) return;
     const onEnded = () => {
       if (!onRef.current) toggle(true, t("autoCompleted"));
     };
-    video.addEventListener("ended", onEnded);
-    return () => video.removeEventListener("ended", onEnded);
+    const unsub = subscribeEnded(onEnded);
+    const video = videoRef.current;
+    if (video) video.addEventListener("ended", onEnded);
+    return () => {
+      unsub();
+      if (video) video.removeEventListener("ended", onEnded);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- toggle is recreated each render; the ref keeps it current
-  }, [videoRef, hasVideo, signInHref, limitSeconds]);
+  }, [videoRef, hasVideo, signInHref, limitSeconds, subscribeEnded]);
 
   const className = cn(
     "flex h-11 items-center gap-2 rounded-lg px-4 font-label-lg text-label-lg shadow-sm transition-colors",

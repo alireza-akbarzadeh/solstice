@@ -4,6 +4,7 @@ import type {
   PageContent,
   PageDefinition,
 } from "./types";
+import type { WorkshopEventDetails } from "@/modules/workshops/types";
 
 export const pageDefinitions: PageDefinition[] = [
   {
@@ -207,6 +208,22 @@ export function applyCopyPath(copy: CopyRecord, path: string, value: CopyTree) {
   node[parts.at(-1)!] = structuredClone(value);
 }
 
+export function blankWorkshopEvent(): WorkshopEventDetails {
+  const empty = () => ({ en: "", fa: "" });
+  return {
+    enabled: false,
+    startDate: "",
+    endDate: "",
+    timezone: "Asia/Tehran",
+    locationType: "in_person",
+    location: empty(),
+    capacity: null,
+    priceLabel: empty(),
+    paymentInstructions: empty(),
+    registrationOpen: true,
+  };
+}
+
 export function blankPageContent(): PageContent {
   const empty = () => ({ en: "", fa: "" });
   return {
@@ -223,6 +240,7 @@ export function blankPageContent(): PageContent {
     body: [],
     copy: { en: {}, fa: {} },
     assets: {},
+    event: blankWorkshopEvent(),
   };
 }
 

@@ -7,11 +7,20 @@ import {
   memberships,
   newsletterSubscribers,
   practiceCompletions,
+  practiceReminders,
   practices,
   programEnrollments,
   programs,
   user,
 } from "@/server/db/schema";
+
+import {
+  calculateCohortCurve,
+  calculateHabitRhythm,
+  calculateRepeatFactor,
+  calculateSaveConversion,
+  type RetentionSummary,
+} from "../retention";
 
 import { getMembershipCounts } from "./studio";
 
@@ -183,18 +192,118 @@ export async function getStudioInsights(weeks: InsightRange) {
     current,
     before,
     heat,
-    topPractices: topRows.map((r) => ({
-      slug: r.slug,
-      title: r.title,
-      sessions: r.sessions,
-      members: r.members,
-      minutes: Number(r.minutes ?? 0),
-      saves: saves[r.slug] ?? 0,
-    })),
+    topPractices: topRows.map((r) => {
+      const saveCount = saves[r.slug] ?? 0;
+      const sessionCount = r.sessions;
+      const memberCount = r.members;
+      const totalMinutes = Number(r.minutes ?? 0);
+      return {
+        slug: r.slug,
+        title: r.title,
+        sessions: sessionCount,
+        members: memberCount,
+        minutes: totalMinutes,
+        saves: saveCount,
+        repeatFactor: calculateRepeatFactor(sessionCount, memberCount),
+        saveConversion: calculateSaveConversion(memberCount, saveCount),
+        avgMinutes: Math.round(totalMinutes / Math.max(1, sessionCount)),
+      };
+    }),
     categories: categoryRows.map((r) => ({ category: r.category, minutes: Number(r.minutes ?? 0), sessions: r.sessions })),
     programs: await getProgramProgress(start),
     membership: { ...counts, trialsEnding: trialsEnding?.n ?? 0 },
+    retention: await getRetentionAnalytics(now, start, weeks, counts.paying + counts.trialing),
     quiet,
+  };
+}
+
+/**
+ * Retention metrics: 30-day active member retention, 4-week cohort curve,
+ * repeat completion rate, and weekly practice habit distribution.
+ */
+async function getRetentionAnalytics(
+  now: Date,
+  start: Date,
+  weeks: number,
+  activeMembershipCount: number,
+): Promise<RetentionSummary> {
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * DAY);
+  const cohortWindowStart = new Date(now.getTime() - 24 * WEEK);
+
+  const [
+    [eligibleRow],
+    [retainedRow],
+    cohortUsers,
+    periodCompletions,
+  ] = await Promise.all([
+    // 1. Members joined 30+ days ago
+    db
+      .select({ count: count() })
+      .from(user)
+      .where(and(eq(user.role, "member"), lt(user.createdAt, thirtyDaysAgo))),
+    // 2. Members joined 30+ days ago who practiced in the last 30 days
+    db
+      .select({ count: countDistinct(practiceCompletions.userId) })
+      .from(practiceCompletions)
+      .innerJoin(user, eq(user.id, practiceCompletions.userId))
+      .where(
+        and(
+          eq(user.role, "member"),
+          lt(user.createdAt, thirtyDaysAgo),
+          gte(practiceCompletions.completedAt, thirtyDaysAgo),
+        ),
+      ),
+    // 3. Cohort members joined between 24 weeks and 28 days ago
+    db
+      .select({ id: user.id, createdAt: user.createdAt })
+      .from(user)
+      .where(
+        and(
+          eq(user.role, "member"),
+          gte(user.createdAt, cohortWindowStart),
+          lt(user.createdAt, new Date(now.getTime() - 28 * DAY)),
+        ),
+      ),
+    // 4. Completions in the selected insight period grouped by user
+    db
+      .select({ userId: practiceCompletions.userId, count: count() })
+      .from(practiceCompletions)
+      .where(gte(practiceCompletions.completedAt, start))
+      .groupBy(practiceCompletions.userId),
+  ]);
+
+  const eligibleMembers = eligibleRow?.count ?? 0;
+  const retainedMembers = retainedRow?.count ?? 0;
+  const thirtyDayRate = eligibleMembers > 0 ? Math.round((retainedMembers / eligibleMembers) * 100) : null;
+
+  // Completions for the cohort members
+  const cohortUserIds = cohortUsers.map((u) => u.id);
+  const cohortCompletions = cohortUserIds.length > 0
+    ? await db
+        .select({ userId: practiceCompletions.userId, completedAt: practiceCompletions.completedAt })
+        .from(practiceCompletions)
+        .where(inArray(practiceCompletions.userId, cohortUserIds))
+    : [];
+
+  const { points: cohortCurve, totalCohortMembers } = calculateCohortCurve(cohortUsers, cohortCompletions, now);
+
+  const totalPracticing = periodCompletions.length;
+  const repeatMembers = periodCompletions.filter((c) => c.count > 1).length;
+  const repeatRate = totalPracticing > 0 ? Math.round((repeatMembers / totalPracticing) * 100) : 0;
+  const totalSessions = periodCompletions.reduce((acc, c) => acc + c.count, 0);
+  const avgSessionsPerMember = totalPracticing > 0 ? Math.round((totalSessions / totalPracticing) * 10) / 10 : 0;
+
+  const habitRhythm = calculateHabitRhythm(activeMembershipCount, periodCompletions, weeks);
+
+  return {
+    thirtyDayRate,
+    eligibleMembers,
+    retainedMembers,
+    repeatRate,
+    avgSessionsPerMember,
+    cohortCurve,
+    cohortCount: totalCohortMembers,
+    habitRhythm,
   };
 }
 
@@ -204,6 +313,7 @@ export async function getStudioInsights(weeks: InsightRange) {
  */
 async function getQuietMembers(staleBefore: Date) {
   const lastPractice = sql<Date | null>`(select max(${practiceCompletions.completedAt}) from ${practiceCompletions} where ${practiceCompletions.userId} = ${user.id})`;
+  const lastReminder = sql<Date | null>`(select max(${practiceReminders.sentAt}) from ${practiceReminders} where ${practiceReminders.userId} = ${user.id})`;
   const rows = await db
     .select({
       id: user.id,
@@ -213,6 +323,7 @@ async function getQuietMembers(staleBefore: Date) {
       trialEndsAt: memberships.trialEndsAt,
       joinedAt: memberships.createdAt,
       lastPracticeAt: lastPractice,
+      lastReminderAt: lastReminder,
     })
     .from(memberships)
     .innerJoin(user, eq(user.id, memberships.userId))

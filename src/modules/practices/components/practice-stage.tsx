@@ -13,6 +13,14 @@ type StageContextValue = {
   currentTime: number;
   setCurrentTime: (seconds: number) => void;
   seek: (seconds: number, opts?: { play?: boolean }) => void;
+  /** Register external player bridge (e.g. YouTube IFrame API) */
+  registerSeekBridge: (
+    bridge: ((seconds: number, opts?: { play?: boolean }) => void) | null,
+  ) => void;
+  /** Trigger completion when video ends (supports both native <video> and external embeds) */
+  triggerEnded: () => void;
+  /** Subscribe to video ended event */
+  subscribeEnded: (cb: () => void) => () => void;
   /** The "preview ended" invitation. */
   gateOpen: boolean;
   openGate: () => void;
@@ -30,7 +38,7 @@ type StageContextValue = {
 
 const StageContext = createContext<StageContextValue | null>(null);
 
-// Shares one <video> between the player and the chapter list, and owns the preview limit.
+// Shares one <video> or embed between the player, chapters, and reflections, and owns preview limits.
 export function PracticeStage({
   hasVideo,
   limitSeconds,
@@ -41,6 +49,9 @@ export function PracticeStage({
   children: React.ReactNode;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const seekBridgeRef = useRef<((seconds: number, opts?: { play?: boolean }) => void) | null>(null);
+  const endedListenersRef = useRef<Set<() => void>>(new Set());
+
   const [currentTime, setCurrentTime] = useState(0);
   const [gateOpen, setGateOpen] = useState(false);
   const [audioOnly, setAudioOnly] = useState(false);
@@ -58,9 +69,14 @@ export function PracticeStage({
 
   const seek = useCallback(
     (seconds: number, opts?: { play?: boolean }) => {
+      if (limitSeconds !== undefined && seconds >= limitSeconds) return openGate();
+      if (seekBridgeRef.current) {
+        seekBridgeRef.current(seconds, opts);
+        setCurrentTime(seconds);
+        return;
+      }
       const video = videoRef.current;
       if (!video) return;
-      if (limitSeconds !== undefined && seconds >= limitSeconds) return openGate();
       const end = Number.isFinite(video.duration) ? video.duration : seconds;
       video.currentTime = Math.max(0, Math.min(seconds, end));
       setCurrentTime(video.currentTime);
@@ -68,6 +84,33 @@ export function PracticeStage({
     },
     [limitSeconds, openGate],
   );
+
+  const registerSeekBridge = useCallback(
+    (bridge: ((seconds: number, opts?: { play?: boolean }) => void) | null) => {
+      seekBridgeRef.current = bridge;
+    },
+    [],
+  );
+
+  const triggerEnded = useCallback(() => {
+    for (const cb of endedListenersRef.current) {
+      try {
+        cb();
+      } catch (err) {
+        console.error("Error in practice stage ended listener:", err);
+      }
+    }
+    if (videoRef.current) {
+      videoRef.current.dispatchEvent(new Event("ended"));
+    }
+  }, []);
+
+  const subscribeEnded = useCallback((cb: () => void) => {
+    endedListenersRef.current.add(cb);
+    return () => {
+      endedListenersRef.current.delete(cb);
+    };
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -77,6 +120,9 @@ export function PracticeStage({
       currentTime,
       setCurrentTime,
       seek,
+      registerSeekBridge,
+      triggerEnded,
+      subscribeEnded,
       gateOpen,
       openGate,
       closeGate: () => setGateOpen(false),
@@ -87,7 +133,20 @@ export function PracticeStage({
       shortcutsOpen,
       setShortcutsOpen,
     }),
-    [hasVideo, limitSeconds, currentTime, seek, gateOpen, openGate, audioOnly, theater, shortcutsOpen],
+    [
+      hasVideo,
+      limitSeconds,
+      currentTime,
+      seek,
+      registerSeekBridge,
+      triggerEnded,
+      subscribeEnded,
+      gateOpen,
+      openGate,
+      audioOnly,
+      theater,
+      shortcutsOpen,
+    ],
   );
 
   return <StageContext.Provider value={value}>{children}</StageContext.Provider>;
@@ -97,6 +156,10 @@ export function usePracticeStage() {
   const ctx = useContext(StageContext);
   if (!ctx) throw new Error("usePracticeStage must be used inside <PracticeStage>");
   return ctx;
+}
+
+export function useOptionalPracticeStage() {
+  return useContext(StageContext);
 }
 
 /**

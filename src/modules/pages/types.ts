@@ -1,5 +1,6 @@
 import type { Localized } from "@/lib/localized";
 import type { JournalStoredBlock } from "@/modules/journal/types";
+import type { WorkshopEventDetails } from "@/modules/workshops/types";
 
 export type CopyTree = string | CopyTree[] | { [key: string]: CopyTree };
 export type CopyRecord = Record<string, CopyTree>;
@@ -17,6 +18,7 @@ export type PageContent = {
   body: JournalStoredBlock[];
   copy: { en: CopyRecord; fa: CopyRecord };
   assets: Record<string, string>;
+  event?: WorkshopEventDetails;
 };
 
 export type PageDefinition = {

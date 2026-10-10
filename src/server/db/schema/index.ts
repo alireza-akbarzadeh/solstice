@@ -13,3 +13,5 @@ export * from "./classes.ts";
 export * from "./member-notes.ts";
 export * from "./onboarding.ts";
 export * from "./promotions.ts";
+export * from "./workshops.ts";
+export * from "./reminders.ts";

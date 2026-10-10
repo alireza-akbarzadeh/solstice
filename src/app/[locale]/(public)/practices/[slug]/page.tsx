@@ -169,8 +169,8 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
       </nav>
 
       {/* One stage for the player, chapters and reflections: timestamps seek the video. */}
-      {/* Only a file-backed player shares its clock, so chapters and timestamps stand down for embeds. */}
-      <PracticeStage hasVideo={playback?.kind === "file"} limitSeconds={fileLimit}>
+      {/* Connected to both file-backed player and YouTube embed player via the API bridge. */}
+      <PracticeStage hasVideo={playback !== null} limitSeconds={fileLimit}>
         <PracticeColumns
           main={
             <>

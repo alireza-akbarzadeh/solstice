@@ -33,6 +33,7 @@ import type { HomeSectionConfig } from "@/modules/home/sections";
 import { HomeSectionsEditor } from "./home-sections-editor";
 
 import { MICROCOPY_NAMESPACES } from "@/modules/pages/microcopy";
+import { WorkshopEventFields } from "./workshop-event-fields";
 
 type PageForm = { slug: string; content: PageContent };
 
@@ -277,6 +278,7 @@ export function PageEditor({
               </Field>
             )}
           />
+          <WorkshopEventFields control={form.control} disabled={busy} />
         </FieldGroup>
       )}
       {definition && template && (
