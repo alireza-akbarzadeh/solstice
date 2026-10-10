@@ -7,6 +7,7 @@ import {
   CircleCheckIcon,
   ClockIcon,
   FlaskConicalIcon,
+  GlobeIcon,
   InfinityIcon,
   LoaderCircleIcon,
   LockIcon,
@@ -22,6 +23,7 @@ import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { cn } from "@/lib/utils";
+import { USER_CURRENCY_COOKIE, USER_GATEWAY_COOKIE } from "@/modules/payments/types";
 import { formatMoney, type Currency } from "../plans";
 import { validateCouponAction } from "@/modules/promotions/actions";
 
@@ -53,6 +55,7 @@ export type CheckoutPlan = {
 export type CheckoutMethod = {
   gateway: string;
   cards: "iranian" | "international";
+  currency: string;
   /** Zero in this method's currency, for "due today". */
   zero: string;
   /** The plan preselected when switching to this method. */
@@ -124,6 +127,14 @@ export function Checkout({
     plans.find((p) => p.id === planId && open(p)) ?? plans.find((p) => p.id === method.featured && open(p)) ?? plans.find(open) ?? plans[0]!;
   const trialDays = selected.trialDays;
   const hasTrial = trialDays > 0;
+
+  const handleSelectMethod = (targetGateway: string, targetCurrency: string) => {
+    setMethodId(targetGateway);
+    try {
+      document.cookie = `${USER_GATEWAY_COOKIE}=${targetGateway}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `${USER_CURRENCY_COOKIE}=${targetCurrency}; path=/; max-age=31536000; SameSite=Lax`;
+    } catch {}
+  };
 
   const handleApplyCoupon = async () => {
     if (!couponInput.trim()) return;
@@ -255,6 +266,85 @@ export function Checkout({
           <p className="mt-3 max-w-2xl font-body-lg text-body-lg text-on-surface-variant">{t("lede")}</p>
         </div>
 
+        {methods.length > 1 && (
+          <div className="rounded-2xl border border-outline-variant/30 bg-surface-container-low p-4 sm:p-5 shadow-xs">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <GlobeIcon className="size-4 text-clay" />
+                <span className="font-label-md text-label-md font-semibold tracking-wider text-clay uppercase">
+                  {t("methods.title")}
+                </span>
+              </div>
+              <span className="font-body-sm text-body-sm text-on-surface-variant">
+                {suggestedFromIran ? t("methods.suggestedIran") : t("methods.hint")}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {methods.map((m) => {
+                const active = m.gateway === method.gateway;
+                const isIran = m.cards === "iranian";
+                return (
+                  <button
+                    key={m.gateway}
+                    type="button"
+                    onClick={() => handleSelectMethod(m.gateway, m.currency)}
+                    className={cn(
+                      "group relative flex items-center justify-between gap-3 rounded-xl p-4 text-start transition-all duration-200",
+                      active
+                        ? "bg-primary-fixed text-on-primary-fixed shadow-sm ring-2 ring-primary"
+                        : "bg-surface-container hover:bg-surface-container-high text-on-surface",
+                    )}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span
+                        className={cn(
+                          "flex size-10 shrink-0 items-center justify-center rounded-lg text-lg transition-colors",
+                          active
+                            ? "bg-primary text-on-primary"
+                            : "bg-surface-container-highest text-on-surface-variant group-hover:text-primary",
+                        )}
+                      >
+                        <CreditCardIcon className="size-5" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="font-label-lg text-label-lg font-bold leading-tight">
+                          {t(`methods.${m.cards}.title`)}
+                        </p>
+                        <p className={cn("mt-0.5 text-xs truncate", active ? "text-on-primary-fixed/80" : "text-on-surface-variant")}>
+                          {t(`methods.${m.cards}.body`)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span
+                        className={cn(
+                          "rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums",
+                          active
+                            ? "bg-primary text-on-primary"
+                            : "bg-surface-container-highest text-on-surface-variant",
+                        )}
+                      >
+                        {isIran ? (locale === "fa" ? "تومان (IRT)" : "Toman (IRT)") : (locale === "fa" ? "دلار ($)" : "USD ($)")}
+                      </span>
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "flex size-5 items-center justify-center rounded-full transition-colors",
+                          active ? "bg-primary text-on-primary" : "border border-outline-variant text-transparent",
+                        )}
+                      >
+                        <CheckIcon className="size-3" />
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <fieldset className="flex flex-col gap-4">
           <legend className="sr-only">{t("title")}</legend>
           {plans.map(planCard)}
@@ -320,7 +410,7 @@ export function Checkout({
                         name="method-choice"
                         value={m.gateway}
                         checked={active}
-                        onChange={() => setMethodId(m.gateway)}
+                        onChange={() => handleSelectMethod(m.gateway, m.currency)}
                         className="sr-only"
                       />
                       <span className="flex items-center gap-2 font-label-lg text-label-lg">

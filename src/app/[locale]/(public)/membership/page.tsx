@@ -34,7 +34,7 @@ export default async function MembershipPage({ params, searchParams }: PageProps
     getTranslations("Membership"),
     getTranslations("Brand"),
     getViewer(),
-    getPaymentMethods(),
+    getPaymentMethods(locale),
     getGuidancePlaces(locale),
   ]);
   // Plans with 1:1 guidance say how many places are left; a full one can't be chosen.
@@ -65,6 +65,7 @@ export default async function MembershipPage({ params, searchParams }: PageProps
     const byHand = !method.provider.recurring;
     offers.push({
       gateway: method.gateway,
+      currency: method.currency,
       cards: method.cards,
       zero: money(0),
       featured: catalog.featured?.id ?? null,
@@ -89,6 +90,7 @@ export default async function MembershipPage({ params, searchParams }: PageProps
   // A method named in the link (coming back from sign-up or the provider) wins, if it sells the plan.
   const initial =
     offers.find((o) => o.gateway === query.method && (!query.plan || o.plans.some((p) => p.id === query.plan))) ??
+    offers.find((o) => o.currency === (typeof query.currency === "string" ? query.currency.toUpperCase() : undefined) && (!query.plan || o.plans.some((p) => p.id === query.plan))) ??
     offers.find((o) => o.plans.some((p) => p.id === query.plan)) ??
     offers[0]!;
   const open = (plan: { guidance?: { full: boolean } }) => !plan.guidance?.full;

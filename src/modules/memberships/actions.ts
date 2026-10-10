@@ -60,7 +60,7 @@ export async function startCheckout(formData: FormData) {
   }
 
   // The visitor's pick wins over the country's preselection, as long as it can sell the plan.
-  const usable = methodsFor((await getPaymentMethods()).methods, plan);
+  const usable = methodsFor((await getPaymentMethods(locale)).methods, plan);
   const method = usable.find((m) => m.gateway === asked) ?? usable[0];
   if (!method) return redirect({ href: withNext("/membership", next), locale });
   const { provider, currency } = method;

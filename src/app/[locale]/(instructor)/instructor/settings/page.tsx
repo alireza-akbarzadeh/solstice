@@ -37,6 +37,8 @@ export default async function StudioSettingsPage({ params }: PageProps<"/[locale
   const places = [
     { href: "/#site-footer", title: t("where.footer"), body: t("where.footerBody") },
     { href: "/about#contact", title: t("where.about"), body: t("where.aboutBody") },
+    { href: "/practices", title: t("where.practices"), body: t("where.practicesBody") },
+    { href: "/guidance", title: t("where.guidance"), body: t("where.guidanceBody") },
   ];
 
   return (

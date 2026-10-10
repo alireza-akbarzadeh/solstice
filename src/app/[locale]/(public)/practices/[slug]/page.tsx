@@ -38,6 +38,9 @@ import { getViewer } from "@/modules/memberships/server/viewer";
 import { resolvePracticeAccess, toPlaybackGrant } from "@/modules/practices/server/access";
 import { getPractice, getRelatedPractices } from "@/modules/practices/server/get-practice";
 import type { ImplementKind } from "@/modules/practices/types";
+import { PracticeAskInstructor } from "@/modules/practices/components/practice-ask-instructor";
+import { getBrandAssets } from "@/modules/brand/server/brand-assets";
+import { getStudioContact } from "@/modules/contact/server/contact";
 import { getCategoryName } from "@/modules/categories/server/names";
 
 const implementIcons: Record<ImplementKind, typeof BoxesIcon> = {
@@ -70,14 +73,18 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
   const practice = await getPractice(locale, slug);
   if (!practice) notFound();
 
-  const [t, tPractice, tBrand, tPractices, viewer, related] = await Promise.all([
+  const [t, tPractice, tBrand, tPractices, viewer, related, contact, brandAssets] = await Promise.all([
     getTranslations("PracticeDetail"),
     getTranslations("Practice"),
     getTranslations("Brand"),
     getTranslations("Practices"),
     getViewer(),
     getRelatedPractices(locale, practice),
+    getStudioContact(),
+    getBrandAssets(),
   ]);
+  const telegramUrl = contact.socials.find((s) => s.network === "telegram")?.url ?? "https://t.me/solstice_yoga";
+  const instagramUrl = contact.socials.find((s) => s.network === "instagram")?.url ?? "https://instagram.com/solstice_yoga";
   const access = resolvePracticeAccess(practice, viewer);
 
   // Opened as a day of a program (?program=…&day=…): show where it sits in the journey.
@@ -256,6 +263,16 @@ export default async function PracticePage({ params, searchParams }: PageProps<"
                   </div>
                 </div>
               )}
+
+              <PracticeAskInstructor
+                instructorName={tBrand("instructor")}
+                practiceTitle={practice.title}
+                practiceSlug={practice.slug}
+                signedIn={!!viewer.user}
+                telegramUrl={telegramUrl}
+                instagramUrl={instagramUrl}
+                instructorAvatar={brandAssets.instructorAvatarUrl}
+              />
 
               {(practice.focus.length > 0 || practice.implements.length > 0) && (
                 <div className="grid grid-cols-1 gap-space-md md:grid-cols-2">

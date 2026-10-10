@@ -5,6 +5,8 @@ import { unstable_rethrow } from "next/navigation";
 import { testModeEnabled } from "@/modules/memberships/server/test-mode";
 import { getViewer } from "@/modules/memberships/server/viewer";
 
+import { getStudioContact } from "@/modules/contact/server/contact";
+
 import { countUnreadForMember, getThread, latestAssistantConversation } from "../server/conversations";
 import { getChatSettings } from "../server/settings";
 import { chatOwner } from "../server/visitor";
@@ -16,7 +18,13 @@ import { AssistantWidget } from "./assistant-widget";
  */
 export async function AssistantDock() {
   try {
-    const [viewer, settings, tBrand, raised] = await Promise.all([getViewer(), getChatSettings(), getTranslations("Brand"), testModeEnabled()]);
+    const [viewer, settings, tBrand, raised, contact] = await Promise.all([
+      getViewer(),
+      getChatSettings(),
+      getTranslations("Brand"),
+      testModeEnabled(),
+      getStudioContact(),
+    ]);
     if (viewer.user?.role === "instructor") return null;
     const { owner } = await chatOwner(viewer);
     const current = owner ? await latestAssistantConversation(owner) : null;
@@ -26,9 +34,19 @@ export async function AssistantDock() {
     if (viewer.user) unread = (await countUnreadForMember(viewer.user.id, "assistant")) > 0;
     else if (current) unread = (await getThread(current, current.locale as "en", "member")).unread;
 
+    const telegramUrl = contact.socials.find((s) => s.network === "telegram")?.url ?? "https://t.me/solstice_yoga";
+    const instagramUrl = contact.socials.find((s) => s.network === "instagram")?.url ?? "https://instagram.com/solstice_yoga";
+
     return (
       <Suspense>
-        <AssistantWidget instructorName={tBrand("instructor")} signedIn={!!viewer.user} unread={unread} raised={raised} />
+        <AssistantWidget
+          instructorName={tBrand("instructor")}
+          signedIn={!!viewer.user}
+          unread={unread}
+          raised={raised}
+          telegramUrl={telegramUrl}
+          instagramUrl={instagramUrl}
+        />
       </Suspense>
     );
   } catch (error) {

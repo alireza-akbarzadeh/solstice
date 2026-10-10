@@ -352,3 +352,11 @@ member moves the dossier above the directory, and selects open as drawers.
   3. Studio management UI: `BrandAssetsEditor` integrated under dedicated "Brand Assets" tab on `/instructor/settings` with live contrast previews for Logo, Sign-In Hero, Sign-Up Interior, and Instructor Portrait Avatar.
   4. Global integration: dynamically consumed by `BrandLockup` (`SiteHeader`, `SiteFooter`, `MobileNav`, Auth Layout), `SignInPage`, and `SignUpPage`.
   5. Automated unit tests in `tests/cms.test.mjs` (16/16 passing), `tsc --noEmit` clean (0 errors), `test:pages` and `test:pages:preview` passing.
+- **2026-10-10** — Direct Guidance & Instructor Channels (Telegram & Instagram):
+  1. Dedicated **Direct Guidance & Messaging Channels** editor in `/instructor/settings` (`ContactEditor`): Top-level inputs for Telegram (@handle or https://t.me/...) and Instagram (@handle or https://instagram.com/...) alongside general social links (WhatsApp, YouTube, Aparat, etc.).
+  2. Student experience integration:
+     - Practice Details (`/practices/[slug]`): `PracticeAskInstructor` card below instructor note with "Ask in Sanctuary", direct Telegram, and Instagram buttons.
+     - 1:1 Guidance room (`/guidance`): Direct Telegram and Instagram action buttons in hero section, locked guidance view, and instructor bio sidebar.
+     - Quick Help Widget (`AssistantWidget`): Direct channels cards embedded in suggestions view, escalation/hand-off dialog, and waiting status.
+     - Studio Inbox settings (`/instructor/inbox/settings`): Overview card showing current Telegram and Instagram channels with quick link to edit in Studio Settings.
+  3. Full bilingual localization in `messages/en.json` and `messages/fa.json`. 16/16 CMS tests pass, full `tsc --noEmit` typecheck passes with zero errors.

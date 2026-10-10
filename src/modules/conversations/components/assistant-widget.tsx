@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
+import { SocialIcon } from "@/modules/contact/components/social-icon";
 
 import { escalateAssistant, loadAssistant, markConversationRead, pollConversation, sendAssistantMessage, startAssistantOver } from "../actions";
 import { ASSISTANT_MESSAGE_MAX } from "../schemas";
@@ -28,12 +29,16 @@ export function AssistantWidget({
   signedIn,
   unread,
   raised,
+  telegramUrl = "https://t.me/solstice_yoga",
+  instagramUrl = "https://instagram.com/solstice_yoga",
 }: {
   instructorName: string;
   signedIn: boolean;
   unread: boolean;
   /** Sit above the test-mode panel, which takes the same corner. */
   raised: boolean;
+  telegramUrl?: string;
+  instagramUrl?: string;
 }) {
   const t = useTranslations("Conversations.widget");
   const params = useSearchParams();
@@ -224,6 +229,38 @@ export function AssistantWidget({
                   </button>
                 ))}
               </div>
+
+              {(telegramUrl || instagramUrl) && (
+                <div className="flex flex-col gap-2 rounded-xl border border-hairline bg-surface-container-low/70 p-3">
+                  <span className="font-label-sm text-label-sm font-medium text-clay">
+                    {t("directChannels")}
+                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {telegramUrl && (
+                      <a
+                        href={telegramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-container-lowest px-2.5 py-1.5 font-label-sm text-label-sm text-on-surface transition-colors hover:border-[#229ED9]/50 hover:text-[#229ED9]"
+                      >
+                        <SocialIcon network="telegram" className="size-3.5 text-[#229ED9]" />
+                        <span>{t("telegram")}</span>
+                      </a>
+                    )}
+                    {instagramUrl && (
+                      <a
+                        href={instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-container-lowest px-2.5 py-1.5 font-label-sm text-label-sm text-on-surface transition-colors hover:border-[#E1306C]/50 hover:text-[#E1306C]"
+                      >
+                        <SocialIcon network="instagram" className="size-3.5 text-[#E1306C]" />
+                        <span>{t("instagram")}</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -292,6 +329,33 @@ export function AssistantWidget({
                   {t("cancel")}
                 </button>
               </div>
+              {(telegramUrl || instagramUrl) && (
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-hairline/60">
+                  <span className="font-label-sm text-label-sm text-on-surface-variant">{t("directChannels")}</span>
+                  {telegramUrl && (
+                    <a
+                      href={telegramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-label-sm text-label-sm text-[#229ED9] hover:underline"
+                    >
+                      <SocialIcon network="telegram" className="size-3" />
+                      <span>{t("telegram")}</span>
+                    </a>
+                  )}
+                  {instagramUrl && (
+                    <a
+                      href={instagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-label-sm text-label-sm text-[#E1306C] hover:underline"
+                    >
+                      <SocialIcon network="instagram" className="size-3" />
+                      <span>{t("instagram")}</span>
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

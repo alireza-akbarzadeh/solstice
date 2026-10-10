@@ -31,8 +31,8 @@ const currencyOf = (gateway: GatewayId, settings: PaymentSettings): Currency =>
  * The switched-on gateways, the one preselected for this visitor first: the Iran gateway when
  * the connection comes from Iran, the default gateway otherwise.
  */
-export const getPaymentMethods = cache(async () => {
-  const [settings, country] = await Promise.all([getPaymentSettings(), getVisitorCountry()]);
+export const getPaymentMethods = cache(async (locale?: string) => {
+  const [settings, country] = await Promise.all([getPaymentSettings(), getVisitorCountry(locale)]);
   const preferred = country === IRAN ? settings.iranGateway : settings.defaultGateway;
   const methods: PaymentMethod[] = [];
   for (const gateway of [preferred, ...gatewayIds.filter((id) => id !== preferred)]) {
@@ -51,8 +51,8 @@ export const methodsFor = (methods: PaymentMethod[], plan: Pick<MembershipPlan, 
  * The currency to quote prices in for this visitor (home banners, "from …" prices): that of
  * the first method, in preference order, that sells at least one plan on sale.
  */
-export const getVisitorCurrency = cache(async (): Promise<Currency> => {
-  const [{ methods }, plans, billing] = await Promise.all([getPaymentMethods(), getAllPlans(), getBillingSettings()]);
+export const getVisitorCurrency = cache(async (locale?: string): Promise<Currency> => {
+  const [{ methods }, plans, billing] = await Promise.all([getPaymentMethods(locale), getAllPlans(), getBillingSettings()]);
   const active = plans.filter((plan) => plan.status === "active");
   return methods.find((method) => active.some((plan) => plan.prices[method.currency] !== undefined))?.currency ?? billing.currency;
 });

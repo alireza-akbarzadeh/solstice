@@ -20,6 +20,8 @@ import type { GuidanceTopic } from "@/modules/conversations/types";
 import { getAllPlans } from "@/modules/memberships/server/plans";
 import { requireUser } from "@/modules/memberships/server/viewer";
 import { getAllPracticeSummaries } from "@/modules/practices/server/get-practice";
+import { SocialIcon } from "@/modules/contact/components/social-icon";
+import { getStudioContact } from "@/modules/contact/server/contact";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/guidance">): Promise<Metadata> {
   const { locale } = await params;
@@ -44,13 +46,16 @@ export default async function GuidancePage({ params, searchParams }: PageProps<"
   const query = await searchParams;
   const one = (key: string) => (Array.isArray(query[key]) ? query[key][0] : query[key]);
 
-  const [t, tBrand, settings, access] = await Promise.all([
+  const [t, tBrand, settings, access, contact] = await Promise.all([
     getTranslations("Conversations.guidance"),
     getTranslations("Brand"),
     getChatSettings(),
     hasGuidanceAccess(viewer),
+    getStudioContact(),
   ]);
   const instructorName = tBrand("instructor");
+  const telegramUrl = contact.socials.find((s) => s.network === "telegram")?.url ?? "https://t.me/solstice_yoga";
+  const instagramUrl = contact.socials.find((s) => s.network === "instagram")?.url ?? "https://instagram.com/solstice_yoga";
 
   const hero = (
     <section className="flex flex-col gap-space-md">
@@ -73,6 +78,28 @@ export default async function GuidancePage({ params, searchParams }: PageProps<"
           <ShieldCheckIcon className="size-4" />
           {t("privacy", { name: instructorName })}
         </span>
+        {telegramUrl && (
+          <a
+            href={telegramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl border border-hairline bg-surface-container-low px-3.5 py-2 font-label-md text-label-md text-on-surface transition-colors hover:border-[#229ED9]/50 hover:bg-surface hover:text-[#229ED9]"
+          >
+            <SocialIcon network="telegram" className="size-4 text-[#229ED9]" />
+            <span>{t("telegram")}</span>
+          </a>
+        )}
+        {instagramUrl && (
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl border border-hairline bg-surface-container-low px-3.5 py-2 font-label-md text-label-md text-on-surface transition-colors hover:border-[#E1306C]/50 hover:bg-surface hover:text-[#E1306C]"
+          >
+            <SocialIcon network="instagram" className="size-4 text-[#E1306C]" />
+            <span>{t("instagram")}</span>
+          </a>
+        )}
       </div>
     </section>
   );
@@ -161,6 +188,37 @@ export default async function GuidancePage({ params, searchParams }: PageProps<"
               })}
             </ul>
             <p className="font-body-sm text-body-sm text-outline">{t("locked.quickHelp")}</p>
+            {(telegramUrl || instagramUrl) && (
+              <div className="mt-2 flex flex-col gap-2 rounded-xl bg-surface-container-lowest p-4">
+                <span className="font-label-sm text-label-sm font-semibold tracking-wider text-clay uppercase">
+                  {t("directChannels")}
+                </span>
+                <div className="flex flex-wrap items-center gap-3">
+                  {telegramUrl && (
+                    <a
+                      href={telegramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg border border-hairline bg-surface px-3 py-2 font-label-md text-label-md text-on-surface transition-colors hover:border-[#229ED9]/50 hover:text-[#229ED9]"
+                    >
+                      <SocialIcon network="telegram" className="size-4 text-[#229ED9]" />
+                      <span>{t("telegram")}</span>
+                    </a>
+                  )}
+                  {instagramUrl && (
+                    <a
+                      href={instagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg border border-hairline bg-surface px-3 py-2 font-label-md text-label-md text-on-surface transition-colors hover:border-[#E1306C]/50 hover:text-[#E1306C]"
+                    >
+                      <SocialIcon network="instagram" className="size-4 text-[#E1306C]" />
+                      <span>{t("instagram")}</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </section>
         {principles}
@@ -273,6 +331,37 @@ export default async function GuidancePage({ params, searchParams }: PageProps<"
                 {settings.guidanceAi ? t("instructor.ethosAi", { name: instructorName }) : t("instructor.ethos", { name: instructorName })}
               </p>
             </div>
+            {(telegramUrl || instagramUrl) && (
+              <div className="mt-2 flex flex-col gap-2 border-t border-hairline/60 pt-3">
+                <span className="font-label-sm text-label-sm font-semibold tracking-wider text-clay uppercase">
+                  {t("directChannels")}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {telegramUrl && (
+                    <a
+                      href={telegramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-surface-container-lowest px-3 py-2 font-label-md text-label-md text-on-surface shadow-xs transition-colors hover:text-[#229ED9]"
+                    >
+                      <SocialIcon network="telegram" className="size-4 text-[#229ED9]" />
+                      <span>{t("telegram")}</span>
+                    </a>
+                  )}
+                  {instagramUrl && (
+                    <a
+                      href={instagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-surface-container-lowest px-3 py-2 font-label-md text-label-md text-on-surface shadow-xs transition-colors hover:text-[#E1306C]"
+                    >
+                      <SocialIcon network="instagram" className="size-4 text-[#E1306C]" />
+                      <span>{t("instagram")}</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
           </section>
         </aside>
 

@@ -44,3 +44,10 @@ export type PaymentSettingsView = {
 
 /** ISO country code for Iran, as Vercel's x-vercel-ip-country reports it. */
 export const IRAN = "IR";
+
+/** User's explicit choice of currency (IRT vs USD/EUR) saved from the currency switcher. */
+export const USER_CURRENCY_COOKIE = "solstice-currency";
+
+/** User's explicit choice of gateway (zarinpal vs stripe) saved from the payment switcher. */
+export const USER_GATEWAY_COOKIE = "solstice-gateway";
+
