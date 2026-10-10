@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  CalendarDaysIcon,
   CheckCircle2Icon,
   DownloadIcon,
   SearchIcon,
   Trash2Icon,
   UserCheckIcon,
-  UsersIcon,
   XCircleIcon,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -56,7 +54,7 @@ export function WorkshopAttendeesDialog({
   const [query, setQuery] = useState("");
   const [isPending, startTransition] = useTransition();
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getWorkshopAttendeesAction(pageSlug);
@@ -67,13 +65,13 @@ export function WorkshopAttendeesDialog({
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageSlug, t]);
 
   useEffect(() => {
     if (open) {
-      loadData();
+      void loadData();
     }
-  }, [open, pageSlug]);
+  }, [open, loadData]);
 
   const handleStatusChange = (
     id: number,
@@ -199,18 +197,30 @@ export function WorkshopAttendeesDialog({
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            {["all", "registered", "confirmed", "waitlist", "canceled"].map(
-              (f) => (
-                <Button
-                  key={f}
-                  variant={filter === f ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setFilter(f)}
-                  className="rounded-full text-xs"
-                >
-                  {f === "all" ? t("all") : t(`total${f.charAt(0).toUpperCase() + f.slice(1)}` as any) || f}
-                </Button>
-              ),
+            {(["all", "registered", "confirmed", "waitlist", "canceled"] as const).map(
+              (f) => {
+                const label =
+                  f === "all"
+                    ? t("all")
+                    : f === "registered"
+                      ? t("totalRegistered")
+                      : f === "confirmed"
+                        ? t("totalConfirmed")
+                        : f === "waitlist"
+                          ? t("totalWaitlist")
+                          : t("totalCanceled");
+                return (
+                  <Button
+                    key={f}
+                    variant={filter === f ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setFilter(f)}
+                    className="rounded-full text-xs"
+                  >
+                    {label}
+                  </Button>
+                );
+              },
             )}
           </div>
         </div>
@@ -265,7 +275,7 @@ export function WorkshopAttendeesDialog({
 
                     {item.notes && (
                       <p className="font-body-xs text-body-xs text-on-surface-variant bg-surface-container/60 mt-1 max-w-xl rounded-lg p-2 italic">
-                        "{item.notes}"
+                        &ldquo;{item.notes}&rdquo;
                       </p>
                     )}
                   </div>

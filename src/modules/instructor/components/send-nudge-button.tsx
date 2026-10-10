@@ -1,6 +1,6 @@
 "use client";
 
-import { BellIcon, CheckIcon, HeartIcon, SendIcon, SparklesIcon } from "lucide-react";
+import { CheckIcon, HeartIcon, SendIcon, SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ export function SendNudgeButton({
   memberId,
   memberName,
   lastReminderAt,
-  canRemind,
+  canRemind: _canRemind,
 }: {
   memberId: string;
   memberName: string;
@@ -55,7 +55,7 @@ export function SendNudgeButton({
         } else {
           toast.error(t("errors.generic"));
         }
-      } catch (err) {
+      } catch {
         toast.error(t("errors.generic"));
       }
     });

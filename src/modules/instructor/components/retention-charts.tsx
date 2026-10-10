@@ -29,7 +29,6 @@ export function RetentionCurveChart({
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
   const n = (val: number) => format.number(val);
-  const pct = (val: number) => format.number(val, { style: "percent", maximumFractionDigits: 0 });
 
   const hasData = cohortCount > 0 && points.some((p) => p.rate > 0);
 
@@ -199,17 +198,17 @@ export function RetentionCurveChart({
               activeIdx === coords.length - 1 && "-translate-x-full",
             )}
             style={{
-              left: `${(coords[activeIdx]!.x / width) * 100}%`,
-              top: `${(coords[activeIdx]!.y / height) * 100 - 32}px`,
+              left: `${(coords[activeIdx].x / width) * 100}%`,
+              top: `${(coords[activeIdx].y / height) * 100 - 32}px`,
             }}
           >
             <div className="font-label-sm text-label-sm font-semibold tabular-nums text-surface">
-              {coords[activeIdx]!.point.rate}% {t("retained")}
+              {coords[activeIdx].point.rate}% {t("retained")}
             </div>
             <div className="text-[10px] text-surface/80">
               {t("activeStudentsCount", {
-                active: coords[activeIdx]!.point.activeCount,
-                total: coords[activeIdx]!.point.totalMembers,
+                active: coords[activeIdx].point.activeCount,
+                total: coords[activeIdx].point.totalMembers,
               })}
             </div>
           </div>

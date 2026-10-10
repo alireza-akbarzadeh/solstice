@@ -208,12 +208,12 @@ export async function sendGentlePracticeNudge({
     const pushResult = await notifyUser(userId, {
       en: {
         title: "Your mat is waiting for you",
-        body: customMessage || "Take a gentle moment today to breathe and reconnect.",
+        body: customMessage ?? "Take a gentle moment today to breathe and reconnect.",
         url: targetUrl,
       },
       fa: {
         title: "تشک شما در انتظار شماست",
-        body: customMessage || "امروز لحظه‌ای کوتاه برای آرامش و تمرین خود اختصاص دهید.",
+        body: customMessage ?? "امروز لحظه‌ای کوتاه برای آرامش و تمرین خود اختصاص دهید.",
         url: targetUrl,
       },
     });

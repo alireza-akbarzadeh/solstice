@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, SaveIcon, SlidersHorizontalIcon } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useMessages, useTranslations } from "next-intl";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch, type Control } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -33,9 +33,9 @@ import type { HomeSectionConfig } from "@/modules/home/sections";
 import { HomeSectionsEditor } from "./home-sections-editor";
 
 import { MICROCOPY_NAMESPACES } from "@/modules/pages/microcopy";
-import { WorkshopEventFields } from "./workshop-event-fields";
+import { WorkshopEventFields, type WorkshopEventFormValues } from "./workshop-event-fields";
 
-type PageForm = { slug: string; content: PageContent };
+export type PageForm = { slug: string; content: PageContent };
 
 /**
  * The website page editor: existing pages edit their copy and images in both languages; new
@@ -278,7 +278,7 @@ export function PageEditor({
               </Field>
             )}
           />
-          <WorkshopEventFields control={form.control} disabled={busy} />
+          <WorkshopEventFields control={form.control as unknown as Control<WorkshopEventFormValues>} disabled={busy} />
         </FieldGroup>
       )}
       {definition && template && (

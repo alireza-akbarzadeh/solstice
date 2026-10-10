@@ -151,7 +151,7 @@ export async function createPlaylist(
     id,
     userId,
     title: title.trim(),
-    description: description?.trim() || null,
+    description: description?.trim() ?? null,
   });
 
   revalidatePath("/[locale]/(member)/my-practices", "page");
@@ -170,7 +170,7 @@ export async function updatePlaylist(
     .update(playlists)
     .set({
       title: data.title.trim(),
-      description: data.description?.trim() || null,
+      description: data.description?.trim() ?? null,
       updatedAt: new Date(),
     })
     .where(and(eq(playlists.id, playlistId), eq(playlists.userId, userId)));

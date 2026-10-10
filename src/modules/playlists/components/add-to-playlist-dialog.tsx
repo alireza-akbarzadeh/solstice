@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { CheckIcon, FolderPlusIcon, ListPlusIcon, Loader2Icon, PlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,7 @@ export function AddToPlaylistDialog({
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [, startTransition] = useTransition();
 
-  const loadPlaylists = async () => {
+  const loadPlaylists = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getPlaylistsForPracticeAction(practiceSlug);
@@ -58,13 +58,13 @@ export function AddToPlaylistDialog({
     } finally {
       setLoading(false);
     }
-  };
+  }, [practiceSlug]);
 
   useEffect(() => {
     if (open) {
-      loadPlaylists();
+      void loadPlaylists();
     }
-  }, [open, practiceSlug]);
+  }, [open, loadPlaylists]);
 
   const handleToggle = (playlistId: string) => {
     const isCurrentlyIncluded = selectedIds.has(playlistId);
@@ -187,7 +187,7 @@ export function AddToPlaylistDialog({
         onOpenChange={setCreateDialogOpen}
         onSuccess={async (newId) => {
           await togglePlaylistItemAction(newId, practiceSlug, true);
-          loadPlaylists();
+          await loadPlaylists();
         }}
       />
     </>

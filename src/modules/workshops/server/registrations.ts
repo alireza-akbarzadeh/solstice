@@ -1,4 +1,4 @@
-import { eq, and, desc, sql, inArray } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { eventRegistrations } from "@/server/db/schema";
 import { getPublishedCustomPage } from "@/modules/pages/server/library";
@@ -129,12 +129,12 @@ export async function registerForWorkshop(
     .insert(eventRegistrations)
     .values({
       pageSlug: input.pageSlug,
-      userId: userId || null,
+      userId: userId ?? null,
       name: input.name.trim(),
       email: input.email.toLowerCase().trim(),
       phone: input.phone.trim(),
       status,
-      notes: input.notes?.trim() || null,
+      notes: input.notes?.trim() ?? null,
     })
     .returning();
 

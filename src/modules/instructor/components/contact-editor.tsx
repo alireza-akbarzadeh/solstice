@@ -116,7 +116,7 @@ export function ContactEditor({ contact }: { contact: StudioContact }) {
     // Validate other socials
     for (let i = 0; i < values.otherSocials.length; i++) {
       const item = values.otherSocials[i];
-      if (item && item.url.trim() && !socialUrl(item.network, item.url)) {
+      if (item?.url.trim() && !socialUrl(item.network, item.url)) {
         form.setError(`otherSocials.${i}.url`, {
           message: t(item.network === "whatsapp" ? "validation.whatsapp" : "validation.url"),
         });

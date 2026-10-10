@@ -1,7 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { getViewer } from "@/modules/memberships/server/viewer";
 import {
   addPracticeToPlaylist,
@@ -14,7 +12,6 @@ import {
   updatePlaylist,
 } from "./server/playlists";
 import { createPlaylistSchema, updatePlaylistSchema } from "./schemas";
-import type { Locale } from "@/i18n/routing";
 
 export async function createPlaylistAction(title: string, description?: string) {
   const viewer = await getViewer();
@@ -96,5 +93,5 @@ export async function getPlaylistsForPracticeAction(practiceSlug: string) {
 export async function getPlaylistDetailsAction(playlistId: string, locale: "en" | "fa") {
   const viewer = await getViewer();
   if (!viewer.user) return null;
-  return getPlaylistWithPractices(viewer.user.id, playlistId, locale as Locale);
+  return getPlaylistWithPractices(viewer.user.id, playlistId, locale);
 }

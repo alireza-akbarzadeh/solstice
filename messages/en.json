@@ -4473,6 +4473,7 @@
       "totalRegistered": "Registered",
       "totalConfirmed": "Confirmed",
       "totalWaitlist": "Waitlist",
+      "totalCanceled": "Canceled",
       "spotsLeft": "Spots Left",
       "all": "All",
       "confirmAttendee": "Mark Confirmed",

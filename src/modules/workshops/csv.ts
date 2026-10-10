@@ -19,7 +19,7 @@ export function workshopAttendeesToCsv(
       row.email,
       row.phone,
       row.status,
-      row.notes || "",
+      row.notes ?? "",
       row.createdAt.toISOString(),
     ]),
   ];

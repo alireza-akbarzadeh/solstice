@@ -126,7 +126,7 @@ export default async function ProgressPage({ params }: PageProps<"/[locale]/prog
       </div>
 
       <MilestonesDisplay
-        locale={locale as "en" | "fa"}
+        locale={locale}
         milestones={milestonesData.milestones}
         unlockedCount={milestonesData.unlockedCount}
         totalCount={milestonesData.totalCount}

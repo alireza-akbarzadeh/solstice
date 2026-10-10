@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
-import { ClockIcon, LoaderCircleIcon, PlayIcon, Trash2Icon, XIcon } from "lucide-react";
+import { ClockIcon, LoaderCircleIcon, PlayIcon, Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export function PlaylistDetailDialog({
 }) {
   const t = useTranslations("Playlists");
   const tPractice = useTranslations("Practice");
-  const locale = useLocale() as "en" | "fa";
+  const locale = useLocale();
   const router = useRouter();
 
   const [playlist, setPlaylist] = useState<PlaylistWithPractices | null>(null);
@@ -40,7 +40,7 @@ export function PlaylistDetailDialog({
   useEffect(() => {
     if (open && playlistId) {
       setLoading(true);
-      getPlaylistDetailsAction(playlistId, locale)
+      void getPlaylistDetailsAction(playlistId, locale)
         .then((data) => setPlaylist(data))
         .finally(() => setLoading(false));
     } else {

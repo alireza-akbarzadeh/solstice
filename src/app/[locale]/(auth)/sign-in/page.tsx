@@ -49,7 +49,7 @@ export default async function SignInPage({
 
   return (
     <Container className="py-8 md:py-12">
-      <div className="bg-surface-container-low grid min-h-[680px] grid-cols-1 overflow-hidden rounded-xl shadow-xl lg:grid-cols-12">
+      <div className="bg-surface-container-low grid min-h-170 grid-cols-1 overflow-hidden rounded-xl shadow-xl lg:grid-cols-12">
         <div className="bg-primary relative hidden flex-col justify-between overflow-hidden p-8 md:p-12 lg:col-span-5 lg:flex">
           <Image
             src={brandAssets.signInPhotoUrl}

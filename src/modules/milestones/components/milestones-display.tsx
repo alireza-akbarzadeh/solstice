@@ -54,7 +54,7 @@ export async function MilestonesDisplay({
   milestones,
   unlockedCount,
   totalCount,
-  recentUnlocked,
+  recentUnlocked: _,
   nextMilestone,
 }: Props) {
   const t = await getTranslations("Milestones");

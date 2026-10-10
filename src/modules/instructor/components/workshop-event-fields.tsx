@@ -1,10 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { type Control, Controller, useWatch } from "react-hook-form";
+import type { Control } from "react-hook-form";
+import { Controller, useWatch } from "react-hook-form";
 import {
   CalendarDaysIcon,
-  CreditCardIcon,
   GlobeIcon,
   MapPinIcon,
   SparklesIcon,
@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { PageContent } from "@/modules/pages/types";
+import type { WorkshopEventDetails } from "@/modules/workshops/types";
 import { LocalizedField, emptyLocalized } from "./localized-field";
 
 const COMMON_TIMEZONES = [
@@ -38,11 +38,17 @@ const COMMON_TIMEZONES = [
   { value: "America/Los_Angeles", label: "Los Angeles (PST / PDT)" },
 ];
 
+export type WorkshopEventFormValues = {
+  content: {
+    event?: WorkshopEventDetails;
+  };
+};
+
 export function WorkshopEventFields({
   control,
   disabled,
 }: {
-  control: any;
+  control: Control<WorkshopEventFormValues>;
   disabled?: boolean;
 }) {
   const t = useTranslations("Workshops.studio");
@@ -95,7 +101,7 @@ export function WorkshopEventFields({
                 render={({ field }) => (
                   <Input
                     type="datetime-local"
-                    value={field.value || ""}
+                    value={field.value ?? ""}
                     onChange={field.onChange}
                     disabled={disabled}
                   />
@@ -114,7 +120,7 @@ export function WorkshopEventFields({
                 render={({ field }) => (
                   <Input
                     type="datetime-local"
-                    value={field.value || ""}
+                    value={field.value ?? ""}
                     onChange={field.onChange}
                     disabled={disabled}
                   />
@@ -132,7 +138,7 @@ export function WorkshopEventFields({
                 name="content.event.timezone"
                 render={({ field }) => (
                   <Select
-                    value={field.value || "Asia/Tehran"}
+                    value={field.value ?? "Asia/Tehran"}
                     onValueChange={field.onChange}
                     disabled={disabled}
                   >
@@ -158,7 +164,7 @@ export function WorkshopEventFields({
                 name="content.event.locationType"
                 render={({ field }) => (
                   <Select
-                    value={field.value || "in_person"}
+                    value={field.value ?? "in_person"}
                     onValueChange={field.onChange}
                     disabled={disabled}
                   >
@@ -198,7 +204,7 @@ export function WorkshopEventFields({
             render={({ field }) => (
               <LocalizedField
                 label={t("locationName")}
-                value={field.value || emptyLocalized}
+                value={field.value ?? emptyLocalized}
                 onChange={field.onChange}
                 disabled={disabled}
               />
@@ -265,7 +271,7 @@ export function WorkshopEventFields({
             render={({ field }) => (
               <LocalizedField
                 label={t("priceLabel")}
-                value={field.value || emptyLocalized}
+                value={field.value ?? emptyLocalized}
                 onChange={field.onChange}
                 disabled={disabled}
               />
@@ -279,7 +285,7 @@ export function WorkshopEventFields({
             render={({ field }) => (
               <LocalizedField
                 label={t("paymentInstructions")}
-                value={field.value || emptyLocalized}
+                value={field.value ?? emptyLocalized}
                 onChange={field.onChange}
                 multiline
                 disabled={disabled}

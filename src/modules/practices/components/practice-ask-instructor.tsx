@@ -7,7 +7,7 @@ import { SocialIcon } from "@/modules/contact/components/social-icon";
 
 export async function PracticeAskInstructor({
   instructorName,
-  practiceTitle,
+  practiceTitle: _practiceTitle,
   practiceSlug,
   signedIn,
   telegramUrl = "https://t.me/solstice_yoga",

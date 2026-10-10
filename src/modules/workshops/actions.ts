@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { getViewer } from "@/modules/memberships/server/viewer";
-import type { Locale } from "@/i18n/routing";
 import {
   workshopRegistrationSchema,
   type WorkshopRegistrationFormValues,
@@ -34,7 +33,7 @@ export async function registerWorkshopAction(
     return { ok: false, error: "failed" };
   }
 
-  const locale = (await getLocale()) as Locale;
+  const locale = await getLocale();
   const viewer = await getViewer();
   const userId = viewer.user?.id;
 

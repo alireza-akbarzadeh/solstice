@@ -47,7 +47,7 @@ export function loadYouTubeIframeApi(): Promise<NonNullable<typeof window.YT>> {
     return Promise.reject(new Error("Window is not available"));
   }
 
-  if (window.YT && window.YT.Player) {
+  if (window.YT?.Player) {
     return Promise.resolve(window.YT);
   }
 

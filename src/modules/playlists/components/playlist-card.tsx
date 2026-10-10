@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { ClockIcon, FolderIcon, MoreVerticalIcon, PencilIcon, PlayIcon, Trash2Icon } from "lucide-react";
+import { ClockIcon, FolderIcon, MoreVerticalIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "@/i18n/navigation";
 import { CreatePlaylistDialog } from "./create-playlist-dialog";
 import { deletePlaylistAction } from "../actions";
 import type { PlaylistSummary } from "../types";
