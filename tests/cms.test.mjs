@@ -29,6 +29,15 @@ const {
 } = await import(
   new URL("../src/modules/instructor/retention.ts", import.meta.url).href
 );
+const { createPlaylistSchema, updatePlaylistSchema } = await import(
+  new URL("../src/modules/playlists/schemas.ts", import.meta.url).href
+);
+const { evaluateMemberMilestones } = await import(
+  new URL("../src/modules/milestones/milestones.ts", import.meta.url).href
+);
+const { brandAssetsSchema, isValidAssetUrl } = await import(
+  new URL("../src/modules/brand/schemas.ts", import.meta.url).href
+);
 
 test("YouTube links use the embed provider even when the default provider is a file player", () => {
   for (const link of [
@@ -480,6 +489,106 @@ test("Retention analytics: repeat factor, save conversion, cohort curve and habi
   assert.equal(habit.occasional, 1);
   assert.equal(habit.dormant, 2); // 5 - (1+1+1) = 2 dormant
   assert.equal(habit.total, 5);
+});
+
+test("Playlist validation schemas enforce non-empty titles and trim boundaries", () => {
+  const valid = createPlaylistSchema.safeParse({
+    title: "  Morning Flow  ",
+    description: "Peaceful morning sequence",
+  });
+  assert.equal(valid.success, true);
+  if (valid.success) {
+    assert.equal(valid.data.title, "Morning Flow");
+  }
+
+  const tooShort = createPlaylistSchema.safeParse({ title: "   " });
+  assert.equal(tooShort.success, false);
+
+  const updateValid = updatePlaylistSchema.safeParse({
+    playlistId: "playlist-1",
+    title: "Updated Title",
+  });
+  assert.equal(updateValid.success, true);
+});
+
+test("Member milestones evaluate progression, unlock dates, and next milestones correctly", () => {
+  // Empty history: nothing unlocked, next milestone is first_breath
+  const emptyResult = evaluateMemberMilestones([], () => undefined);
+  assert.equal(emptyResult.unlockedCount, 0);
+  assert.equal(emptyResult.totalCount, 9);
+  assert.equal(emptyResult.recentUnlocked, null);
+  assert.equal(emptyResult.nextMilestone?.id, "first_breath");
+
+  // 1 completion
+  const t1 = new Date("2026-01-01T08:00:00Z");
+  const singleResult = evaluateMemberMilestones(
+    [{ practiceSlug: "morning-sun", completedAt: t1, minutes: 25 }],
+    (slug) => (slug === "morning-sun" ? "vinyasa" : undefined),
+  );
+  assert.equal(singleResult.unlockedCount, 1);
+  assert.equal(singleResult.recentUnlocked?.id, "first_breath");
+  assert.deepEqual(singleResult.recentUnlocked?.unlockedAt, t1);
+
+  // 7 breathwork sessions of 20 min each (total 140 min)
+  const completions = [];
+  for (let i = 1; i <= 7; i++) {
+    completions.push({
+      practiceSlug: `breath-${i}`,
+      completedAt: new Date(2026, 0, i, 9, 0, 0),
+      minutes: 20,
+    });
+  }
+  const sevenBreathResult = evaluateMemberMilestones(
+    completions,
+    () => "breathwork",
+  );
+  // Unlocked should include:
+  // - first_breath (1 session)
+  // - rhythm_awakened (5 sessions)
+  // - pranayama_mastery (5 breathwork sessions)
+  const unlockedIds = new Set(
+    sevenBreathResult.milestones.filter((m) => m.unlocked).map((m) => m.id),
+  );
+  assert.equal(unlockedIds.has("first_breath"), true);
+  assert.equal(unlockedIds.has("rhythm_awakened"), true);
+  assert.equal(unlockedIds.has("pranayama_mastery"), true);
+  assert.equal(sevenBreathResult.unlockedCount, 3);
+
+  // The 5th breath session unlocked pranayama_mastery on Day 5
+  const breathMilestone = sevenBreathResult.milestones.find(
+    (m) => m.id === "pranayama_mastery",
+  );
+  assert.deepEqual(breathMilestone?.unlockedAt, new Date(2026, 0, 5, 9, 0, 0));
+});
+
+test("Brand assets schema validates local images and secure https URLs while rejecting traversal and malformed inputs", () => {
+  assert.equal(isValidAssetUrl("/images/brand/logo.svg"), true);
+  assert.equal(isValidAssetUrl("https://cdn.example.com/sanctuary-logo.png"), true);
+  assert.equal(isValidAssetUrl("/images/brand/../secret.png"), false);
+  assert.equal(isValidAssetUrl("http://insecure.example.com/logo.png"), false);
+  assert.equal(isValidAssetUrl("not-a-url"), false);
+
+  const valid = brandAssetsSchema.safeParse({
+    logoUrl: "/images/brand/logo.svg",
+    logoAlt: { en: "Solstice", fa: "سلستیس" },
+    signInPhotoUrl: "https://images.unsplash.com/photo-1506126613408",
+    signUpPhotoUrl: "/images/auth/sanctuary-interior.jpg",
+    instructorAvatarUrl: "/images/brand/elena-portrait.jpg",
+    instructorName: { en: "Elena Rostova", fa: "النا روستووا" },
+    studioName: { en: "Solstice Sanctuary", fa: "پناهگاه سلستیس" },
+  });
+  assert.equal(valid.success, true);
+
+  const invalid = brandAssetsSchema.safeParse({
+    logoUrl: "invalid-url",
+    logoAlt: { en: "", fa: "" },
+    signInPhotoUrl: "",
+    signUpPhotoUrl: "",
+    instructorAvatarUrl: "",
+    instructorName: { en: "", fa: "" },
+    studioName: { en: "", fa: "" },
+  });
+  assert.equal(invalid.success, false);
 });
 
 

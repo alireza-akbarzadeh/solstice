@@ -6,6 +6,7 @@ import { ContactList } from "@/modules/contact/components/contact-list";
 import { SocialLinks } from "@/modules/contact/components/social-links";
 import { getStudioContact } from "@/modules/contact/server/contact";
 import { hasContactDetails } from "@/modules/contact/types";
+import { getBrandAssets } from "@/modules/brand/server/brand-assets";
 import { NewsletterForm } from "@/modules/newsletter/components/newsletter-form";
 import { getFooterPages } from "@/modules/pages/server/library";
 
@@ -32,13 +33,14 @@ const linkStyle =
 
 export async function SiteFooter({ className }: { className?: string }) {
   const locale = await getLocale();
-  const [t, nav, brand, metadata, pages, contact] = await Promise.all([
+  const [t, nav, brand, metadata, pages, contact, brandAssets] = await Promise.all([
     getTranslations("Footer"),
     getTranslations("Nav"),
     getTranslations("Brand"),
     getTranslations("Metadata"),
     getFooterPages(locale).catch(() => []),
     getStudioContact(),
+    getBrandAssets(),
   ]);
   return (
     <footer
@@ -79,6 +81,7 @@ export async function SiteFooter({ className }: { className?: string }) {
                 name={brand("name")}
                 studio={brand("studio")}
                 logoAlt={brand("logoAlt")}
+                logoUrl={brandAssets.logoUrl}
               />
             </Link>
             <p className="font-headline-sm text-headline-sm text-primary mt-5 max-w-xs">

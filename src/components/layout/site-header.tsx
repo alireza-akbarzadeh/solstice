@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { isPushConfigured } from "@/infrastructure/push/web-push";
+import { getBrandAssets } from "@/modules/brand/server/brand-assets";
 import { getViewer } from "@/modules/memberships/server/viewer";
 import { MessagesLink } from "@/modules/conversations/components/messages-link";
 import { countUnreadForMember, countWaiting } from "@/modules/conversations/server/conversations";
@@ -18,11 +19,12 @@ import { MobileNav } from "./mobile-nav";
 
 export async function SiteHeader() {
   const locale = await getLocale();
-  const [t, tBrand, viewer, extraPages] = await Promise.all([
+  const [t, tBrand, viewer, extraPages, brandAssets] = await Promise.all([
     getTranslations("Nav"),
     getTranslations("Brand"),
     getViewer(),
     getNavigationPages(locale).catch(() => []),
+    getBrandAssets(),
   ]);
   const { user } = viewer;
 
@@ -54,6 +56,7 @@ export async function SiteHeader() {
             name={tBrand("name")}
             studio={tBrand("studio")}
             logoAlt={tBrand("logoAlt")}
+            logoUrl={brandAssets.logoUrl}
           />
         </Link>
 
@@ -100,6 +103,7 @@ export async function SiteHeader() {
             isInstructor={user?.role === "instructor"}
             user={user}
             status={status}
+            logoUrl={brandAssets.logoUrl}
           />
         </div>
       </Container>

@@ -9,6 +9,8 @@ import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { requireUser } from "@/modules/memberships/server/viewer";
+import { PlaylistsShelf } from "@/modules/playlists/components/playlists-shelf";
+import { getUserPlaylists } from "@/modules/playlists/server/playlists";
 import { PracticeLibraryCard } from "@/modules/practices/components/practice-library-card";
 import { getAllPracticeSummaries, getPracticeSummaries } from "@/modules/practices/server/get-practice";
 import { getCompletions } from "@/modules/progress/server/completions";
@@ -31,7 +33,7 @@ export default async function MyPracticesPage({ params }: PageProps<"/[locale]/m
   setRequestLocale(locale);
 
   const viewer = await requireUser(locale, "/my-practices");
-  const [t, tPractice, format, favorites, completions, library, programs] = await Promise.all([
+  const [t, tPractice, format, favorites, completions, library, programs, userPlaylists] = await Promise.all([
     getTranslations("MyPractices"),
     getTranslations("Practice"),
     getFormatter(),
@@ -39,6 +41,7 @@ export default async function MyPracticesPage({ params }: PageProps<"/[locale]/m
     getCompletions(viewer.user.id),
     getAllPracticeSummaries(locale),
     getPrograms(locale),
+    getUserPlaylists(viewer.user.id),
   ]);
   const saved = await getPracticeSummaries(locale, favorites);
   const bySlug = new Map(library.map((p) => [p.slug, p]));
@@ -79,6 +82,8 @@ export default async function MyPracticesPage({ params }: PageProps<"/[locale]/m
           </ul>
         )}
       </section>
+
+      <PlaylistsShelf playlists={userPlaylists} />
 
       <section aria-labelledby="history-title">
         <h2 id="history-title" className="mb-space-md font-headline-sm text-headline-sm text-on-surface">

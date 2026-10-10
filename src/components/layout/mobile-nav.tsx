@@ -36,12 +36,14 @@ export function MobileNav({
   extraItems = [],
   user,
   status = "none",
+  logoUrl,
 }: {
   signedIn: boolean;
   isInstructor: boolean;
   extraItems?: { href: string; label: string }[];
   user?: { name: string; email: string; image?: string | null } | null;
   status?: AccountStatus;
+  logoUrl?: string;
 }) {
   const t = useTranslations("Nav");
   const tAccount = useTranslations("Account");
@@ -91,6 +93,7 @@ export function MobileNav({
               name={tBrand("name")}
               studio={tBrand("studio")}
               logoAlt={tBrand("logoAlt")}
+              logoUrl={logoUrl}
             />
           </Link>
           <SheetTitle className="sr-only">{t("menuTitle")}</SheetTitle>

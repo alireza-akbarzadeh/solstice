@@ -15,3 +15,4 @@ export * from "./onboarding.ts";
 export * from "./promotions.ts";
 export * from "./workshops.ts";
 export * from "./reminders.ts";
+export * from "./playlists.ts";

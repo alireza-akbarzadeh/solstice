@@ -1,12 +1,12 @@
 import Image from "next/image";
 
-type Props = { name: string; studio: string; logoAlt: string };
+type Props = { name: string; studio: string; logoAlt: string; logoUrl?: string };
 
-export function BrandLockup({ name, studio, logoAlt }: Props) {
+export function BrandLockup({ name, studio, logoAlt, logoUrl }: Props) {
   return (
     <span className="group inline-flex min-w-0 max-w-full items-center gap-2 sm:gap-2.5">
       <Image
-        src="/images/brand/logo.svg"
+        src={logoUrl || "/images/brand/logo.svg"}
         alt={logoAlt}
         width={36}
         height={42}

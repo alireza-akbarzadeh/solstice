@@ -8,6 +8,8 @@ import { Container } from "@/components/layout/container";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { requireUser } from "@/modules/memberships/server/viewer";
+import { MilestonesDisplay } from "@/modules/milestones/components/milestones-display";
+import { getMemberMilestones } from "@/modules/milestones/server/milestones";
 import { getAllPracticeSummaries } from "@/modules/practices/server/get-practice";
 import type { PracticeCategory } from "@/modules/practices/types";
 import { ProgressOverview } from "@/modules/progress/components/progress-overview";
@@ -31,13 +33,14 @@ export default async function ProgressPage({ params }: PageProps<"/[locale]/prog
   const practiceCategory = await getCategoryName("practice");
 
   const viewer = await requireUser(locale, "/progress");
-  const [t, tPractice, format, completions, library, programSlugs] = await Promise.all([
+  const [t, tPractice, format, completions, library, programSlugs, milestonesData] = await Promise.all([
     getTranslations("Progress"),
     getTranslations("Practice"),
     getFormatter(),
     getCompletions(viewer.user.id),
     getAllPracticeSummaries(locale),
     getEnrolledProgramSlugs(viewer.user.id),
+    getMemberMilestones(viewer.user.id),
   ]);
 
   const programs = (
@@ -121,6 +124,15 @@ export default async function ProgressPage({ params }: PageProps<"/[locale]/prog
           )}
         </section>
       </div>
+
+      <MilestonesDisplay
+        locale={locale as "en" | "fa"}
+        milestones={milestonesData.milestones}
+        unlockedCount={milestonesData.unlockedCount}
+        totalCount={milestonesData.totalCount}
+        recentUnlocked={milestonesData.recentUnlocked}
+        nextMilestone={milestonesData.nextMilestone}
+      />
     </Container>
   );
 }

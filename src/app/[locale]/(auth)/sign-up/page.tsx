@@ -14,6 +14,7 @@ import { SocialButtons } from "@/modules/auth/components/social-buttons";
 import { getVisitorPlanDisplay } from "@/modules/memberships/server/plan-display";
 import { enabledSocialProviders } from "@/server/better-auth/config";
 import { getSession } from "@/server/better-auth/server";
+import { getBrandAssets } from "@/modules/brand/server/brand-assets";
 import { getBuiltinPagePreview } from "@/modules/pages/server/request";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/sign-up">): Promise<Metadata> {
@@ -33,7 +34,12 @@ export default async function SignUpPage({ params, searchParams }: PageProps<"/[
   const next = safeNextPath((await searchParams).next, "/membership");
   if ((await getSession()) && (await getBuiltinPagePreview())?.slug !== "account-access") redirect({ href: next, locale });
 
-  const [t, tBrand, { catalog, money, per }] = await Promise.all([getTranslations("Auth"), getTranslations("Brand"), getVisitorPlanDisplay(locale)]);
+  const [t, tBrand, { catalog, money, per }, brandAssets] = await Promise.all([
+    getTranslations("Auth"),
+    getTranslations("Brand"),
+    getVisitorPlanDisplay(locale),
+    getBrandAssets(),
+  ]);
   const { trialDays, entry } = catalog;
   const benefits = [
     { icon: Flower2Icon, text: t("signUp.benefit1") },
@@ -48,13 +54,13 @@ export default async function SignUpPage({ params, searchParams }: PageProps<"/[
         <section className="order-2 flex flex-col gap-6 lg:order-1 lg:col-span-5">
           <div className="relative overflow-hidden rounded-xl bg-surface-container shadow-md">
             <div className="relative h-64 w-full overflow-hidden md:h-72">
-              <Image src="/images/auth/sanctuary-interior.jpg" alt="" fill sizes="(min-width: 1024px) 520px, 100vw" className="object-cover" />
+              <Image src={brandAssets.signUpPhotoUrl} alt="" fill sizes="(min-width: 1024px) 520px, 100vw" className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-on-surface/80 via-on-surface/20 to-transparent" />
               <div className="absolute inset-x-4 bottom-4 flex items-center gap-3.5 rounded-lg bg-surface/90 p-3 backdrop-blur-md">
-                <Image src="/images/brand/elena-portrait.jpg" alt="" width={56} height={56} className="size-14 shrink-0 rounded-full object-cover shadow-sm" />
+                <Image src={brandAssets.instructorAvatarUrl} alt="" width={56} height={56} className="size-14 shrink-0 rounded-full object-cover shadow-sm" />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="truncate font-headline-sm text-headline-sm leading-tight text-on-surface">{tBrand("instructor")}</span>
+                    <span className="truncate font-headline-sm text-headline-sm leading-tight text-on-surface">{brandAssets.instructorName[locale] || tBrand("instructor")}</span>
                     <BadgeCheckIcon className="size-4 shrink-0 text-primary" />
                   </div>
                   <p className="truncate font-body-sm text-body-sm text-on-surface-variant">{t("guideRole")}</p>

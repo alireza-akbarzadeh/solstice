@@ -9,6 +9,7 @@ import {
   HeartIcon,
   KeyboardIcon,
   LinkIcon,
+  ListPlusIcon,
   LoaderCircleIcon,
   MoreHorizontalIcon,
   Share2Icon,
@@ -21,6 +22,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { AddToPlaylistDialog } from "@/modules/playlists/components/add-to-playlist-dialog";
 import { usePracticeStage } from "@/modules/practices/components/practice-stage";
 import { completePractice, likePractice, savePractice } from "@/modules/progress/actions";
 
@@ -157,6 +159,8 @@ export function PracticeHeaderActions({
     });
   };
 
+  const [playlistDialogOpen, setPlaylistDialogOpen] = useState(false);
+
   const copyLink = async () => {
     await navigator.clipboard.writeText(window.location.href);
     toast.success(t("copied"));
@@ -263,6 +267,25 @@ export function PracticeHeaderActions({
             </Tip>
           )}
 
+          {signInHref ? (
+            <Tip label={t("signInToAddToPlaylist")}>
+              <Link href={signInHref} aria-label={t("signInToAddToPlaylist")} className={iconButton}>
+                <ListPlusIcon className="size-4.5 text-clay" />
+              </Link>
+            </Tip>
+          ) : (
+            <Tip label={t("addToPlaylist")}>
+              <button
+                type="button"
+                onClick={() => setPlaylistDialogOpen(true)}
+                aria-label={t("addToPlaylist")}
+                className={iconButton}
+              >
+                <ListPlusIcon className="size-4.5 text-clay" />
+              </button>
+            </Tip>
+          )}
+
           <Tip label={t("share")}>
             <button type="button" onClick={share} aria-label={t("share")} className={iconButton}>
               <Share2Icon className="size-4.5 text-outline" />
@@ -322,6 +345,13 @@ export function PracticeHeaderActions({
           </DropdownMenu>
         </div>
       </div>
+
+      <AddToPlaylistDialog
+        practiceSlug={practiceSlug}
+        practiceTitle={practiceTitle}
+        open={playlistDialogOpen}
+        onOpenChange={setPlaylistDialogOpen}
+      />
     </TooltipProvider>
   );
 }
